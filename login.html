@@ -223,14 +223,14 @@
 
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label class="form-label" for="email">
+                    <label class="form-label" for="loginCode">
                         <i class="fas fa-envelope"></i> Login Code
                     </label>
                     <input 
                         type="text" 
                         id="loginCode"
                         class="form-input" 
-                        placeholder="your@email.com"
+                        placeholder="Enter Employee Code"
                         required
                     >
                 </div>
@@ -316,43 +316,13 @@
             loadingSpinner.style.display = 'inline-block';
             btnText.textContent = 'Logging in...';
 
-            try {
-                // Admin check
-                const adminEmails = [
-                    'aaqsolutioninfoteam@gmail.com',
-                    'admin@aaq.com'
-                ];
-
-                if (adminEmails.includes(email)) {
-                    // Admin login - Match activeStaffUser for safety
-                    const adminData = {
-                        email: email,
-                        role: 'ADMIN',
-                        name: 'Administrator',
-                        position: 'System Administrator'
-                    };
-                    
-                    localStorage.setItem('loggedUser', 'Admin');
-                    localStorage.setItem('userRole', 'ADMIN');
-                    localStorage.setItem('currentUser', JSON.stringify(adminData));
-                    localStorage.setItem('activeStaffUser', JSON.stringify(adminData)); // Interlock matched
-
-                    if (rememberMe) {
-                        localStorage.setItem('rememberEmail', email);
-                    }
-
-                    showAlert('✅ Welcome Admin!', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'admin.html';
-                    }, 1000);
-                    return;
-                }
+            
 
                 // Staff check
-                const q = query(
-                    collection(db, 'staffs'),
-                    where('loginCode', '==', loginCode)
-                );
+                const  q = query(
+    collection(db, 'users'),
+    where('employeeCode', '==', loginCode)
+);
 
                 const querySnapshot = await getDocs(q);
                 
@@ -380,37 +350,37 @@
 
                 // SUCCESSFUL LOGIN - INTERLOCK FIX WITH DASHBOARD ENGINE
                 const staffSessionData = {
-                    name: userData.staffName || 'Staff Member',
+                    name: userData.fullName || 'Staff Member',
                     position: userData.position || 'Field Worker',
                     photoUrl: userData.photoURL || 'https://i.imgur.com/6VBx3io.png'
                 };
 
                 // Saving standard legacy tokens
                 localStorage.setItem('staffId', userData.id);
-                localStorage.setItem('staffName', userData.staffName || 'Staff');
+                localStorage.setItem('staffName', userData.fullName || 'Staff');
                 localStorage.setItem('staffEmail', userData.email);
                 localStorage.setItem('staffPhoto', userData.photoURL || '');
                 localStorage.setItem('userRole', 'STAFF');
-                localStorage.setItem('loggedUser', userData.staffName || 'Staff');
+                localStorage.setItem('loggedUser', userData.fullName || 'Staff');
                 localStorage.setItem('currentUser', JSON.stringify(userData));
                 
                 // CRITICAL FIXED: Match exactly what dashboard.html requires!
                 localStorage.setItem('activeStaffUser', JSON.stringify(staffSessionData));
 
                 if (rememberMe) {
-                    localStorage.setItem('rememberEmail', email);
+                    localStorage.setItem('rememberCode', loginCode);
                 }
 
                 // Send welcome notification
                 try {
-                    await sendWelcomeEmail(email, userData.staffName || 'Staff');
+                    await sendWelcomeEmail(email, userData.fullName || 'Staff');
                 } catch(e) {
                     console.log("Email notifications fallback triggered.");
                 }
 
-                showAlert('✅ Welcome back, ' + (userData.staffName || 'Staff'), 'success');
+                showAlert('✅ Welcome back, ' + (userData.fullName || 'Staff'), 'success');
                 setTimeout(() => {
-                    window.location.href = 'staff-dashboard.html';
+                    window.location.href='dashboard.html';
                 }, 1000);
 
             } catch (error) {
@@ -426,9 +396,9 @@
 
         // Pre-fill remembered email
         window.addEventListener('DOMContentLoaded', () => {
-            const rememberedEmail = localStorage.getItem('rememberEmail');
+            const rememberedCode = localStorage.getItem('rememberCode');
             if (rememberedEmail) {
-                document.getElementById('email').value = rememberedEmail;
+                document.getElementById('loginCode').value = rememberedCode;
                 document.getElementById('rememberMe').checked = true;
             }
         });
