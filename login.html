@@ -1,407 +1,927 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donation Box Department ERP | Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
 
-        .login-container {
-            width: 100%;
-            max-width: 420px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .login-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px 30px;
-        }
+<title>Donation Box Department ERP | Login</title>
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 35px;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        .login-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #0f766e, #14b8a6);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 40px;
-        }
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-        .login-header h1 {
-            font-size: 28px;
-            color: #0f172a;
-            margin-bottom: 8px;
-        }
+<style>
 
-        .login-header p {
-            color: #475569;
-            font-size: 14px;
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+body{
 
-        .form-label {
-            display: block;
-            font-weight: 600;
-            color: #0f172a;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
+background:linear-gradient(135deg,#0F4C81,#2563EB,#38BDF8);
+background-size:300% 300%;
+animation:bg 12s ease infinite;
 
-        .form-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
+height:100vh;
 
-        .form-input:focus {
-            outline: none;
-            border-color: #0f766e;
-            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
-        }
+display:flex;
+justify-content:center;
+align-items:center;
 
-        .form-input::placeholder {
-            color: #94a3b8;
-        }
+}
 
-        .password-group {
-            position: relative;
-        }
+@keyframes bg{
 
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 40px;
-            cursor: pointer;
-            color: #0f766e;
-            font-size: 18px;
-            background: none;
-            border: none;
-        }
+0%{background-position:0% 50%;}
 
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
+50%{background-position:100% 50%;}
 
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+100%{background-position:0% 50%;}
 
-        .remember-me input[type="checkbox"] {
-            cursor: pointer;
-            width: 16px;
-            height: 16px;
-            accent-color: #0f766e;
-        }
+}
 
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #0f766e, #14b8a6);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 5px;
-        }
+.login-box{
 
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(15, 118, 110, 0.3);
-        }
+width:430px;
 
-        .login-btn:active {
-            transform: translateY(0);
-        }
+background:#fff;
 
-        .alert {
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-        }
+border-radius:18px;
 
-        .alert.show {
-            display: block;
-        }
+box-shadow:0 25px 60px rgba(0,0,0,.30);
 
-        .alert-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #047857;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
+padding:35px;
 
-        .alert-error {
-            background: rgba(239, 68, 68, 0.1);
-            color: #991b1b;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
+}
 
-        .loading-spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 8px;
-        }
+.logo{
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+text-align:center;
 
-        @media (max-width: 480px) {
-            .login-card {
-                padding: 30px 20px;
-            }
+margin-bottom:20px;
 
-            .login-header h1 {
-                font-size: 24px;
-            }
+}
 
-            .remember-forgot {
-                flex-direction: column;
-                gap: 12px;
-                align-items: flex-start;
-            }
-        }
-    </style>
+.logo img{
+
+width:90px;
+
+height:90px;
+
+border-radius:15px;
+
+object-fit:cover;
+
+}
+
+.title{
+
+text-align:center;
+
+font-size:28px;
+
+font-weight:700;
+
+color:#0F4C81;
+
+}
+
+.subtitle{
+
+text-align:center;
+
+font-size:14px;
+
+margin-top:6px;
+
+margin-bottom:25px;
+
+color:#555;
+
+}
+
+.input-group{
+
+margin-bottom:18px;
+
+}
+
+.input-group label{
+
+display:block;
+
+font-size:14px;
+
+font-weight:600;
+
+margin-bottom:8px;
+
+color:#333;
+
+}
+
+.input-group input{
+
+width:100%;
+
+height:48px;
+
+border:1px solid #ddd;
+
+border-radius:10px;
+
+padding-left:15px;
+
+padding-right:45px;
+
+font-size:15px;
+
+outline:none;
+
+transition:.3s;
+
+}
+
+.input-group input:focus{
+
+border-color:#2563EB;
+
+box-shadow:0 0 8px rgba(37,99,235,.25);
+
+}
+
+.password-box{
+
+position:relative;
+
+}
+
+.password-box i{
+
+position:absolute;
+
+right:15px;
+
+top:16px;
+
+cursor:pointer;
+
+color:#2563EB;
+
+}
+
+.remember{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:20px;
+
+font-size:14px;
+
+}
+
+.login-btn{
+
+width:100%;
+
+height:48px;
+
+background:#2563EB;
+
+border:none;
+
+color:#fff;
+
+font-size:17px;
+
+font-weight:600;
+
+border-radius:10px;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.login-btn:hover{
+
+background:#0F4C81;
+
+}
+
+.footer{
+
+text-align:center;
+
+margin-top:25px;
+
+font-size:13px;
+
+color:#666;
+
+}
+
+.loading{
+
+display:none;
+
+text-align:center;
+
+margin-top:15px;
+
+color:#2563EB;
+
+font-weight:600;
+
+}
+
+.error{
+
+display:none;
+
+background:#ffe5e5;
+
+color:#b30000;
+
+padding:12px;
+
+border-radius:8px;
+
+margin-bottom:15px;
+
+font-size:14px;
+
+}
+
+.success{
+
+display:none;
+
+background:#d9ffe4;
+
+color:#006b28;
+
+padding:12px;
+
+border-radius:8px;
+
+margin-bottom:15px;
+
+font-size:14px;
+
+}
+
+</style>
+
 </head>
+
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-               <div class="login-logo">
-    <img src="images/dblogo.png"
-         alt="Donation Box Department"
-         style="width:70px;height:70px;border-radius:12px;">
+
+<div class="login-box">
+
+<div class="logo">
+
+<img src="images/dblogo.png">
+
 </div>
-                <h1>Donation Box ERP</h1>
-                <p>Donation Box Department Inventory & Warehouse Management ERP</p>
-            </div>
 
-            <div id="alertBox" class="alert"></div>
+<div class="title">
 
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label class="form-label" for="loginCode">
-                        <i class="fas fa-envelope"></i> Login Code
-                    </label>
-                    <input 
-                        type="text" 
-                        id="loginCode"
-                        class="form-input" 
-                        placeholder="Enter Employee Code"
-                        required
-                    >
-                </div>
+Donation Box ERP
 
-                <div class="form-group password-group">
-                    <label class="form-label" for="password">
-                        <i class="fas fa-lock"></i> Password
-                    </label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        class="form-input" 
-                        placeholder="Enter your password"
-                        required
-                    >
-                    <button type="button" class="toggle-password" onclick="togglePassword()">
-                        <i class="fas fa-eye" id="toggleIcon"></i>
-                    </button>
-                </div>
+</div>
 
-                <div class="remember-forgot">
-                    <label class="remember-me">
-                        <input type="checkbox" id="rememberMe">
-                        <span>Remember me</span>
-                    </label>
-                </div>
+<div class="subtitle">
 
-                <button type="submit" class="login-btn">
-                    <span class="loading-spinner" id="loadingSpinner"></span>
-                    <span id="btnText">Login</span>
-                </button>
-            </form>
-        </div>
-    </div>
+Donation Box Department<br>
 
-    <script type="module">
-        import { db } from './js/firebase-config.js';
-        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { sendWelcomeEmail } from './js/email.js';
+Inventory & Warehouse Management
 
-        // Toggle password visibility
-        window.togglePassword = function() {
-            const passwordInput = document.getElementById('password');
-            const toggleIcon = document.getElementById('toggleIcon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        };
+</div>
 
-        // Show alert
-        function showAlert(message, type = 'error') {
-            const alertBox = document.getElementById('alertBox');
-            alertBox.textContent = message;
-            alertBox.className = `alert show alert-${type}`;
-            
-            if (type === 'success') {
-                setTimeout(() => {
-                    alertBox.classList.remove('show');
-                }, 3000);
-            }
-        }
+<div id="error" class="error"></div>
 
-        // Handle Login
-        window.handleLogin = async function(event) {
-            event.preventDefault();
-            
-            const loginCode = document.getElementById('loginCode').value.trim().toUpperCase();
-            const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
-            const loginBtn = document.querySelector('.login-btn');
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            const btnText = document.getElementById('btnText');
+<div id="success" class="success"></div>
 
-            // Disable button and show loading
-            loginBtn.disabled = true;
-            loadingSpinner.style.display = 'inline-block';
-            btnText.textContent = 'Logging in...';
+<form id="loginForm">
 
-            
+<div class="input-group">
 
-                // Staff check
-                const  q = query(
-    collection(db, 'users'),
-    where('employeeCode', '==', loginCode)
-);
+<label>
 
-                const querySnapshot = await getDocs(q);
-                
-                if (querySnapshot.empty) {
-                    throw new Error('User not found');
-                }
+Employee Code
 
-                let found = false;
-                let userData = null;
+</label>
 
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if (data.password === password) {
-                        found = true;
-                        userData = {
-                            id: doc.id,
-                            ...data
-                        };
-                    }
-                });
+<input
 
-                if (!found) {
-                    throw new Error('Invalid password');
-                }
+type="text"
 
-                // SUCCESSFUL LOGIN - INTERLOCK FIX WITH DASHBOARD ENGINE
-                const staffSessionData = {
-                    name: userData.fullName || 'Staff Member',
-                    position: userData.position || 'Field Worker',
-                    photoUrl: userData.photoURL || 'https://i.imgur.com/6VBx3io.png'
-                };
+id="employeeCode"
 
-                // Saving standard legacy tokens
-                localStorage.setItem('staffId', userData.id);
-                localStorage.setItem('staffName', userData.fullName || 'Staff');
-                localStorage.setItem('staffEmail', userData.email);
-                localStorage.setItem('staffPhoto', userData.photoURL || '');
-                localStorage.setItem('userRole', 'STAFF');
-                localStorage.setItem('loggedUser', userData.fullName || 'Staff');
-                localStorage.setItem('currentUser', JSON.stringify(userData));
-                
-                // CRITICAL FIXED: Match exactly what dashboard.html requires!
-                localStorage.setItem('activeStaffUser', JSON.stringify(staffSessionData));
+placeholder="Enter Employee Code"
 
-                if (rememberMe) {
-                    localStorage.setItem('rememberCode', loginCode);
-                }
+required>
 
-                // Send welcome notification
-                try {
-                 await sendWelcomeEmail(userData.email, userData.fullName || 'Staff');
-                } catch(e) {
-                    console.log("Email notifications fallback triggered.");
-                }
+</div>
 
-                showAlert('✅ Welcome back, ' + (userData.fullName || 'Staff'), 'success');
-                setTimeout(() => {
-                    window.location.href='dashboard.html';
-                }, 1000);
+<div class="input-group">
 
-            } catch (error) {
-                console.error('Login error:', error);
-                showAlert('❌ ' + (error.message || 'Login failed. Please try again.'), 'error');
-            } finally {
-                // Re-enable button
-                loginBtn.disabled = false;
-                loadingSpinner.style.display = 'none';
-                btnText.textContent = 'Login';
-            }
-        };
+<label>
 
-        // Pre-fill remembered email
-        window.addEventListener('DOMContentLoaded', () => {
-            const rememberedCode = localStorage.getItem('rememberCode');
-          if (rememberedCode) {
-                document.getElementById('loginCode').value = rememberedCode;
-                document.getElementById('rememberMe').checked = true;
-            }
-        });
-    </script>
+Password
+
+</label>
+
+<div class="password-box">
+
+<input
+
+type="password"
+
+id="password"
+
+placeholder="Enter Password"
+
+required>
+
+<i
+
+class="fa-solid fa-eye"
+
+id="togglePassword">
+
+</i>
+
+</div>
+
+</div>
+
+<div class="remember">
+
+<label>
+
+<input type="checkbox" id="remember">
+
+Remember Me
+
+</label>
+
+<a href="#">
+
+Forgot Password?
+
+</a>
+
+</div>
+
+<button
+
+type="submit"
+
+class="login-btn">
+
+LOGIN
+
+</button>
+
+<div
+
+class="loading"
+
+id="loading">
+
+Please Wait...
+
+</div>
+
+</form>
+
+<div class="footer">
+
+Version 1.0.0
+
+</div>
+
+</div>
+
+    <!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Donation Box Department ERP | Login</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+
+background:linear-gradient(135deg,#0F4C81,#2563EB,#38BDF8);
+background-size:300% 300%;
+animation:bg 12s ease infinite;
+
+height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+}
+
+@keyframes bg{
+
+0%{background-position:0% 50%;}
+
+50%{background-position:100% 50%;}
+
+100%{background-position:0% 50%;}
+
+}
+
+.login-box{
+
+width:430px;
+
+background:#fff;
+
+border-radius:18px;
+
+box-shadow:0 25px 60px rgba(0,0,0,.30);
+
+padding:35px;
+
+}
+
+.logo{
+
+text-align:center;
+
+margin-bottom:20px;
+
+}
+
+.logo img{
+
+width:90px;
+
+height:90px;
+
+border-radius:15px;
+
+object-fit:cover;
+
+}
+
+.title{
+
+text-align:center;
+
+font-size:28px;
+
+font-weight:700;
+
+color:#0F4C81;
+
+}
+
+.subtitle{
+
+text-align:center;
+
+font-size:14px;
+
+margin-top:6px;
+
+margin-bottom:25px;
+
+color:#555;
+
+}
+
+.input-group{
+
+margin-bottom:18px;
+
+}
+
+.input-group label{
+
+display:block;
+
+font-size:14px;
+
+font-weight:600;
+
+margin-bottom:8px;
+
+color:#333;
+
+}
+
+.input-group input{
+
+width:100%;
+
+height:48px;
+
+border:1px solid #ddd;
+
+border-radius:10px;
+
+padding-left:15px;
+
+padding-right:45px;
+
+font-size:15px;
+
+outline:none;
+
+transition:.3s;
+
+}
+
+.input-group input:focus{
+
+border-color:#2563EB;
+
+box-shadow:0 0 8px rgba(37,99,235,.25);
+
+}
+
+.password-box{
+
+position:relative;
+
+}
+
+.password-box i{
+
+position:absolute;
+
+right:15px;
+
+top:16px;
+
+cursor:pointer;
+
+color:#2563EB;
+
+}
+
+.remember{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:20px;
+
+font-size:14px;
+
+}
+
+.login-btn{
+
+width:100%;
+
+height:48px;
+
+background:#2563EB;
+
+border:none;
+
+color:#fff;
+
+font-size:17px;
+
+font-weight:600;
+
+border-radius:10px;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.login-btn:hover{
+
+background:#0F4C81;
+
+}
+
+.footer{
+
+text-align:center;
+
+margin-top:25px;
+
+font-size:13px;
+
+color:#666;
+
+}
+
+.loading{
+
+display:none;
+
+text-align:center;
+
+margin-top:15px;
+
+color:#2563EB;
+
+font-weight:600;
+
+}
+
+.error{
+
+display:none;
+
+background:#ffe5e5;
+
+color:#b30000;
+
+padding:12px;
+
+border-radius:8px;
+
+margin-bottom:15px;
+
+font-size:14px;
+
+}
+
+.success{
+
+display:none;
+
+background:#d9ffe4;
+
+color:#006b28;
+
+padding:12px;
+
+border-radius:8px;
+
+margin-bottom:15px;
+
+font-size:14px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-box">
+
+<div class="logo">
+
+<img src="images/dblogo.png">
+
+</div>
+
+<div class="title">
+
+Donation Box ERP
+
+</div>
+
+<div class="subtitle">
+
+Donation Box Department<br>
+
+Inventory & Warehouse Management
+
+</div>
+
+<div id="error" class="error"></div>
+
+<div id="success" class="success"></div>
+
+<form id="loginForm">
+
+<div class="input-group">
+
+<label>
+
+Employee Code
+
+</label>
+
+<input
+
+type="text"
+
+id="employeeCode"
+
+placeholder="Enter Employee Code"
+
+required>
+
+</div>
+
+<div class="input-group">
+
+<label>
+
+Password
+
+</label>
+
+<div class="password-box">
+
+<input
+
+type="password"
+
+id="password"
+
+placeholder="Enter Password"
+
+required>
+
+<i
+
+class="fa-solid fa-eye"
+
+id="togglePassword">
+
+</i>
+
+</div>
+
+</div>
+
+<div class="remember">
+
+<label>
+
+<input type="checkbox" id="remember">
+
+Remember Me
+
+</label>
+
+<a href="#">
+
+Forgot Password?
+
+</a>
+
+</div>
+
+<button
+
+type="submit"
+
+class="login-btn">
+
+LOGIN
+
+</button>
+
+<div
+
+class="loading"
+
+id="loading">
+
+Please Wait...
+
+</div>
+
+</form>
+
+<div class="footer">
+
+Version 1.0.0
+
+</div>
+
+</div>
+localStorage.setItem("userSession", JSON.stringify({
+
+uid: userData.uid || "",
+
+employeeCode: userData.employeeCode || "",
+
+fullName: userData.fullName || "",
+
+mobile: userData.mobile || "",
+
+email: userData.email || "",
+
+photo: userData.photo || "",
+
+role: userData.role || "",
+
+department: userData.department || "",
+
+designation: userData.designation || "",
+
+region: userData.region || "",
+
+state: userData.state || "",
+
+division: userData.division || "",
+
+warehouse: userData.warehouse || "",
+
+status: userData.status || ""
+
+}));
+
+
+localStorage.setItem("userRole", userData.role);
+
+localStorage.setItem("userName", userData.fullName);
+
+localStorage.setItem("employeeCode", userData.employeeCode);
+
+localStorage.setItem("loginStatus","true");
+
+
+
+setTimeout(()=>{
+
+window.location.href="dashboard.html";
+
+},1200);
+
+}
+
+catch(err){
+
+loading.style.display="none";
+
+error.style.display="block";
+
+error.innerHTML=err.message;
+
+return;
+
+}
+
+
+
+loading.style.display="none";
+
+
+
+});
+
+
+
+window.addEventListener("keydown",(e)=>{
+
+if(e.key==="Enter"){
+
+loginForm.requestSubmit();
+
+}
+
+});
+
+
+
+</script>
+
 </body>
+
 </html>
