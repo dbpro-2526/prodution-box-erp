@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Dashboard - Donation Box ERP</title>
+    <title>Multi-Role Unified Dashboard - Donation Box ERP</title>
     
     <!-- Favicon & Fonts -->
     <link rel="icon" href="dblogo.png">
@@ -58,17 +58,8 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .sidebar-brand img {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-        }
-
-        .sidebar-brand h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
+        .sidebar-brand img { width: 40px; height: 40px; border-radius: 8px; }
+        .sidebar-brand h2 { font-size: 18px; font-weight: 700; color: var(--primary-color); }
 
         .sidebar-menu {
             padding: 20px 15px;
@@ -96,10 +87,7 @@
             color: var(--accent-color);
         }
 
-        .sidebar-footer {
-            padding: 20px 15px;
-            border-top: 1px solid var(--border-color);
-        }
+        .sidebar-footer { padding: 20px 15px; border-top: 1px solid var(--border-color); }
 
         .btn-logout {
             width: 100%;
@@ -116,10 +104,7 @@
             gap: 8px;
             transition: background 0.2s;
         }
-
-        .btn-logout:hover {
-            background: #fca5a5;
-        }
+        .btn-logout:hover { background: #fca5a5; }
 
         /* --- Main Content Area --- */
         .main-content {
@@ -144,11 +129,7 @@
             border-radius: 30px;
             border: 1px solid var(--border-color);
         }
-
-        .user-profile i {
-            font-size: 20px;
-            color: var(--primary-color);
-        }
+        .user-profile i { font-size: 20px; color: var(--primary-color); }
 
         /* --- Cards Container --- */
         .stats-grid {
@@ -166,30 +147,11 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
         }
 
-        .stat-info h3 {
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .stat-info p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
+        .stat-info h3 { font-size: 26px; font-weight: 700; color: var(--primary-color); }
+        .stat-info p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
         .icon-blue { background: #e0f2fe; color: #0284c7; }
         .icon-green { background: #dcfce7; color: #16a34a; }
@@ -227,81 +189,32 @@
             gap: 8px;
         }
 
-        /* --- Table Styling --- */
-        .table-responsive {
-            overflow-x: auto;
-        }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f8fafc; padding: 14px 16px; color: var(--text-muted); font-weight: 600; font-size: 13px; border-bottom: 2px solid var(--border-color); }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
+        .user-click-link { color: var(--accent-color); text-decoration: none; font-weight: 600; }
+        .user-click-link:hover { text-decoration: underline; }
 
-        th {
-            background: #f8fafc;
-            padding: 14px 16px;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 13px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 14px;
-        }
-
-        .user-click-link {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .user-click-link:hover {
-            text-decoration: underline;
-        }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
         .badge-admin { background: #eff6ff; color: #2563EB; }
         .badge-in { background: #dcfce7; color: #16a34a; }
         .badge-out { background: #ffe4e6; color: #e11d48; }
-
-        .actions-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 16px;
-            padding: 4px;
-        }
-
-        .actions-btn:hover {
-            color: var(--accent-color);
-        }
+        .actions-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 4px; }
+        .actions-btn:hover { color: var(--accent-color); }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar Navigation -->
+    <!-- Unified Sidebar Sidebar Navigation -->
     <div class="sidebar">
         <div class="sidebar-brand">
             <img src="dblogo.png" alt="Logo">
             <h2>Donation Box</h2>
         </div>
-        <div class="sidebar-menu">
-            <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-            <a href="users.html" class="menu-item"><i class="fa-solid fa-users"></i> All Users Setup</a>
-            <a href="hubs.html" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
-            <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
-            <a href="#" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> Pending Approvals</a>
-            <a href="#" class="menu-item"><i class="fa-solid fa-file-invoice-dollar"></i> Reports</a>
+        <div class="sidebar-menu" id="dynamicSidebarMenu">
+            <!-- Menus auto-inject via user roles inside JS -->
         </div>
         <div class="sidebar-footer">
             <button class="btn-logout" id="logoutBtn">
@@ -315,8 +228,8 @@
         <!-- Top Profile Header -->
         <div class="header-top">
             <div>
-                <h1 style="font-size: 24px; font-weight: 700;">Super Admin Control Hub</h1>
-                <p style="color: var(--text-muted); font-size: 14px;">Welcome back to management dashboard.</p>
+                <h1 id="dashboardTitle" style="font-size: 24px; font-weight: 700;">Loading Control Hub...</h1>
+                <p id="dashboardSubtitle" style="color: var(--text-muted); font-size: 14px;">Please wait while configurations sync...</p>
             </div>
             <div class="user-profile">
                 <i class="fa-solid fa-circle-user"></i>
@@ -324,46 +237,44 @@
             </div>
         </div>
 
-        <!-- Dynamic Counter Cards (Updated with Stock In & Out) -->
+        <!-- Dynamic Counter Cards -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card" id="cardUsers">
                 <div class="stat-info">
                     <h3 id="countUsers">0</h3>
                     <p>Total Registered Users</p>
                 </div>
                 <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="cardHubs">
                 <div class="stat-info">
                     <h3 id="countHubs">0</h3>
-                    <p>Active Warehouses</p>
+                    <p>Monitored Warehouses</p>
                 </div>
                 <div class="stat-icon icon-green"><i class="fa-solid fa-warehouse"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="cardItems">
                 <div class="stat-info">
                     <h3 id="countItems">0</h3>
-                    <p>Inventory Items</p>
+                    <p>Inventory SKUs</p>
                 </div>
                 <div class="stat-icon icon-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="cardPending">
                 <div class="stat-info">
                     <h3 id="countPending">0</h3>
                     <p>Pending Box Approvals</p>
                 </div>
                 <div class="stat-icon icon-amber"><i class="fa-solid fa-clock"></i></div>
             </div>
-            <!-- NEW: Stock In Counter Card -->
-            <div class="stat-card">
+            <div class="stat-card" id="cardStockIn">
                 <div class="stat-info">
                     <h3 id="countStockIn">0</h3>
                     <p>Total Stock IN</p>
                 </div>
                 <div class="stat-icon icon-emerald"><i class="fa-solid fa-arrow-down-long"></i></div>
             </div>
-            <!-- NEW: Stock Out Counter Card -->
-            <div class="stat-card">
+            <div class="stat-card" id="cardStockOut">
                 <div class="stat-info">
                     <h3 id="countStockOut">0</h3>
                     <p>Total Stock OUT</p>
@@ -372,11 +283,11 @@
             </div>
         </div>
 
-        <!-- Section: Overview Display -->
-        <div class="dashboard-section">
+        <!-- Section: Overview Accounts List (Only for Admin, Regional & State Managers) -->
+        <div class="dashboard-section" id="accountsOverviewSection">
             <div class="section-header">
                 <h2 style="font-size: 18px; font-weight: 600;">System Administrative Overview</h2>
-                <button class="btn-add" onclick="window.location.href='users.html'"><i class="fa-solid fa-plus"></i> Configure New Entity</button>
+                <button class="btn-add" id="configureEntityBtn" onclick="window.location.href='users.html'"><i class="fa-solid fa-plus"></i> Configure New Entity</button>
             </div>
             <div class="table-responsive">
                 <table>
@@ -390,22 +301,16 @@
                         </tr>
                     </thead>
                     <tbody id="overviewTableBody">
-                        <tr>
-                            <td><a href="users.html" class="user-click-link">Markazi Warehouse User</a></td>
-                            <td><span class="badge badge-admin">Super Admin</span></td>
-                            <td><span style="color: #16a34a; font-weight: 500;">● Active</span></td>
-                            <td>All Zones (Full Access)</td>
-                            <td><button class="actions-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-                        </tr>
+                        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Syncing users scope registry...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- NEW SECTION: Live Stock In/Out Ledger Transactions -->
+        <!-- SECTION: Live Stock In/Out Ledger Transactions -->
         <div class="dashboard-section">
             <div class="section-header">
-                <h2 style="font-size: 18px; font-weight: 600;"><i class="fa-solid fa-right-left"></i> Live Stock In / Out Log</h2>
+                <h2 style="font-size: 18px; font-weight: 600;"><i class="fa-solid fa-right-left"></i> Live Stock In / Out Ledger Logs</h2>
             </div>
             <div class="table-responsive">
                 <table>
@@ -419,9 +324,7 @@
                         </tr>
                     </thead>
                     <tbody id="stockLedgerTableBody">
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: var(--text-muted);">Fetching transactions...</td>
-                        </tr>
+                        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Fetching scoped transactions...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -431,7 +334,7 @@
     <!-- Firebase SDK Integration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
@@ -446,103 +349,211 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Security Route Validation Guard Rule
+        // Security Route Guard & Initialization Execution Block
         window.addEventListener('DOMContentLoaded', () => {
             const activeUser = JSON.parse(localStorage.getItem('userSession'));
 
-            if (!activeUser || activeUser.role !== "Super Admin") {
-                alert("Unauthorized Entry! Super Admin Access Required.");
+            if (!activeUser || !activeUser.role) {
+                alert("Unauthorized Entry! Active Session Invalid. Redirecting...");
                 window.location.href = "login.html";
-            } else {
-                document.getElementById("adminName").innerText = activeUser.fullName || "Super Admin";
-                fetchLiveDashboardStats();
+                return;
             }
+
+            document.getElementById("adminName").innerText = activeUser.fullName || "User Panel";
+            
+            // Step 1: Render dynamic components according to logged user role structure
+            setupDashboardStructure(activeUser);
+
+            // Step 2: Build parameters to pull scoped logs from Firestore
+            fetchScopedDataMetrics(activeUser);
         });
 
-        // Real-time Counters Setup & Dynamic Table Loading
-        async function fetchLiveDashboardStats() {
-            try {
-                const usersSnap = await getDocs(collection(db, "users"));
-                const hubsSnap = await getDocs(collection(db, "hubs"));
-                const itemsSnap = await getDocs(collection(db, "inventory"));
-                const pendingSnap = await getDocs(collection(db, "approvals"));
+        // UI Configuration Engine according to strict organizational hierarchal structure
+        function setupDashboardStructure(user) {
+            const menuContainer = document.getElementById('dynamicSidebarMenu');
+            const titleEl = document.getElementById('dashboardTitle');
+            const subEl = document.getElementById('dashboardSubtitle');
+            const confBtn = document.getElementById('configureEntityBtn');
+
+            if (user.role === "Super Admin") {
+                titleEl.innerText = "Super Admin Control Hub";
+                subEl.innerText = "Full continuous global diagnostics across all operational networks.";
                 
-                // Fetching Stock Ledger data
-                const ledgerSnap = await getDocs(collection(db, "stock_ledger"));
+                menuContainer.innerHTML = `
+                    <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                    <a href="users.html" class="menu-item"><i class="fa-solid fa-users"></i> All Users Setup</a>
+                    <a href="hubs.html" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-file-invoice-dollar"></i> System Reports</a>
+                `;
+            } 
+            else if (user.role === "Regional Manager") {
+                titleEl.innerText = `Regional Hub Monitor (${user.region || 'Assigned Zone'})`;
+                subEl.innerText = `Displaying comprehensive logs filtered specifically under Region: ${user.region || 'Global'}`;
+                if(confBtn) confBtn.style.display = "none";
 
-                document.getElementById('countUsers').innerText = usersSnap.size || 0;
-                document.getElementById('countHubs').innerText = hubsSnap.size || 0;
-                document.getElementById('countItems').innerText = itemsSnap.size || 0;
-                document.getElementById('countPending').innerText = pendingSnap.size || 0;
+                menuContainer.innerHTML = `
+                    <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Regional Warehouses</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-file-waveform"></i> Zone Auditing</a>
+                `;
+                // Remove universal metrics blocks
+                document.getElementById('cardUsers').style.display = "none";
+            } 
+            else if (user.role === "State Manager") {
+                titleEl.innerText = `State Logistic Operations (${user.state || 'Assigned Territory'})`;
+                subEl.innerText = `Displaying strict monitoring scopes inside State Territory: ${user.state || 'N/A'}`;
+                if(confBtn) confBtn.style.display = "none";
 
-                // Calulating Stock In and Out totals dynamically
+                menuContainer.innerHTML = `
+                    <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-truck-ramp-box"></i> State Allocation</a>
+                `;
+                document.getElementById('cardUsers').style.display = "none";
+            } 
+            else if (user.role === "Hub Manager" || user.role === "Inventory Loader") {
+                titleEl.innerText = `${user.role} Control Console`;
+                subEl.innerText = `Facility Vault Location Link: ${user.hub || 'Unassigned Facility Store'}`;
+                
+                if(confBtn) confBtn.style.display = "none";
+                document.getElementById('accountsOverviewSection').style.display = "none";
+
+                // Strip down telemetry panels for site loaders/managers
+                ['cardUsers', 'cardHubs', 'cardPending'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.style.display = "none";
+                });
+
+                menuContainer.innerHTML = `
+                    <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-right-left"></i> Execute Stock IN/OUT</a>
+                `;
+            }
+        }
+
+        // Analytical Execution & Query Custom Pipeline
+        async function fetchScopedDataMetrics(user) {
+            try {
+                let usersList = [], hubsList = [], ledgerList = [];
+                
+                // --- 1. PULL MASTER COLLECTIONS BASED ON INHERITED PROFILE RIGHTS ---
+                const usersRaw = await getDocs(collection(db, "users"));
+                const hubsRaw = await getDocs(collection(db, "hubs"));
+                const ledgerRaw = await getDocs(collection(db, "stock_ledger"));
+
+                usersRaw.forEach(d => usersList.push({ id: d.id, ...d.data() }));
+                hubsRaw.forEach(d => hubsList.push({ id: d.id, ...d.data() }));
+                ledgerRaw.forEach(d => ledgerList.push({ id: d.id, ...d.data() }));
+
+                // --- 2. MULTI-LAYER ROLE FILTERING MATRIX ---
+                let allowedHubNames = [];
+                let filteredUsers = [];
+                let filteredLedger = [];
+
+                if (user.role === "Super Admin") {
+                    allowedHubNames = hubsList.map(h => h.name);
+                    filteredUsers = usersList;
+                    filteredLedger = ledgerList;
+
+                    document.getElementById('countUsers').innerText = usersList.length;
+                    document.getElementById('countHubs').innerText = hubsList.length;
+                    
+                    const approvalsRaw = await getDocs(collection(db, "approvals"));
+                    document.getElementById('countPending').innerText = approvalsRaw.size || 0;
+                } 
+                else if (user.role === "Regional Manager") {
+                    // Filter matching Hub codes assigned to this specific region
+                    const targetHubs = hubsList.filter(h => h.region === user.region);
+                    allowedHubNames = targetHubs.map(h => h.name);
+
+                    // Filter User Base & Transaction Ledger rows assigned within this specific region
+                    filteredUsers = usersList.filter(u => u.region === user.region);
+                    filteredLedger = ledgerList.filter(l => allowedHubNames.includes(l.hubName));
+
+                    document.getElementById('countHubs').innerText = targetHubs.length;
+                    document.getElementById('countPending').innerText = "Restricted";
+                } 
+                else if (user.role === "State Manager") {
+                    const targetHubs = hubsList.filter(h => h.state === user.state);
+                    allowedHubNames = targetHubs.map(h => h.name);
+
+                    filteredUsers = usersList.filter(u => u.state === user.state);
+                    filteredLedger = ledgerList.filter(l => allowedHubNames.includes(l.hubName));
+
+                    document.getElementById('countHubs').innerText = targetHubs.length;
+                } 
+                else if (user.role === "Hub Manager" || user.role === "Inventory Loader") {
+                    allowedHubNames = [user.hub || ""];
+                    filteredLedger = ledgerList.filter(l => l.hubName === user.hub);
+                }
+
+                // --- 3. RENDERING COUNTERS AND ARRAYS ---
+                // Calculate stock units metrics dynamically from filtered operations data rows
                 let stockInTotal = 0;
                 let stockOutTotal = 0;
                 const ledgerTableBody = document.getElementById('stockLedgerTableBody');
                 ledgerTableBody.innerHTML = "";
 
-                if (!ledgerSnap.empty) {
-                    ledgerSnap.forEach((doc) => {
-                        const data = doc.data();
-                        const qty = parseInt(data.quantity) || 0;
-                        const type = data.type || "IN"; // IN ya OUT
+                filteredLedger.forEach(data => {
+                    const qty = parseInt(data.quantity) || 0;
+                    const type = (data.type || "IN").toUpperCase();
 
-                        if (type.toUpperCase() === "IN") {
-                            stockInTotal += qty;
-                        } else {
-                            stockOutTotal += qty;
-                        }
+                    if (type === "IN") stockInTotal += qty;
+                    else stockOutTotal += qty;
 
-                        // Appending each entry to the new stock ledger table
-                        const row = `
-                            <tr>
-                                <td style="font-weight: 500;">${data.itemName || "Unnamed Item"}</td>
-                                <td><span class="badge ${type.toUpperCase() === 'IN' ? 'badge-in' : 'badge-out'}">${type.toUpperCase()}</span></td>
-                                <td style="font-weight: 600;">${qty} Pcs</td>
-                                <td>${data.hubName || "Main Hub"}</td>
-                                <td style="color: var(--text-muted); font-size: 13px;">${data.date || "N/A"}</td>
-                            </tr>
-                        `;
-                        ledgerTableBody.innerHTML += row;
-                    });
-                } else {
-                    ledgerTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No stock log records found.</td></tr>`;
+                    ledgerTableBody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 500;">${data.itemName || "Unnamed SKU Item"}</td>
+                            <td><span class="badge ${type === 'IN' ? 'badge-in' : 'badge-out'}">${type}</span></td>
+                            <td style="font-weight: 600;">${qty.toLocaleString()} Pcs</td>
+                            <td>${data.hubName || "Unassigned Warehouse"}</td>
+                            <td style="color: var(--text-muted); font-size: 13px;">${data.date || "N/A"}</td>
+                        </tr>
+                    `;
+                });
+
+                if(filteredLedger.length === 0) {
+                    ledgerTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No asset ledger records found within your authorized organizational scope.</td></tr>`;
                 }
 
-                // Updating Stock counters on screen
-                document.getElementById('countStockIn').innerText = stockInTotal;
-                document.getElementById('countStockOut').innerText = stockOutTotal;
+                document.getElementById('countStockIn').innerText = stockInTotal.toLocaleString();
+                document.getElementById('countStockOut').innerText = stockOutTotal.toLocaleString();
 
-                // Dynamic table loader for Users
+                // Generate dynamic count for active items matching authorized locations
+                const itemsRaw = await getDocs(collection(db, "inventory"));
+                let itemsCount = 0;
+                itemsRaw.forEach(doc => {
+                    if (allowedHubNames.includes(doc.data().hubName)) itemsCount++;
+                });
+                document.getElementById('countItems').innerText = itemsCount;
+
+                // --- 4. RENDER ACCOUNT OVERVIEW REGISTRY (IF PERMITTED) ---
                 const tableBody = document.getElementById('overviewTableBody');
-                if(!usersSnap.empty) {
-                    tableBody.innerHTML = ""; 
-                    
-                    usersSnap.forEach((doc) => {
-                        const userData = doc.data();
-                        const name = userData.fullName || userData.name || "Unknown User";
-                        const role = userData.role || "User";
-                        const status = userData.status || "Active";
-                        const facility = userData.hub || userData.facility || "Not Assigned";
-
-                        const row = `
-                            <tr>
-                                <td><a href="users.html" class="user-click-link">${name}</a></td>
-                                <td><span class="badge badge-admin">${role}</span></td>
-                                <td><span style="color: ${status === 'Active' || status === 'active' ? '#16a34a' : '#ef4444'}; font-weight: 500;">● ${status}</span></td>
-                                <td>${facility}</td>
-                                <td><button class="actions-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-                            </tr>
-                        `;
-                        tableBody.innerHTML += row;
-                    });
+                if (user.role === "Super Admin" || user.role === "Regional Manager" || user.role === "State Manager") {
+                    tableBody.innerHTML = "";
+                    if (filteredUsers.length === 0) {
+                        tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No records linked to this operational wing.</td></tr>`;
+                    } else {
+                        filteredUsers.forEach(userData => {
+                            tableBody.innerHTML += `
+                                <tr>
+                                    <td><a href="users.html" class="user-click-link">${userData.fullName || "Unnamed Officer"}</a></td>
+                                    <td><span class="badge badge-admin">${userData.role || "User"}</span></td>
+                                    <td><span style="color: ${(userData.status || '').toLowerCase() === 'active' ? '#16a34a' : '#ef4444'}; font-weight: 500;">● ${userData.status || 'Active'}</span></td>
+                                    <td>${userData.hub || userData.state || userData.region || "Global Network"}</td>
+                                    <td><button class="actions-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+                                </tr>
+                            `;
+                        });
+                    }
                 }
+
             } catch (error) {
-                console.error("Firestore loading error: ", error);
+                console.error("Firestore localized multi-role mapping error: ", error);
             }
         }
 
-        // Logout Session Process
+        // User Logout Clean Task Process
         document.getElementById('logoutBtn').addEventListener('click', () => {
             localStorage.clear(); 
             window.location.href = 'login.html'; 
