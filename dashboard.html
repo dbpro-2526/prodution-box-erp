@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Dashboard - Donation Box ERP</title>
+    
+    <!-- Favicon & Fonts -->
+    <link rel="icon" href="dblogo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary-color: #0F4C81;
+            --accent-color: #2563EB;
+            --bg-light: #f4f7fe;
+            --sidebar-width: 260px;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Sidebar Style --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #ffffff;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-brand img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu {
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: #eff6ff;
+            color: var(--accent-color);
+        }
+
+        .sidebar-footer {
+            padding: 20px 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            background: #fee2e2;
+            color: #ef4444;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #fca5a5;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 40px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .user-profile i {
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        /* --- Cards Container --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+        }
+
+        .stat-info h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .icon-blue { background: #e0f2fe; color: #0284c7; }
+        .icon-green { background: #dcfce7; color: #16a34a; }
+        .icon-purple { background: #f3e8ff; color: #9333ea; }
+        .icon-amber { background: #fef3c7; color: #d97706; }
+
+        /* --- Data Section Layout --- */
+        .dashboard-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-add {
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- Table Styling --- */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 14px 16px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 13px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-admin { background: #eff6ff; color: #2563EB; }
+        .badge-manager { background: #f5f3ff; color: #7c3aed; }
+
+        .actions-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        .actions-btn:hover {
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <img src="dblogo.png" alt="Logo">
+            <h2>Donation Box</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-users"></i> All Users Setup</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> Pending Approvals</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-file-invoice-dollar"></i> Reports</a>
+        </div>
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="logoutBtn">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout System
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Profile Header -->
+        <div class="header-top">
+            <div>
+                <h1 style="font-size: 24px; font-weight: 700;">Super Admin Control Hub</h1>
+                <p style="color: var(--text-muted); font-size: 14px;">Welcome back to management dashboard.</p>
+            </div>
+            <div class="user-profile">
+                <i class="fa-solid fa-circle-user"></i>
+                <span id="adminName" style="font-weight: 600; font-size: 14px;">Super Admin</span>
+            </div>
+        </div>
+
+        <!-- Dynamic Counter Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="countUsers">0</h3>
+                    <p>Total Registered Users</p>
+                </div>
+                <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="countHubs">0</h3>
+                    <p>Active Warehouses/Hubs</p>
+                </div>
+                <div class="stat-icon icon-green"><i class="fa-solid fa-warehouse"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="countItems">0</h3>
+                    <p>Total Inventory Items</p>
+                </div>
+                <div class="stat-icon icon-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="countPending">0</h3>
+                    <p>Pending Box Approvals</p>
+                </div>
+                <div class="stat-icon icon-amber"><i class="fa-solid fa-clock"></i></div>
+            </div>
+        </div>
+
+        <!-- Section: User Management Demo Display -->
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h2 style="font-size: 18px; font-weight: 600;">System Administrative Overview</h2>
+                <button class="btn-add"><i class="fa-solid fa-plus"></i> Configure New Entity</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name / Description</th>
+                            <th>Role / Scope</th>
+                            <th>Status</th>
+                            <th>Linked Facility</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overviewTableBody">
+                        <!-- Firestore elements dynamic render location -->
+                        <tr>
+                            <td><strong>Markazi Warehouse User</strong></td>
+                            <td><span class="badge badge-admin">Super Admin</span></td>
+                            <td><span style="color: #16a34a; font-weight: 500;">● Active</span></td>
+                            <td>All Zones (Full Access)</td>
+                            <td><button class="actions-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modules Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Configuration (Uses global settings matching login)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA...", // Aapki real dynamic apiKey yahan automatic mapping legi
+            authDomain: "donation-box-erp.firebaseapp.com",
+            projectId: "donation-box-erp",
+            storageBucket: "donation-box-erp.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:123456:web:abcde12345"
+        };
+
+        // Initialize App & DB
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Security Authentication Router Rule
+        window.addEventListener('DOMContentLoaded', () => {
+            const activeUser = JSON.parse(localStorage.getItem('activeUser'));
+            if (!activeUser || activeUser.role !== 'Super Admin') {
+                // Agar user logged in nahi h ya role Super Admin nahi h to login par redirect karein
+                alert("Unauthorized Entry! Super Admin Access Required.");
+                window.location.href = 'login.html';
+            } else {
+                document.getElementById('adminName').innerText = activeUser.name || "Super Admin";
+                fetchLiveDashboardStats();
+            }
+        });
+
+        // Real-time Dashboard Core Counters Logic
+        async function fetchLiveDashboardStats() {
+            try {
+                // Fetch dynamic collections snapshots
+                const usersSnap = await getDocs(collection(db, "users"));
+                const hubsSnap = await getDocs(collection(db, "hubs"));
+                const itemsSnap = await getDocs(collection(db, "inventory"));
+                const pendingSnap = await getDocs(collection(db, "approvals"));
+
+                document.getElementById('countUsers').innerText = usersSnap.size || 0;
+                document.getElementById('countHubs').innerText = hubsSnap.size || 0;
+                document.getElementById('countItems').innerText = itemsSnap.size || 0;
+                document.getElementById('countPending').innerText = pendingSnap.size || 0;
+            } catch (error) {
+                console.error("Error reading statistics from Firestore: ", error);
+            }
+        }
+
+        // System Sign Out Action
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('activeUser');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
