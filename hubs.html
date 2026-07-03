@@ -505,7 +505,15 @@
     import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // --- Firebase Setup (Ensure your config is here) ---
-    const firebaseConfig = { /* APKA CONFIG YAHAN RAKHEIN */ };
+      const firebaseConfig = {
+            apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
+            authDomain: "prodution-box-erp.firebaseapp.com",
+            projectId: "prodution-box-erp",
+            storageBucket: "prodution-box-erp.firebasestorage.app",
+            messagingSenderId: "426698063494",
+            appId: "1:426698063494:web:880dd323f24bd4121ddb07",
+            measurementId: "G-948852RZLB"
+        };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
