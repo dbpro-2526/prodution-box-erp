@@ -259,7 +259,6 @@
         }
 
         .badge-admin { background: #eff6ff; color: #2563EB; }
-        .badge-manager { background: #f5f3ff; color: #7c3aed; }
 
         .actions-btn {
             background: none;
@@ -308,7 +307,7 @@
             </div>
             <div class="user-profile">
                 <i class="fa-solid fa-circle-user"></i>
-                <span id="adminName" style="font-weight: 600; font-size: 14px;">Super Admin</span>
+                <span id="adminName" style="font-weight: 600; font-size: 14px;">Loading...</span>
             </div>
         </div>
 
@@ -344,7 +343,7 @@
             </div>
         </div>
 
-        <!-- Section: User Management Demo Display -->
+        <!-- Section: Overview Display -->
         <div class="dashboard-section">
             <div class="section-header">
                 <h2 style="font-size: 18px; font-weight: 600;">System Administrative Overview</h2>
@@ -362,7 +361,6 @@
                         </tr>
                     </thead>
                     <tbody id="overviewTableBody">
-                        <!-- Firestore elements dynamic render location -->
                         <tr>
                             <td><strong>Markazi Warehouse User</strong></td>
                             <td><span class="badge badge-admin">Super Admin</span></td>
@@ -376,14 +374,13 @@
         </div>
     </div>
 
-    <!-- Firebase SDK Modules Integration -->
+    <!-- Firebase SDK Integration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Configuration (Uses global settings matching login)
         const firebaseConfig = {
-            apiKey: "AIzaSyA...", // Aapki real dynamic apiKey yahan automatic mapping legi
+            apiKey: "AIzaSyA...", // Aapki actual Firebase configuration settings
             authDomain: "donation-box-erp.firebaseapp.com",
             projectId: "donation-box-erp",
             storageBucket: "donation-box-erp.appspot.com",
@@ -391,27 +388,26 @@
             appId: "1:123456:web:abcde12345"
         };
 
-        // Initialize App & DB
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Security Authentication Router Rule
+        // Security Route Validation Guard Rule
         window.addEventListener('DOMContentLoaded', () => {
             const activeUser = JSON.parse(localStorage.getItem('activeUser'));
+            
+            // Validation: Agar login state khali h ya role "Super Admin" nahi h, to access band
             if (!activeUser || activeUser.role !== 'Super Admin') {
-                // Agar user logged in nahi h ya role Super Admin nahi h to login par redirect karein
-                alert("Unauthorized Entry! Super Admin Access Required.");
-                window.location.href = 'login.html';
+                alert("Unauthorized Entry! Pehle System Me Login Karein.");
+                window.location.href = 'login.html'; // Login page par reverse redirect
             } else {
                 document.getElementById('adminName').innerText = activeUser.name || "Super Admin";
                 fetchLiveDashboardStats();
             }
         });
 
-        // Real-time Dashboard Core Counters Logic
+        // Real-time Counters Setup
         async function fetchLiveDashboardStats() {
             try {
-                // Fetch dynamic collections snapshots
                 const usersSnap = await getDocs(collection(db, "users"));
                 const hubsSnap = await getDocs(collection(db, "hubs"));
                 const itemsSnap = await getDocs(collection(db, "inventory"));
@@ -422,14 +418,14 @@
                 document.getElementById('countItems').innerText = itemsSnap.size || 0;
                 document.getElementById('countPending').innerText = pendingSnap.size || 0;
             } catch (error) {
-                console.error("Error reading statistics from Firestore: ", error);
+                console.error("Firestore loading error: ", error);
             }
         }
 
-        // System Sign Out Action
+        // Logout Session Process
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('activeUser');
-            window.location.href = 'login.html';
+            localStorage.removeItem('activeUser'); // Session end
+            window.location.href = 'login.html'; // Redirect
         });
     </script>
 </body>
