@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donation Box ERP</title>
 
-    <link rel="icon" href="images/dblogo.png">
+    <link rel="icon" href="dblogo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -36,12 +36,15 @@
             border: 1px solid #e2e8f0;
         }
 
-        img {
-            width: 85px;
-            height: 85px;
+        .logo-box {
+            margin-bottom: 20px;
+        }
+
+        .logo-box img {
+            width: 90px;
+            height: 90px;
             border-radius: 12px;
             object-fit: cover;
-            margin-bottom: 20px;
         }
 
         h1 {
@@ -79,7 +82,7 @@
             transition: all .2s ease;
         }
 
-        /* ERP Login Button (Primary Blue) */
+        /* ERP Login Button */
         .btn-primary {
             background: #2563EB;
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
@@ -89,7 +92,7 @@
             background: #1d4ed8;
         }
 
-        /* Dawateislami Apps Button (Secondary Outline/Light) */
+        /* Dawateislami Apps Button */
         .btn-secondary {
             background: #f1f5f9;
             color: #334155;
@@ -113,7 +116,10 @@
 
 <div class="container">
 
-    <img src="images/dblogo.png" alt="Logo">
+    <!-- Logo Section -->
+    <div class="logo-box">
+        <img src="dblogo.png" alt="Logo">
+    </div>
 
     <h1>Donation Box ERP</h1>
 
@@ -123,12 +129,12 @@
     </p>
 
     <div class="button-group">
-        <!-- Purana Login Button -->
+        <!-- Login Button -->
         <a href="login.html" class="btn btn-primary">
             <i class="fa-solid fa-right-to-bracket"></i> Login System
         </a>
 
-        <!-- Naya Dawateislami India App Button -->
+        <!-- Dawateislami India App Button -->
         <a href="https://apps.dawateislamiindia.org" target="_blank" class="btn btn-secondary">
             <i class="fa-solid fa-cubes"></i> Dawateislami India Apps
         </a>
