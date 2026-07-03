@@ -471,13 +471,12 @@
                         </select>
                     </div>
 
+                    <!-- UPDATED: Assign Warehouse Dropdown (Loads Dynamically now) -->
                     <div class="form-group">
-                        <label>Assign Warehouse</label>
+                        <label>Assign Warehouse / Hub Location</label>
                         <select id="userWarehouse" required>
                             <option value="ALL">ALL (Full Access)</option>
-                            <option value="Central Warehouse">Central Warehouse</option>
-                            <option value="North Hub">North Hub</option>
-                            <option value="South Depot">South Depot</option>
+                            <!-- Live Warehouse Options will append here -->
                         </select>
                     </div>
 
@@ -621,8 +620,34 @@
                 }
             } catch(e) { console.log("Config mapping error:", e); }
 
+            // NEW: Fetch Live Warehouses/Hubs from Firestore
+            await loadLiveWarehousesDropdown();
+
             syncUsersCollectionEngine();
         });
+
+        // NEW FUNCTION: Loads hubs dynamically from database into dropdown
+        async function loadLiveWarehousesDropdown() {
+            try {
+                const hubsSnap = await getDocs(collection(db, "hubs"));
+                const selectWh = document.getElementById('userWarehouse');
+                
+                // Retaining default option
+                selectWh.innerHTML = `<option value="ALL">ALL (Full Access)</option>`;
+                
+                hubsSnap.forEach((docItem) => {
+                    const hubData = docItem.data();
+                    const hubName = hubData.name || hubData.hubName || "Unnamed Hub";
+                    
+                    const option = document.createElement('option');
+                    option.value = hubName;
+                    option.innerText = hubName;
+                    selectWh.appendChild(option);
+                });
+            } catch (err) {
+                console.error("Error loading warehouses dropdown: ", err);
+            }
+        }
 
         document.getElementById('allowManagerEdits').addEventListener('change', async function(e) {
             globalManagerEditPermission = e.target.checked;
@@ -691,7 +716,6 @@
             registryBody.innerHTML = "";
             filteredSet.forEach(user => {
                 const placeholderAvatar = `<div class="preview-avatar" style="width:36px; height:36px;"><i class="fa-solid fa-user"></i></div>`;
-                // Key Adjusted: login checks `photo` or `photoUrl`/`avatarUrl` but maps to `photo` field
                 const avatarRender = user.photo ? `<img src="${user.photo}" alt="Avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : placeholderAvatar;
                 const activeLabelClass = user.status === 'Active' ? 'status-active' : 'status-inactive';
 
@@ -723,7 +747,6 @@
                     <td>
                         <div class="user-meta">
                             ${avatarRender}
-                            <!-- Key Adjusted: login matches `fullName` field -->
                             <strong>${user.fullName || user.name || 'N/A'}</strong>
                         </div>
                     </td>
@@ -825,11 +848,10 @@
             e.preventDefault();
             const editId = document.getElementById('editUserId').value;
             
-            // Payload perfectly mapped with login file fields
             const packetPayload = {
                 employeeCode: document.getElementById('empCode').value.trim(),
                 fullName: document.getElementById('fullName').value.trim(),
-                name: document.getElementById('fullName').value.trim(), // Backward compatibility safe-keeping
+                name: document.getElementById('fullName').value.trim(), 
                 mobile: document.getElementById('userMobile').value.trim(),
                 role: document.getElementById('userRole').value,
                 status: document.getElementById('userStatus').value,
@@ -838,7 +860,6 @@
                 division: document.getElementById('userDivision').value,
                 warehouse: document.getElementById('userWarehouse').value,
                 photo: document.getElementById('photoDataUrl').value || "",
-                // Keeping empty placeholders to avoid undefined breaks on login fetch parsing
                 email: "", 
                 department: "",
                 designation: ""
