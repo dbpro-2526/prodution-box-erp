@@ -492,6 +492,18 @@
 
     <!-- Firebase SDK Operations Layer -->
     <script type="module">
+        window.addEventListener('DOMContentLoaded', () => {
+    const activeUser = JSON.parse(localStorage.getItem('userSession'));
+
+    // Agar session nahi hai ya role Super Admin nahi hai toh nikal dega
+    if (!activeUser || activeUser.role !== "Super Admin") {
+        alert("Unauthorized Entry! Super Admin Access Required.");
+        window.location.href = "login.html";
+    } else {
+        console.log("Welcome:", activeUser.fullName);
+        // Yahan aapka users page load karne ka baaki code aayega
+    }
+});
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
