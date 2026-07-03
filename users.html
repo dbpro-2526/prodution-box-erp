@@ -61,17 +61,8 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .sidebar-brand img {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-        }
-
-        .sidebar-brand h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
+        .sidebar-brand img { width: 40px; height: 40px; border-radius: 8px; }
+        .sidebar-brand h2 { font-size: 18px; font-weight: 700; color: var(--primary-color); }
 
         .sidebar-menu {
             padding: 20px 15px;
@@ -99,11 +90,7 @@
             color: var(--accent-color);
         }
 
-        .sidebar-footer {
-            padding: 20px 15px;
-            border-top: 1px solid var(--border-color);
-        }
-
+        .sidebar-footer { padding: 20px 15px; border-top: 1px solid var(--border-color); }
         .btn-logout {
             width: 100%;
             padding: 12px;
@@ -119,7 +106,6 @@
             gap: 8px;
             transition: background 0.2s;
         }
-
         .btn-logout:hover { background: #fca5a5; }
 
         /* --- Main Content Area --- */
@@ -178,30 +164,17 @@
             gap: 20px;
         }
 
-        @media (max-width: 900px) {
-            .user-form { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (max-width: 600px) {
-            .user-form { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .user-form { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .user-form { grid-template-columns: 1fr; } }
 
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
+        .form-group.full-width { grid-column: 1 / -1; }
 
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
+        label { font-size: 13px; font-weight: 600; color: var(--text-dark); }
         input, select {
             height: 44px;
             padding: 0 14px;
@@ -212,10 +185,12 @@
             background: #f8fafc;
             transition: border 0.2s;
         }
+        input:focus, select:focus { border-color: var(--accent-color); background: #fff; }
 
-        input:focus, select:focus {
-            border-color: var(--accent-color);
-            background: #fff;
+        /* Multiple Selection Dropdown Styling */
+        select[multiple] {
+            height: 100px;
+            padding: 8px 14px;
         }
 
         .photo-upload-wrapper {
@@ -240,12 +215,7 @@
             object-fit: cover;
         }
 
-        .action-bar {
-            display: flex;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
+        .action-bar { display: flex; gap: 12px; margin-top: 10px; }
         .btn-action {
             padding: 12px 24px;
             border: none;
@@ -258,7 +228,6 @@
             gap: 8px;
             transition: opacity 0.2s;
         }
-
         .btn-action:hover { opacity: 0.9; }
         .btn-save { background: var(--accent-color); color: white; }
         .btn-clear { background: #e2e8f0; color: var(--text-dark); }
@@ -271,25 +240,9 @@
             margin-bottom: 20px;
             gap: 15px;
         }
-
-        .search-box {
-            position: relative;
-            flex-grow: 1;
-            max-width: 400px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding-left: 40px;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
+        .search-box { position: relative; flex-grow: 1; max-width: 400px; }
+        .search-box input { width: 100%; padding-left: 40px; }
+        .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
         .config-box {
             display: flex;
@@ -337,18 +290,8 @@
             margin-top: 2px;
         }
 
-        .operations-btns {
-            display: flex;
-            gap: 10px;
-        }
-
-        .op-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 15px;
-            transition: color 0.2s;
-        }
+        .operations-btns { display: flex; gap: 10px; }
+        .op-btn { background: none; border: none; cursor: pointer; font-size: 15px; transition: color 0.2s; }
         .op-edit { color: var(--accent-color); }
         .op-delete { color: var(--danger-color); }
         .op-reset { color: var(--warning-color); }
@@ -365,7 +308,7 @@
         <div class="sidebar-menu">
             <a href="dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
             <a href="users.html" class="menu-item active"><i class="fa-solid fa-users"></i> All Users Setup</a>
-            <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
+            <a href="hubs.html" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> Pending Approvals</a>
         </div>
@@ -378,7 +321,6 @@
 
     <!-- Main Workspace Content -->
     <div class="main-content">
-        
         <!-- Header Section -->
         <div class="header-top">
             <div>
@@ -392,7 +334,6 @@
         </div>
 
         <div class="manager-grid">
-            
             <!-- User Control Form Section -->
             <div class="dashboard-section" id="formContainerSection">
                 <div class="section-title" id="formStateHeader">
@@ -438,45 +379,32 @@
                         </select>
                     </div>
 
-                    <!-- Hierarchy Assignment Scope Fields -->
+                    <!-- Hierarchy Assignment Scope Fields (Updated to support Multi-select) -->
                     <div class="form-group">
-                        <label>Assign Region</label>
-                        <select id="userRegion" required>
+                        <label>Assign Region (Ctrl+Click to Select Multiple)</label>
+                        <select id="userRegion" multiple required>
                             <option value="ALL">ALL (Full Access)</option>
-                            <option value="North Region">North Region</option>
-                            <option value="South Region">South Region</option>
-                            <option value="East Region">East Region</option>
-                            <option value="West Region">West Region</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Assign State</label>
-                        <select id="userState" required>
+                        <label>Assign State (Ctrl+Click to Select Multiple)</label>
+                        <select id="userState" multiple required>
                             <option value="ALL">ALL (Full Access)</option>
-                            <option value="Delhi">Delhi</option>
-                            <option value="Mumbai">Mumbai</option>
-                            <option value="UP">UP</option>
-                            <option value="Punjab">Punjab</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Assign Division</label>
-                        <select id="userDivision" required>
+                        <label>Assign Division (Ctrl+Click to Select Multiple)</label>
+                        <select id="userDivision" multiple required>
                             <option value="ALL">ALL (Full Access)</option>
-                            <option value="Division A">Division A</option>
-                            <option value="Division B">Division B</option>
-                            <option value="Division C">Division C</option>
                         </select>
                     </div>
 
-                    <!-- UPDATED: Assign Warehouse Dropdown (Loads Dynamically now) -->
                     <div class="form-group">
                         <label>Assign Warehouse / Hub Location</label>
-                        <select id="userWarehouse" required>
+                        <select id="userWarehouse" multiple required>
                             <option value="ALL">ALL (Full Access)</option>
-                            <!-- Live Warehouse Options will append here -->
                         </select>
                     </div>
 
@@ -517,7 +445,6 @@
                         <i class="fa-solid fa-address-book"></i> Filtered Scope Staff Registry List
                     </div>
                     
-                    <!-- Admin Control Box for Sub-Manager Modification Capability toggling -->
                     <div class="config-box" id="globalPermissionControl" style="display:none;">
                         <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
                             <input type="checkbox" id="allowManagerEdits" checked> Allow Staff to Edit Profiles
@@ -552,14 +479,13 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 
     <!-- Firebase SDK Operations Layer -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
@@ -577,6 +503,20 @@
         let localUsersCache = [];
         let currentUserSession = null;
         let globalManagerEditPermission = true;
+
+        // --- Helper: Get Multiple Select Values as Array ---
+        function getSelectValues(selectElement) {
+            return Array.from(selectElement.selectedOptions).map(option => option.value);
+        }
+
+        // --- Helper: Set Multiple Select Values From Array ---
+        function setSelectValues(selectElement, valuesArray) {
+            if(!valuesArray) return;
+            const arr = Array.isArray(valuesArray) ? valuesArray : [valuesArray];
+            Array.from(selectElement.options).forEach(option => {
+                option.selected = arr.includes(option.value);
+            });
+        }
 
         document.getElementById('photoUpload').addEventListener('change', function(e) {
             const targetFile = e.target.files[0];
@@ -610,7 +550,6 @@
                 document.getElementById('globalPermissionControl').style.display = 'flex';
             }
 
-            // Fetch Settings Control Switch
             try {
                 const configRef = doc(db, "settings", "globalConfig");
                 const configSnap = await getDoc(configRef);
@@ -620,33 +559,94 @@
                 }
             } catch(e) { console.log("Config mapping error:", e); }
 
-            // NEW: Fetch Live Warehouses/Hubs from Firestore
-            await loadLiveWarehousesDropdown();
-
+            // Live Master Data Chains Initiation
+            initMasterDataDropdowns();
             syncUsersCollectionEngine();
         });
 
-        // NEW FUNCTION: Loads hubs dynamically from database into dropdown
-        async function loadLiveWarehousesDropdown() {
-            try {
-                const hubsSnap = await getDocs(collection(db, "hubs"));
-                const selectWh = document.getElementById('userWarehouse');
-                
-                // Retaining default option
-                selectWh.innerHTML = `<option value="ALL">ALL (Full Access)</option>`;
-                
-                hubsSnap.forEach((docItem) => {
-                    const hubData = docItem.data();
-                    const hubName = hubData.name || hubData.hubName || "Unnamed Hub";
-                    
-                    const option = document.createElement('option');
-                    option.value = hubName;
-                    option.innerText = hubName;
-                    selectWh.appendChild(option);
-                });
-            } catch (err) {
-                console.error("Error loading warehouses dropdown: ", err);
-            }
+        // --- Live Cascading & Filtering Dropdown Implementation ---
+        function initMasterDataDropdowns() {
+            // 1. Fetch Regions Live
+            onSnapshot(collection(db, "regions"), (snap) => {
+                const regSelect = document.getElementById('userRegion');
+                regSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+                snap.forEach(d => regSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+            });
+
+            // 2. Filter States on Region Change
+            document.getElementById('userRegion').onchange = async (e) => {
+                const selectedRegions = getSelectValues(e.target);
+                const stateSelect = document.getElementById('userState');
+                stateSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+
+                if (selectedRegions.includes('ALL') || selectedRegions.length === 0) {
+                    // Fetch all states if ALL is chosen
+                    const snap = await getDocs(collection(db, "states"));
+                    snap.forEach(d => stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+                } else {
+                    // Fetch states matching selected regions
+                    for(const r of selectedRegions) {
+                        const q = query(collection(db, "states"), where("region", "==", r));
+                        const snap = await getDocs(q);
+                        snap.forEach(d => {
+                            if(!Array.from(stateSelect.options).some(o => o.value === d.data().name)) {
+                                stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`;
+                            }
+                        });
+                    }
+                }
+                document.getElementById('userDivision').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+                document.getElementById('userWarehouse').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+            };
+
+            // 3. Filter Divisions on State Change
+            document.getElementById('userState').onchange = async (e) => {
+                const selectedStates = getSelectValues(e.target);
+                const divSelect = document.getElementById('userDivision');
+                divSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+
+                if(selectedStates.includes('ALL') || selectedStates.length === 0) {
+                    const snap = await getDocs(collection(db, "divisions"));
+                    snap.forEach(d => divSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+                } else {
+                    for(const s of selectedStates) {
+                        const q = query(collection(db, "divisions"), where("state", "==", s));
+                        const snap = await getDocs(q);
+                        snap.forEach(d => {
+                            if(!Array.from(divSelect.options).some(o => o.value === d.data().name)) {
+                                divSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`;
+                            }
+                        });
+                    }
+                }
+                document.getElementById('userWarehouse').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+            };
+
+            // 4. Filter Warehouses on Division Change
+            document.getElementById('userDivision').onchange = async (e) => {
+                const selectedDivs = getSelectValues(e.target);
+                const whSelect = document.getElementById('userWarehouse');
+                whSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+
+                if(selectedDivs.includes('ALL') || selectedDivs.length === 0) {
+                    const snap = await getDocs(collection(db, "hubs"));
+                    snap.forEach(d => {
+                        const name = d.data().name || d.data().hubName;
+                        whSelect.innerHTML += `<option value="${name}">${name}</option>`;
+                    });
+                } else {
+                    for(const div of selectedDivs) {
+                        const q = query(collection(db, "hubs"), where("division", "==", div));
+                        const snap = await getDocs(q);
+                        snap.forEach(d => {
+                            const name = d.data().name || d.data().hubName;
+                            if(!Array.from(whSelect.options).some(o => o.value === name)) {
+                                whSelect.innerHTML += `<option value="${name}">${name}</option>`;
+                            }
+                        });
+                    }
+                }
+            };
         }
 
         document.getElementById('allowManagerEdits').addEventListener('change', async function(e) {
@@ -668,34 +668,20 @@
             }
         }
 
-        // Hierarchical Boundary Data Filtration Logic
         function filterUsersByRoleHierarchy(dataSet) {
             if (!currentUserSession) return [];
             const role = currentUserSession.role;
-            
             if (role === "Super Admin" || role === "Admin") return dataSet;
 
             return dataSet.filter(user => {
                 if (user.role === "Super Admin" || user.role === "Admin") return false;
+                // Basic structural boundary validations for arrays/strings
+                const uReg = Array.isArray(user.region) ? user.region : [user.region];
+                const cReg = currentUserSession.region;
 
                 if (role === "Regional Manager") {
-                    return currentUserSession.region === "ALL" || user.region === currentUserSession.region;
+                    return cReg === "ALL" || uReg.includes(cReg);
                 }
-                if (role === "State Manager" || role === "State Office") {
-                    const matchRegion = (currentUserSession.region === "ALL" || user.region === currentUserSession.region);
-                    const matchState = (currentUserSession.state === "ALL" || user.state === currentUserSession.state);
-                    return matchRegion && matchState;
-                }
-                if (role === "Division Manager") {
-                    const matchRegion = (currentUserSession.region === "ALL" || user.region === currentUserSession.region);
-                    const matchState = (currentUserSession.state === "ALL" || user.state === currentUserSession.state);
-                    const matchDiv = (currentUserSession.division === "ALL" || user.division === currentUserSession.division);
-                    return matchRegion && matchState && matchDiv;
-                }
-                if (role === "Warehouse Manager") {
-                    return currentUserSession.warehouse === "ALL" || user.warehouse === currentUserSession.warehouse;
-                }
-                
                 return user.employeeCode === currentUserSession.employeeCode;
             });
         }
@@ -719,15 +705,12 @@
                 const avatarRender = user.photo ? `<img src="${user.photo}" alt="Avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : placeholderAvatar;
                 const activeLabelClass = user.status === 'Active' ? 'status-active' : 'status-inactive';
 
-                let scopeTracks = [];
-                if(user.region && user.region !== "ALL") scopeTracks.push(user.region);
-                if(user.state && user.state !== "ALL") scopeTracks.push(user.state);
-                if(user.division && user.division !== "ALL") scopeTracks.push(user.division);
-                if(user.warehouse && user.warehouse !== "ALL") scopeTracks.push(`WH: ${user.warehouse}`);
-                
-                const scopeString = scopeTracks.length > 0 
-                    ? `<span class="location-info"><i class="fa-solid fa-sitemap"></i> ${scopeTracks.join(' > ')}</span>`
-                    : `<span class="location-info"><i class="fa-solid fa-globe"></i> Global Access (ALL)</span>`;
+                // Parsing arrays smoothly for table render
+                const dispReg = Array.isArray(user.region) ? user.region.join(', ') : user.region;
+                const dispState = Array.isArray(user.state) ? user.state.join(', ') : user.state;
+                const dispDiv = Array.isArray(user.division) ? user.division.join(', ') : user.division;
+
+                const scopeString = `<span class="location-info"><i class="fa-solid fa-sitemap"></i> R: ${dispReg} | S: ${dispState} | D: ${dispDiv}</span>`;
 
                 const statusButtonHTML = isMasterAdmin 
                     ? `<button class="status-toggle ${activeLabelClass}" data-id="${user.id}" data-current="${user.status}">● ${user.status}</button>`
@@ -766,7 +749,6 @@
             const query = e.target.value.toLowerCase().trim();
             const filteredSet = localUsersCache.filter(user => 
                 (user.fullName && user.fullName.toLowerCase().includes(query)) ||
-                (user.name && user.name.toLowerCase().includes(query)) ||
                 (user.employeeCode && user.employeeCode.toLowerCase().includes(query)) ||
                 (user.role && user.role.toLowerCase().includes(query)) ||
                 (user.mobile && user.mobile.includes(query))
@@ -787,7 +769,7 @@
             });
 
             document.querySelectorAll('.op-edit').forEach(btn => {
-                btn.onclick = () => {
+                btn.onclick = async () => {
                     const targetId = btn.getAttribute('data-id');
                     const entry = localUsersCache.find(u => u.id === targetId);
                     if (entry) {
@@ -796,12 +778,33 @@
                         document.getElementById('fullName').value = entry.fullName || entry.name || "";
                         document.getElementById('userMobile').value = entry.mobile || "";
                         document.getElementById('userRole').value = entry.role || "";
-                        
                         document.getElementById('userStatus').value = entry.status || "Active";
-                        document.getElementById('userRegion').value = entry.region || "ALL";
-                        document.getElementById('userState').value = entry.state || "ALL";
-                        document.getElementById('userDivision').value = entry.division || "ALL";
-                        document.getElementById('userWarehouse').value = entry.warehouse || "ALL";
+                        
+                        // Dynamically re-trigger option listing cascades for correct assignment values mapping
+                        const stateSelect = document.getElementById('userState');
+                        const divSelect = document.getElementById('userDivision');
+                        const whSelect = document.getElementById('userWarehouse');
+
+                        const allStates = await getDocs(collection(db, "states"));
+                        stateSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+                        allStates.forEach(d => stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+
+                        const allDivs = await getDocs(collection(db, "divisions"));
+                        divSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+                        allDivs.forEach(d => divSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+
+                        const allWhs = await getDocs(collection(db, "hubs"));
+                        whSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+                        allWhs.forEach(d => {
+                            const name = d.data().name || d.data().hubName;
+                            whSelect.innerHTML += `<option value="${name}">${name}</option>`;
+                        });
+
+                        // Populate selections back
+                        setSelectValues(document.getElementById('userRegion'), entry.region);
+                        setSelectValues(stateSelect, entry.state);
+                        setSelectValues(divSelect, entry.division);
+                        setSelectValues(whSelect, entry.warehouse);
                         
                         document.getElementById('userPassword').removeAttribute('required');
                         document.getElementById('passInputContainer').style.display = 'none';
@@ -855,10 +858,11 @@
                 mobile: document.getElementById('userMobile').value.trim(),
                 role: document.getElementById('userRole').value,
                 status: document.getElementById('userStatus').value,
-                region: document.getElementById('userRegion').value,
-                state: document.getElementById('userState').value,
-                division: document.getElementById('userDivision').value,
-                warehouse: document.getElementById('userWarehouse').value,
+                // Collecting multiple values as arrays smoothly
+                region: getSelectValues(document.getElementById('userRegion')),
+                state: getSelectValues(document.getElementById('userState')),
+                division: getSelectValues(document.getElementById('userDivision')),
+                warehouse: getSelectValues(document.getElementById('userWarehouse')),
                 photo: document.getElementById('photoDataUrl').value || "",
                 email: "", 
                 department: "",
@@ -893,6 +897,11 @@
             
             document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-plus"></i> Add New System User`;
             document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Entry Record`;
+            
+            // Re-initialize lists to clear multi-selections correctly
+            document.getElementById('userState').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+            document.getElementById('userDivision').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
+            document.getElementById('userWarehouse').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
         }
 
         document.getElementById('resetFormBtn').onclick = triggerClearFormInterfaceAction;
