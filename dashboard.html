@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Dashboard - Donation Box ERP</title>
+    <title>Super Admin Control - Donation Box ERP</title>
     
     <!-- Favicon & Fonts -->
     <link rel="icon" href="dblogo.png">
@@ -28,6 +28,9 @@
             --text-dark: #1e293b;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
+            --success-color: #16a34a;
+            --danger-color: #ef4444;
+            --warning-color: #d97706;
         }
 
         body {
@@ -117,9 +120,7 @@
             transition: background 0.2s;
         }
 
-        .btn-logout:hover {
-            background: #fca5a5;
-        }
+        .btn-logout:hover { background: #fca5a5; }
 
         /* --- Main Content Area --- */
         .main-content {
@@ -145,150 +146,212 @@
             border: 1px solid var(--border-color);
         }
 
-        .user-profile i {
-            font-size: 20px;
-            color: var(--primary-color);
-        }
-
-        /* --- Cards Container --- */
-        .stats-grid {
+        /* --- User Management Layout --- */
+        .manager-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: 1fr;
+            gap: 30px;
         }
 
-        .stat-card {
-            background: #fff;
-            padding: 25px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
-        }
-
-        .stat-info h3 {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .stat-info p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-
-        .icon-blue { background: #e0f2fe; color: #0284c7; }
-        .icon-green { background: #dcfce7; color: #16a34a; }
-        .icon-purple { background: #f3e8ff; color: #9333ea; }
-        .icon-amber { background: #fef3c7; color: #d97706; }
-
-        /* --- Data Section Layout --- */
         .dashboard-section {
             background: #fff;
             padding: 30px;
             border-radius: 16px;
             border: 1px solid var(--border-color);
-            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
         }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .btn-add {
-            background: var(--accent-color);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
+        /* --- Forms Setup --- */
+        .user-form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .user-form { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .user-form { grid-template-columns: 1fr; }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input, select {
+            height: 44px;
+            padding: 0 14px;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-weight: 500;
+            font-size: 14px;
+            outline: none;
+            background: #f8fafc;
+            transition: border 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+            background: #fff;
+        }
+
+        .photo-upload-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .preview-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            object-fit: cover;
+        }
+
+        /* --- Buttons Styling --- */
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-action {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover { opacity: 0.9; }
+        .btn-save { background: var(--accent-color); color: white; }
+        .btn-clear { background: #e2e8f0; color: var(--text-dark); }
+
+        /* --- Search & Controls --- */
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding-left: 40px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
         }
 
         /* --- Table Styling --- */
-        .table-responsive {
-            overflow-x: auto;
-        }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f8fafc; padding: 14px 16px; color: var(--text-muted); font-weight: 600; font-size: 13px; border-bottom: 2px solid var(--border-color); }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); font-size: 14px; vertical-align: middle; }
+        
+        .user-meta { display: flex; align-items: center; gap: 12px; }
+        .user-meta img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            background: #f8fafc;
-            padding: 14px 16px;
-            color: var(--text-muted);
+        .status-toggle {
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
-            font-size: 13px;
-            border-bottom: 2px solid var(--border-color);
+            border: none;
         }
+        .status-active { background: #dcfce7; color: var(--success-color); }
+        .status-inactive { background: #fee2e2; color: var(--danger-color); }
 
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 14px;
-        }
-
-        .badge {
+        .role-badge {
+            background: #eff6ff;
+            color: var(--accent-color);
             padding: 4px 8px;
             border-radius: 6px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 500;
         }
 
-        .badge-admin { background: #eff6ff; color: #2563EB; }
+        .operations-btns {
+            display: flex;
+            gap: 10px;
+        }
 
-        .actions-btn {
+        .op-btn {
             background: none;
             border: none;
-            color: var(--text-muted);
             cursor: pointer;
-            font-size: 16px;
-            padding: 4px;
+            font-size: 15px;
+            transition: color 0.2s;
         }
-
-        .actions-btn:hover {
-            color: var(--accent-color);
-        }
+        .op-edit { color: var(--accent-color); }
+        .op-delete { color: var(--danger-color); }
+        .op-reset { color: var(--warning-color); }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar Navigation -->
+    <!-- Sidebar Menu Navigation -->
     <div class="sidebar">
         <div class="sidebar-brand">
             <img src="dblogo.png" alt="Logo">
             <h2>Donation Box</h2>
         </div>
         <div class="sidebar-menu">
-            <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-            <a href="#" class="menu-item"><i class="fa-solid fa-users"></i> All Users Setup</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a href="#" class="menu-item active"><i class="fa-solid fa-users"></i> All Users Setup</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> Pending Approvals</a>
-            <a href="#" class="menu-item"><i class="fa-solid fa-file-invoice-dollar"></i> Reports</a>
         </div>
         <div class="sidebar-footer">
             <button class="btn-logout" id="logoutBtn">
@@ -297,142 +360,380 @@
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main Workspace Content -->
     <div class="main-content">
-        <!-- Top Profile Header -->
+        
+        <!-- Header Section -->
         <div class="header-top">
             <div>
-                <h1 style="font-size: 24px; font-weight: 700;">Super Admin Control Hub</h1>
-                <p style="color: var(--text-muted); font-size: 14px;">Welcome back to management dashboard.</p>
+                <h1 style="font-size: 24px; font-weight: 700;">All Users Setup</h1>
+                <p style="color: var(--text-muted); font-size: 14px;">Manage administrative staff, access keys, and system levels.</p>
             </div>
             <div class="user-profile">
-                <i class="fa-solid fa-circle-user"></i>
-                <span id="adminName" style="font-weight: 600; font-size: 14px;">Loading...</span>
+                <i class="fa-solid fa-circle-user" style="font-size: 20px; color: var(--primary-color);"></i>
+                <span id="adminName" style="font-weight: 600; font-size: 14px;">Super Admin</span>
             </div>
         </div>
 
-        <!-- Dynamic Counter Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h3 id="countUsers">0</h3>
-                    <p>Total Registered Users</p>
+        <div class="manager-grid">
+            
+            <!-- Section 1: Add/Edit User Management Form -->
+            <div class="dashboard-section">
+                <div class="section-title" id="formStateHeader">
+                    <i class="fa-solid fa-user-plus"></i> Add New System User
                 </div>
-                <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h3 id="countHubs">0</h3>
-                    <p>Active Warehouses/Hubs</p>
-                </div>
-                <div class="stat-icon icon-green"><i class="fa-solid fa-warehouse"></i></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h3 id="countItems">0</h3>
-                    <p>Total Inventory Items</p>
-                </div>
-                <div class="stat-icon icon-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h3 id="countPending">0</h3>
-                    <p>Pending Box Approvals</p>
-                </div>
-                <div class="stat-icon icon-amber"><i class="fa-solid fa-clock"></i></div>
-            </div>
-        </div>
+                
+                <form id="userControlForm" class="user-form">
+                    <!-- Hidden reference parameter for editing tracks -->
+                    <input type="hidden" id="editUserId">
 
-        <!-- Section: Overview Display -->
-        <div class="dashboard-section">
-            <div class="section-header">
-                <h2 style="font-size: 18px; font-weight: 600;">System Administrative Overview</h2>
-                <button class="btn-add"><i class="fa-solid fa-plus"></i> Configure New Entity</button>
+                    <div class="form-group">
+                        <label>Employee Code</label>
+                        <input type="text" id="empCode" placeholder="Auto Generating..." readonly style="font-weight:600; color:var(--primary-color);">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="fullName" placeholder="Enter full identity name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Login Username / Email</label>
+                        <input type="email" id="userEmail" placeholder="username@domain.com" required>
+                    </div>
+
+                    <div class="form-group" id="passInputContainer">
+                        <label>System Password</label>
+                        <input type="password" id="userPassword" placeholder="Set default login secure key" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role / Scope Selection</label>
+                        <select id="userRole" required>
+                            <option value="">-- Choose Assigned Access Layer --</option>
+                            <option value="Super Admin">Super Admin</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Regional Manager">Regional Manager</option>
+                            <option value="State Manager">State Manager</option>
+                            <option value="State Office">State Office</option>
+                            <option value="Division Manager">Division Manager</option>
+                            <option value="Warehouse Manager">Warehouse Manager</option>
+                            <option value="Employee">Employee</option>
+                            <option value="Viewer">Viewer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Account Default Status</label>
+                        <select id="userStatus">
+                            <option value="Active">Active / Operational</option>
+                            <option value="Inactive">Inactive / Locked</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Profile Image File</label>
+                        <div class="photo-upload-wrapper">
+                            <div class="preview-avatar" id="avatarBox">
+                                <i class="fa-solid fa-camera"></i>
+                            </div>
+                            <input type="file" id="photoUpload" accept="image/*" style="border:none; background:none; height:auto; padding:0;">
+                            <input type="hidden" id="photoDataUrl">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width action-bar">
+                        <button type="submit" class="btn-action btn-save" id="submitBtn">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Entry Record
+                        </button>
+                        <button type="button" class="btn-action btn-clear" id="resetFormBtn">
+                            Clear Fields
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name / Description</th>
-                            <th>Role / Scope</th>
-                            <th>Status</th>
-                            <th>Linked Facility</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="overviewTableBody">
-                        <tr>
-                            <td><strong>Markazi Warehouse User</strong></td>
-                            <td><span class="badge badge-admin">Super Admin</span></td>
-                            <td><span style="color: #16a34a; font-weight: 500;">● Active</span></td>
-                            <td>All Zones (Full Access)</td>
-                            <td><button class="actions-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <!-- Section 2: Active User Base Registry List -->
+            <div class="dashboard-section">
+                <div class="controls-row">
+                    <div class="section-title" style="margin-bottom:0;">
+                        <i class="fa-solid fa-address-book"></i> Active Registered Staff List
+                    </div>
+                    
+                    <!-- Search Field Component -->
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchUserField" placeholder="Search by name, code, or role...">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Emp Code</th>
+                                <th>User Profiles Details</th>
+                                <th>Email / Username</th>
+                                <th>Role Tier</th>
+                                <th>Status Control</th>
+                                <th>System Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userRegistryTableBody">
+                            <!-- Dynamic content injection module hook -->
+                            <tr>
+                                <td colspan="6" style="text-align:center; color:var(--text-muted); padding:30px;">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Synchronization with database ongoing...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
         </div>
     </div>
 
-    <!-- Firebase SDK Integration -->
+    <!-- Firebase System Module Operations Layer Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-       const firebaseConfig = {
-  apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
-  authDomain: "prodution-box-erp.firebaseapp.com",
-  projectId: "prodution-box-erp",
-  storageBucket: "prodution-box-erp.firebasestorage.app",
-  messagingSenderId: "426698063494",
-  appId: "1:426698063494:web:880dd323f24bd4121ddb07",
-  measurementId: "G-948852RZLB"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyA...", 
+            authDomain: "donation-box-erp.firebaseapp.com",
+            projectId: "donation-box-erp",
+            storageBucket: "donation-box-erp.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:123456:web:abcde12345"
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Security Route Validation Guard Rule
-        window.addEventListener('DOMContentLoaded', () => {
-           const activeUser = JSON.parse(localStorage.getItem('userSession'));
+        let localUsersCache = [];
 
-                  if (!activeUser || activeUser.role !== "Super Admin") {
-                  alert("Unauthorized Entry! Super Admin Access Required.");
-                  window.location.href = "login.html";
-                  } else {
-                  document.getElementById("adminName").innerText =
-               activeUser.fullName || "Super Admin";
+        // Dynamic ID Auto-Generator Realization
+        function triggerEmpCodeGeneration() {
+            const patternCode = "DBE-" + Math.floor(10000 + Math.random() * 90000);
+            document.getElementById('empCode').value = patternCode;
+        }
 
-             fetchLiveDashboardStats();
-             }
+        // Photo Upload Conversion Utility Base64 Line
+        document.getElementById('photoUpload').addEventListener('change', function(e) {
+            const targetFile = e.target.files[0];
+            if (targetFile) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('photoDataUrl').value = event.target.result;
+                    document.getElementById('avatarBox').innerHTML = `<img src="${event.target.result}" class="preview-avatar" style="width:100%; height:100%;">`;
+                };
+                reader.readAsDataURL(targetFile);
+            }
         });
 
-        // Real-time Counters Setup
-        async function fetchLiveDashboardStats() {
-            try {
-                const usersSnap = await getDocs(collection(db, "users"));
-                const hubsSnap = await getDocs(collection(db, "hubs"));
-                const itemsSnap = await getDocs(collection(db, "inventory"));
-                const pendingSnap = await getDocs(collection(db, "approvals"));
+        // Safe Gateway Auth Router Check Rule
+        window.addEventListener('DOMContentLoaded', () => {
+            const activeUser = JSON.parse(localStorage.getItem('activeUser'));
+            if (!activeUser || activeUser.role !== 'Super Admin') {
+                alert("Unauthorized Entry! Super Admin Role Required.");
+                window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('adminName').innerText = activeUser.name || "Super Admin";
+            
+            triggerEmpCodeGeneration();
+            syncUsersCollectionEngine();
+        });
 
-                document.getElementById('countUsers').innerText = usersSnap.size || 0;
-                document.getElementById('countHubs').innerText = hubsSnap.size || 0;
-                document.getElementById('countItems').innerText = itemsSnap.size || 0;
-                document.getElementById('countPending').innerText = pendingSnap.size || 0;
-            } catch (error) {
-                console.error("Firestore loading error: ", error);
+        // Core Collection Engine Pull Sync
+        async function syncUsersCollectionEngine() {
+            try {
+                const snap = await getDocs(collection(db, "users"));
+                localUsersCache = [];
+                snap.forEach(docItem => {
+                    localUsersCache.push({ id: docItem.id, ...docItem.data() });
+                });
+                renderUserInterfaceRegistry(localUsersCache);
+            } catch (err) {
+                console.error("Error reading users mapping table", err);
             }
         }
 
-        // Logout Session Process
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-           localStorage.removeItem("userSession");
-           localStorage.removeItem("userRole");
-           localStorage.removeItem("userName");
-           localStorage.removeItem("employeeCode");
-           localStorage.removeItem("loginStatus"); // Session end
-            window.location.href = 'login.html'; // Redirect
+        // Render Table Functionality
+        function renderUserInterfaceRegistry(dataSet) {
+            const registryBody = document.getElementById('userRegistryTableBody');
+            if (dataSet.length === 0) {
+                registryBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No records discovered matching matrix definitions.</td></tr>`;
+                return;
+            }
+
+            registryBody.innerHTML = "";
+            dataSet.forEach(user => {
+                const placeholderAvatar = `<div class="preview-avatar" style="width:36px; height:36px;"><i class="fa-solid fa-user"></i></div>`;
+                const avatarRender = user.avatarUrl ? `<img src="${user.avatarUrl}" alt="Avatar">` : placeholderAvatar;
+                const activeLabelClass = user.status === 'Active' ? 'status-active' : 'status-inactive';
+
+                const tableRow = document.createElement('tr');
+                tableRow.innerHTML = `
+                    <td style="font-weight:600; color:var(--primary-color);">${user.employeeCode || 'N/A'}</td>
+                    <td>
+                        <div class="user-meta">
+                            ${avatarRender}
+                            <strong>${user.name}</strong>
+                        </div>
+                    </td>
+                    <td>${user.email}</td>
+                    <td><span class="role-badge">${user.role}</span></td>
+                    <td>
+                        <button class="status-toggle ${activeLabelClass}" data-id="${user.id}" data-current="${user.status}">
+                            ● ${user.status}
+                        </button>
+                    </td>
+                    <td>
+                        <div class="operations-btns">
+                            <button class="op-btn op-edit" data-id="${user.id}" title="Edit User Identity"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="op-btn op-reset" data-id="${user.id}" title="Reset Security Password"><i class="fa-solid fa-key"></i></button>
+                            <button class="op-btn op-delete" data-id="${user.id}" title="Delete User Record Permanently"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                `;
+                registryBody.appendChild(tableRow);
+            });
+
+            bindInteractiveFunctionalTriggers();
+        }
+
+        // Search Field Implementation
+        document.getElementById('searchUserField').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const filteredSet = localUsersCache.filter(user => 
+                (user.name && user.name.toLowerCase().includes(query)) ||
+                (user.employeeCode && user.employeeCode.toLowerCase().includes(query)) ||
+                (user.role && user.role.toLowerCase().includes(query)) ||
+                (user.email && user.email.toLowerCase().includes(query))
+            );
+            renderUserInterfaceRegistry(filteredSet);
         });
+
+        // Trigger Binding Dynamic Interoperability Components
+        function bindInteractiveFunctionalTriggers() {
+            // Status Toggle Operations
+            document.querySelectorAll('.status-toggle').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const targetId = btn.getAttribute('data-id');
+                    const nextState = btn.getAttribute('data-current') === 'Active' ? 'Inactive' : 'Active';
+                    await updateDoc(doc(db, "users", targetId), { status: nextState });
+                    syncUsersCollectionEngine();
+                };
+            });
+
+            // Edit Action Matrix Configuration Route
+            document.querySelectorAll('.op-edit').forEach(btn => {
+                btn.onclick = (e) => {
+                    const targetId = btn.getAttribute('data-id');
+                    const entry = localUsersCache.find(u => u.id === targetId);
+                    if (entry) {
+                        document.getElementById('editUserId').value = entry.id;
+                        document.getElementById('empCode').value = entry.employeeCode || "";
+                        document.getElementById('fullName').value = entry.name || "";
+                        document.getElementById('userEmail').value = entry.email || "";
+                        document.getElementById('userRole').value = entry.role || "";
+                        document.getElementById('userStatus').value = entry.status || "Active";
+                        
+                        // Password setup control handling for modifications
+                        document.getElementById('userPassword').removeAttribute('required');
+                        document.getElementById('passInputContainer').style.display = 'none';
+                        
+                        if(entry.avatarUrl) {
+                            document.getElementById('photoDataUrl').value = entry.avatarUrl;
+                            document.getElementById('avatarBox').innerHTML = `<img src="${entry.avatarUrl}" class="preview-avatar" style="width:100%; height:100%;">`;
+                        }
+
+                        document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-pen"></i> Edit User: ${entry.employeeCode}`;
+                        document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Update User Profile`;
+                    }
+                };
+            });
+
+            // Password Reset Functionality Module Action
+            document.querySelectorAll('.op-reset').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const targetId = btn.getAttribute('data-id');
+                    const entry = localUsersCache.find(u => u.id === targetId);
+                    const promptPass = prompt(`Set new secure credentials password key for ${entry.name}:`);
+                    if (promptPass && promptPass.trim().length >= 4) {
+                        await updateDoc(doc(db, "users", targetId), { password: promptPass.trim() });
+                        alert("Password updated successfully for account security verification layers.");
+                    } else if (promptPass) {
+                        alert("Validation error: Password metric must match minimum 4 digits structure constraints.");
+                    }
+                };
+            });
+
+            // Structural Record Eraser Route
+            document.querySelectorAll('.op-delete').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const targetId = btn.getAttribute('data-id');
+                    if (confirm("Are you absolutely sure you want to permanently erase this user account from system logs database registers?")) {
+                        await deleteDoc(doc(db, "users", targetId));
+                        syncUsersCollectionEngine();
+                    }
+                };
+            });
+        }
+
+        // Form Submit Handler Interface Router (Unified Add / Edit)
+        document.getElementById('userControlForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('editUserId').value;
+            
+            const packetPayload = {
+                employeeCode: document.getElementById('empCode').value,
+                name: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('userEmail').value.trim(),
+                role: document.getElementById('userRole').value,
+                status: document.getElementById('userStatus').value,
+                avatarUrl: document.getElementById('photoDataUrl').value || ""
+            };
+
+            if (!editId) {
+                // Add mode execution path
+                packetPayload.password = document.getElementById('userPassword').value;
+                await addDoc(collection(db, "users"), packetPayload);
+                alert("New user added successfully.");
+            } else {
+                // Update configuration structural edits
+                await updateDoc(doc(db, "users", editId), packetPayload);
+                alert("Identity mapping record verified and synchronized successfully.");
+            }
+
+            triggerClearFormInterfaceAction();
+            syncUsersCollectionEngine();
+        };
+
+        // UI View State Reset Cleaner
+        function triggerClearFormInterfaceAction() {
+            document.getElementById('userControlForm').reset();
+            document.getElementById('editUserId').value = "";
+            document.getElementById('photoDataUrl').value = "";
+            document.getElementById('avatarBox').innerHTML = `<i class="fa-solid fa-camera"></i>`;
+            document.getElementById('passInputContainer').style.display = 'flex';
+            document.getElementById('userPassword').setAttribute('required', 'required');
+            
+            document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-plus"></i> Add New System User`;
+            document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Entry Record`;
+            
+            triggerEmpCodeGeneration();
+        }
+
+        document.getElementById('resetFormBtn').onclick = triggerClearFormInterfaceAction;
+
+        // Logout Flow Action Integration
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('activeUser');
+            window.location.href = 'login.html';
+        };
     </script>
 </body>
 </html>
