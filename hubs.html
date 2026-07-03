@@ -169,28 +169,7 @@
             gap: 6px;
         }
 
-        .dynamic-select-container {
-            display: flex;
-            gap: 6px;
-        }
-
-        .dynamic-select-container select { flex-grow: 1; }
-        
-        .btn-inline-add {
-            width: 44px;
-            height: 44px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-        .btn-inline-add:hover { background: var(--accent-color); }
+      
 
         .form-group.full-width { grid-column: 1 / -1; }
 
@@ -311,10 +290,11 @@
                     <div class="form-group">
                         <label>Region Allocation</label>
                         <div class="dynamic-select-container">
-                            <select id="hubRegion" required>
-                                <option value="">-- Select Region --</option>
-                            </select>
-                            <button type="button" class="btn-inline-add" id="addNewRegionBtn" title="Add New Region"><i class="fa-solid fa-plus"></i></button>
+    <select id="hubRegion" required>
+        <option value="">-- Select Region --</option>
+    </select>
+</div>
+                           
                         </div>
                     </div>
 
@@ -322,22 +302,22 @@
                     <div class="form-group">
                         <label>State Location</label>
                         <div class="dynamic-select-container">
-                            <select id="hubState" required>
-                                <option value="">-- Select State --</option>
-                            </select>
-                            <button type="button" class="btn-inline-add" id="addNewStateBtn" title="Add New State"><i class="fa-solid fa-plus"></i></button>
+    <select id="hubState" required>
+        <option value="">-- Select State --</option>
+    </select>
+</div>
+                        
                         </div>
                     </div>
 
                     <!-- Dynamic Division Field -->
                     <div class="form-group">
                         <label>Division</label>
-                        <div class="dynamic-select-container">
-                            <select id="hubDivision" required>
-                                <option value="">-- Select Division --</option>
-                            </select>
-                            <button type="button" class="btn-inline-add" id="addNewDivisionBtn" title="Add New Division"><i class="fa-solid fa-plus"></i></button>
-                        </div>
+                       <div class="dynamic-select-container">
+    <select id="hubDivision" required>
+        <option value="">-- Select Division --</option>
+    </select>
+</div>
                     </div>
 
                     <div class="form-group">
@@ -365,6 +345,119 @@
                         <button type="button" class="btn-action btn-clear" id="resetFormBtn">Clear Fields</button>
                     </div>
                 </form>
+        <!-- ================= MASTER DATA ================= -->
+
+<div class="dashboard-section" style="margin-top:30px;">
+
+    <div class="section-title">
+        <i class="fa-solid fa-database"></i>
+        Master Data
+    </div>
+
+    <div class="hub-form">
+
+        <!-- REGION -->
+
+        <div class="form-group">
+
+            <label>Region Name</label>
+
+            <input
+                type="text"
+                id="regionName"
+                placeholder="Enter Region Name">
+
+            <button
+                type="button"
+                class="btn-action btn-save"
+                id="saveRegion"
+                style="margin-top:10px;">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Add Region
+
+            </button>
+
+        </div>
+
+        <!-- STATE -->
+
+        <div class="form-group">
+
+            <label>Select Region</label>
+
+            <select id="stateRegion">
+
+                <option value="">Select Region</option>
+
+            </select>
+
+            <input
+                type="text"
+                id="stateName"
+                placeholder="Enter State Name"
+                style="margin-top:10px;">
+
+            <button
+                type="button"
+                class="btn-action btn-save"
+                id="saveState"
+                style="margin-top:10px;">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Add State
+
+            </button>
+
+        </div>
+
+        <!-- DIVISION -->
+
+        <div class="form-group">
+
+            <label>Select Region</label>
+
+            <select id="divisionRegion">
+
+                <option value="">Select Region</option>
+
+            </select>
+
+            <select
+                id="divisionState"
+                style="margin-top:10px;">
+
+                <option value="">Select State</option>
+
+            </select>
+
+            <input
+                type="text"
+                id="divisionName"
+                placeholder="Enter Division Name"
+                style="margin-top:10px;">
+
+            <button
+                type="button"
+                class="btn-action btn-save"
+                id="saveDivision"
+                style="margin-top:10px;">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Add Division
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= END MASTER DATA ================= -->
             </div>
 
             <!-- Registry Table -->
