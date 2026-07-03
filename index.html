@@ -5,88 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donation Box ERP</title>
 
-    <link rel="icon" href="dblogo.png">
+    <link rel="icon" href="images/dblogo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial,Helvetica,sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
-        body{
-            background:#f5f7fb;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
+        body {
+            background: linear-gradient(135deg, #f4f7fe 0%, #eef2f6 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        .container{
-            text-align:center;
-            background:#fff;
-            padding:40px;
-            width:400px;
-            border-radius:15px;
-            box-shadow:0 10px 25px rgba(0,0,0,.15);
+        .container {
+            text-align: center;
+            background: #ffffff;
+            padding: 40px 35px;
+            width: 430px;
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
         }
 
-        img{
-            width:100px;
-            margin-bottom:20px;
+        img {
+            width: 85px;
+            height: 85px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 20px;
         }
 
-        h1{
-            color:#1565C0;
-            margin-bottom:10px;
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0F4C81;
+            margin-bottom: 10px;
         }
 
-        p{
-            color:#666;
-            margin-bottom:30px;
+        p {
+            font-size: 13.5px;
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.5;
         }
 
-        .btn{
-            display:block;
-            width:100%;
-            padding:15px;
-            background:#1565C0;
-            color:#fff;
-            text-decoration:none;
-            border-radius:8px;
-            font-size:18px;
-            transition:.3s;
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .btn:hover{
-            background:#0D47A1;
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            height: 48px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 15.5px;
+            font-weight: 600;
+            transition: all .2s ease;
         }
 
-        .version{
-            margin-top:20px;
-            color:#888;
-            font-size:14px;
+        /* ERP Login Button (Primary Blue) */
+        .btn-primary {
+            background: #2563EB;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        /* Dawateislami Apps Button (Secondary Outline/Light) */
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #0F4C81;
+        }
+
+        .version {
+            margin-top: 30px;
+            color: #94a3b8;
+            font-size: 12px;
         }
     </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-    <img src="dblogo.png" alt="Logo">
+    <img src="images/dblogo.png" alt="Logo">
 
     <h1>Donation Box ERP</h1>
 
     <p>
+        Donation Box Department<br>
         Inventory & Warehouse Management System
     </p>
 
-    <a href="login.html" class="btn">
-        Login System
-    </a>
+    <div class="button-group">
+        <!-- Purana Login Button -->
+        <a href="login.html" class="btn btn-primary">
+            <i class="fa-solid fa-right-to-bracket"></i> Login System
+        </a>
+
+        <!-- Naya Dawateislami India App Button -->
+        <a href="https://apps.dawateislamiindia.org" target="_blank" class="btn btn-secondary">
+            <i class="fa-solid fa-cubes"></i> Dawateislami India Apps
+        </a>
+    </div>
 
     <div class="version">
         Version 1.0.0
