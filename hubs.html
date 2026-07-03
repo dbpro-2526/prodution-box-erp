@@ -543,8 +543,9 @@
             const selects = [document.getElementById('hubRegion'), document.getElementById('stateRegion'), document.getElementById('divisionRegion')];
             selects.forEach(s => {
                 s.innerHTML = '<option value="">-- Select Region --</option>';
-                snap.forEach(d => s.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
-            });
+            snap.forEach(d => {
+    stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`;
+});
         });
 
         // Dynamic State loading based on region
