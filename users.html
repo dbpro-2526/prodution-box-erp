@@ -438,7 +438,7 @@
                         </select>
                     </div>
 
-                    <!-- Hierarchy Assignment Scope Fields (with explicit bypass fallback mapping) -->
+                    <!-- Hierarchy Assignment Scope Fields -->
                     <div class="form-group">
                         <label>Assign Region</label>
                         <select id="userRegion" required>
@@ -602,7 +602,7 @@
             }
             
             localStorage.setItem('userSession', JSON.stringify(currentUserSession));
-            document.getElementById('adminName').innerText = currentUserSession.fullName || currentUserSession.name || "System User";
+            document.getElementById('adminName').innerText = currentUserSession.fullName || "System User";
             
             const currentRole = currentUserSession.role;
             const isMasterAdmin = (currentRole === "Super Admin" || currentRole === "Admin");
@@ -651,7 +651,6 @@
             if (role === "Super Admin" || role === "Admin") return dataSet;
 
             return dataSet.filter(user => {
-                // If checking user is admin, pass through
                 if (user.role === "Super Admin" || user.role === "Admin") return false;
 
                 if (role === "Regional Manager") {
@@ -672,8 +671,7 @@
                     return currentUserSession.warehouse === "ALL" || user.warehouse === currentUserSession.warehouse;
                 }
                 
-                // Absolute fallback tracking lock
-                return user.employeeCode === (currentUserSession.employeeCode || currentUserSession.empCode);
+                return user.employeeCode === currentUserSession.employeeCode;
             });
         }
 
@@ -693,10 +691,10 @@
             registryBody.innerHTML = "";
             filteredSet.forEach(user => {
                 const placeholderAvatar = `<div class="preview-avatar" style="width:36px; height:36px;"><i class="fa-solid fa-user"></i></div>`;
-                const avatarRender = user.avatarUrl ? `<img src="${user.avatarUrl}" alt="Avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : placeholderAvatar;
+                // Key Adjusted: login checks `photo` or `photoUrl`/`avatarUrl` but maps to `photo` field
+                const avatarRender = user.photo ? `<img src="${user.photo}" alt="Avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : placeholderAvatar;
                 const activeLabelClass = user.status === 'Active' ? 'status-active' : 'status-inactive';
 
-                // Scope metadata rendering string logic
                 let scopeTracks = [];
                 if(user.region && user.region !== "ALL") scopeTracks.push(user.region);
                 if(user.state && user.state !== "ALL") scopeTracks.push(user.state);
@@ -725,7 +723,8 @@
                     <td>
                         <div class="user-meta">
                             ${avatarRender}
-                            <strong>${user.name}</strong>
+                            <!-- Key Adjusted: login matches `fullName` field -->
+                            <strong>${user.fullName || user.name || 'N/A'}</strong>
                         </div>
                     </td>
                     <td>${user.mobile || 'N/A'}</td>
@@ -743,6 +742,7 @@
         document.getElementById('searchUserField').addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase().trim();
             const filteredSet = localUsersCache.filter(user => 
+                (user.fullName && user.fullName.toLowerCase().includes(query)) ||
                 (user.name && user.name.toLowerCase().includes(query)) ||
                 (user.employeeCode && user.employeeCode.toLowerCase().includes(query)) ||
                 (user.role && user.role.toLowerCase().includes(query)) ||
@@ -770,7 +770,7 @@
                     if (entry) {
                         document.getElementById('editUserId').value = entry.id;
                         document.getElementById('empCode').value = entry.employeeCode || "";
-                        document.getElementById('fullName').value = entry.name || "";
+                        document.getElementById('fullName').value = entry.fullName || entry.name || "";
                         document.getElementById('userMobile').value = entry.mobile || "";
                         document.getElementById('userRole').value = entry.role || "";
                         
@@ -783,9 +783,10 @@
                         document.getElementById('userPassword').removeAttribute('required');
                         document.getElementById('passInputContainer').style.display = 'none';
                         
-                        if(entry.avatarUrl) {
-                            document.getElementById('photoDataUrl').value = entry.avatarUrl;
-                            document.getElementById('avatarBox').innerHTML = `<img src="${entry.avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                        const currentPhoto = entry.photo || entry.avatarUrl;
+                        if(currentPhoto) {
+                            document.getElementById('photoDataUrl').value = currentPhoto;
+                            document.getElementById('avatarBox').innerHTML = `<img src="${currentPhoto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
                         }
 
                         document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-pen"></i> Modify Identity Scope: ${entry.employeeCode}`;
@@ -799,7 +800,7 @@
                 btn.onclick = async () => {
                     const targetId = btn.getAttribute('data-id');
                     const entry = localUsersCache.find(u => u.id === targetId);
-                    const promptPass = prompt(`Set new secure credentials password for ${entry.name}:`);
+                    const promptPass = prompt(`Set new secure credentials password for ${entry.fullName || entry.name}:`);
                     if (promptPass && promptPass.trim().length >= 4) {
                         await updateDoc(doc(db, "users", targetId), { password: promptPass.trim() });
                         alert("Password synchronized on registry server.");
@@ -824,9 +825,11 @@
             e.preventDefault();
             const editId = document.getElementById('editUserId').value;
             
+            // Payload perfectly mapped with login file fields
             const packetPayload = {
                 employeeCode: document.getElementById('empCode').value.trim(),
-                name: document.getElementById('fullName').value.trim(),
+                fullName: document.getElementById('fullName').value.trim(),
+                name: document.getElementById('fullName').value.trim(), // Backward compatibility safe-keeping
                 mobile: document.getElementById('userMobile').value.trim(),
                 role: document.getElementById('userRole').value,
                 status: document.getElementById('userStatus').value,
@@ -834,10 +837,13 @@
                 state: document.getElementById('userState').value,
                 division: document.getElementById('userDivision').value,
                 warehouse: document.getElementById('userWarehouse').value,
-                avatarUrl: document.getElementById('photoDataUrl').value || ""
+                photo: document.getElementById('photoDataUrl').value || "",
+                // Keeping empty placeholders to avoid undefined breaks on login fetch parsing
+                email: "", 
+                department: "",
+                designation: ""
             };
 
-            // Double unique enforcement check for safety during insertion mapping
             if(!editId) {
                 const codeDuplicate = localUsersCache.some(u => u.employeeCode.toLowerCase() === packetPayload.employeeCode.toLowerCase());
                 if(codeDuplicate) {
@@ -873,6 +879,7 @@
         document.getElementById('logoutBtn').onclick = () => {
             localStorage.removeItem('userSession');
             localStorage.removeItem('activeUser');
+            localStorage.removeItem('loginStatus');
             window.location.href = 'login.html';
         };
     </script>
