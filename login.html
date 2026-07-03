@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donation Box Department ERP | Login</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -17,27 +18,20 @@
         }
 
         body {
-            background: linear-gradient(135deg, #0F4C81, #2563EB, #38BDF8);
-            background-size: 300% 300%;
-            animation: bg 12s ease infinite;
+            background: linear-gradient(135deg, #f4f7fe 0%, #eef2f6 100%);
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        @keyframes bg {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
         .login-box {
             width: 430px;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 25px 60px rgba(0,0,0,.30);
-            padding: 35px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+            padding: 40px 35px;
+            border: 1px solid #e2e8f0;
         }
 
         .logo {
@@ -46,54 +40,58 @@
         }
 
         .logo img {
-            width: 90px;
-            height: 90px;
-            border-radius: 15px;
+            width: 85px;
+            height: 85px;
+            border-radius: 12px;
             object-fit: cover;
         }
 
         .title {
             text-align: center;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: #0F4C81;
         }
 
         .subtitle {
             text-align: center;
-            font-size: 14px;
+            font-size: 13.5px;
             margin-top: 6px;
-            margin-bottom: 25px;
-            color: #555;
+            margin-bottom: 30px;
+            color: #64748b;
+            line-height: 1.5;
         }
 
         .input-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .input-group label {
             display: block;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: #333;
+            color: #334155;
         }
 
         .input-group input {
             width: 100%;
             height: 48px;
-            border: 1px solid #ddd;
+            border: 1px solid #cbd5e1;
             border-radius: 10px;
             padding-left: 15px;
             padding-right: 45px;
-            font-size: 15px;
+            font-size: 14.5px;
             outline: none;
-            transition: .3s;
+            transition: all .3s ease;
+            color: #1e293b;
+            background: #f8fafc;
         }
 
         .input-group input:focus {
             border-color: #2563EB;
-            box-shadow: 0 0 8px rgba(37,99,235,.25);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
         }
 
         .password-box {
@@ -103,8 +101,15 @@
         .password-box i {
             position: absolute;
             right: 15px;
-            top: 16px;
+            top: 50%;
+            transform: translateY(-50%);
             cursor: pointer;
+            color: #64748b;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+        
+        .password-box i:hover {
             color: #2563EB;
         }
 
@@ -112,8 +117,26 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            font-size: 14px;
+            margin-bottom: 24px;
+            font-size: 13.5px;
+            color: #64748b;
+        }
+
+        .remember label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .remember a {
+            color: #2563EB;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .remember a:hover {
+            text-decoration: underline;
         }
 
         .login-btn {
@@ -122,22 +145,23 @@
             background: #2563EB;
             border: none;
             color: #fff;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 600;
             border-radius: 10px;
             cursor: pointer;
-            transition: .3s;
+            transition: background .2s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
 
         .login-btn:hover {
-            background: #0F4C81;
+            background: #1d4ed8;
         }
 
         .footer {
             text-align: center;
-            margin-top: 25px;
-            font-size: 13px;
-            color: #666;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #94a3b8;
         }
 
         .loading {
@@ -146,26 +170,29 @@
             margin-top: 15px;
             color: #2563EB;
             font-weight: 600;
+            font-size: 14px;
         }
 
         .error {
             display: none;
-            background: #ffe5e5;
-            color: #b30000;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fee2e2;
             padding: 12px;
             border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 14px;
+            margin-bottom: 20px;
+            font-size: 13.5px;
         }
 
         .success {
             display: none;
-            background: #d9ffe4;
-            color: #006b28;
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #dcfce7;
             padding: 12px;
             border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 14px;
+            margin-bottom: 20px;
+            font-size: 13.5px;
         }
     </style>
 </head>
@@ -211,7 +238,26 @@
     <div class="footer">Version 1.0.0</div>
 </div>
 
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
 <script>
+// Aapki provided Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
+    authDomain: "prodution-box-erp.firebaseapp.com",
+    projectId: "prodution-box-erp",
+    storageBucket: "prodution-box-erp.firebasestorage.app",
+    messagingSenderId: "426698063494",
+    appId: "1:426698063494:web:880dd323f24bd4121ddb07",
+    measurementId: "G-948852RZLB"
+};
+
+// Firebase Initialize
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
 const loginForm = document.getElementById("loginForm");
 const togglePassword = document.getElementById("togglePassword");
 const passwordInput = document.getElementById("password");
@@ -223,79 +269,92 @@ const success = document.getElementById("success");
 togglePassword.addEventListener("click", function () {
     const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
     passwordInput.setAttribute("type", type);
-    this.classList.toggle("fa-eye-slash");
+    
+    // Icon toggling
+    if (type === "password") {
+        this.classList.remove("fa-eye-slash");
+        this.classList.add("fa-eye");
+    } else {
+        this.classList.remove("fa-eye");
+        this.classList.add("fa-eye-slash");
+    }
 });
 
-// Form Submit Handling
-loginForm.addEventListener("submit", async function (e) {
+// Form Submit Functionality
+loginForm.addEventListener("submit", function (e) {
     e.preventDefault();
     
     error.style.display = "none";
     success.style.display = "none";
     loading.style.display = "block";
 
-    const empCode = document.getElementById("employeeCode").value;
-    const pass = passwordInput.value;
+    const empCode = document.getElementById("employeeCode").value.trim();
+    const pass = passwordInput.value.trim();
 
-    try {
-        // NOTE: Yahan aapko apna actual API fetch call lagana hoga.
-        // Yeh ek dummy userData object hai jo aapke data structure ke mutabiq kaam karega.
-        const userData = {
-            uid: "12345",
-            employeeCode: empCode,
-            fullName: "Test User",
-            mobile: "1234567890",
-            email: "user@example.com",
-            photo: "",
-            role: "Admin",
-            department: "IT",
-            designation: "Manager",
-            region: "Central",
-            state: "State Name",
-            division: "Div 1",
-            warehouse: "Main Warehouse",
-            status: "Active"
-        };
+    // Firebase Realtime Database se "users/EmployeeCode" node check karna
+    database.ref("users/" + empCode).once("value").then((snapshot) => {
+        if (snapshot.exists()) {
+            const userData = snapshot.val();
 
-        // Local Storage mein data save karna
-        localStorage.setItem("userSession", JSON.stringify({
-            uid: userData.uid || "",
-            employeeCode: userData.employeeCode || "",
-            fullName: userData.fullName || "",
-            mobile: userData.mobile || "",
-            email: userData.email || "",
-            photo: userData.photo || "",
-            role: userData.role || "",
-            department: userData.department || "",
-            designation: userData.designation || "",
-            region: userData.region || "",
-            state: userData.state || "",
-            division: userData.division || "",
-            warehouse: userData.warehouse || "",
-            status: userData.status || ""
-        }));
+            // Database ke password se match check karna
+            if (userData.password === pass) {
+                
+                if (userData.status === "Inactive") {
+                    loading.style.display = "none";
+                    error.style.display = "block";
+                    error.innerHTML = "Your account is inactive. Contact Admin.";
+                    return;
+                }
 
-        localStorage.setItem("userRole", userData.role);
-        localStorage.setItem("userName", userData.fullName);
-        localStorage.setItem("employeeCode", userData.employeeCode);
-        localStorage.setItem("loginStatus", "true");
+                // Poora data structure local storage mein save karna (Designation, Role, etc.)
+                localStorage.setItem("userSession", JSON.stringify({
+                    uid: userData.uid || "",
+                    employeeCode: empCode,
+                    fullName: userData.fullName || "",
+                    mobile: userData.mobile || "",
+                    email: userData.email || "",
+                    photo: userData.photo || "",
+                    role: userData.role || "",
+                    department: userData.department || "",
+                    designation: userData.designation || "",
+                    region: userData.region || "",
+                    state: userData.state || "",
+                    division: userData.division || "",
+                    warehouse: userData.warehouse || "",
+                    status: userData.status || ""
+                }));
 
-        success.style.display = "block";
-        success.innerHTML = "Login Successful! Redirecting...";
-        loading.style.display = "none";
+                localStorage.setItem("userRole", userData.role || "");
+                localStorage.setItem("userName", userData.fullName || "");
+                localStorage.setItem("employeeCode", empCode);
+                localStorage.setItem("loginStatus", "true");
 
-        setTimeout(() => {
-            window.location.href = "dashboard.html";
-        }, 1200);
+                success.style.display = "block";
+                success.innerHTML = "Login Successful! Redirecting...";
+                loading.style.display = "none";
 
-    } catch (err) {
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1200);
+
+            } else {
+                loading.style.display = "none";
+                error.style.display = "block";
+                error.innerHTML = "Incorrect Password! Please try again.";
+            }
+        } else {
+            loading.style.display = "none";
+            error.style.display = "block";
+            error.innerHTML = "Employee Code not found!";
+        }
+    }).catch((err) => {
         loading.style.display = "none";
         error.style.display = "block";
-        error.innerHTML = err.message;
-    }
+        error.innerHTML = "Database Error: " + err.message;
+    });
 });
 
-// Enter key press par form submit hona
+// Enter key control
 window.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
         loginForm.requestSubmit();
