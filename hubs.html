@@ -502,14 +502,55 @@
     <!-- Replace your old code with this full block -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, setDoc, getDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ... (Keep your existing firebaseConfig here)
+    // --- Firebase Setup (Ensure your config is here) ---
+    const firebaseConfig = { /* APKA CONFIG YAHAN RAKHEIN */ };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    // NEW: Variable to store all hubs for search
+    // --- Save Master Data Logic ---
+    document.getElementById('saveRegion').onclick = async () => {
+        const name = document.getElementById('regionName').value;
+        if(name) { await addDoc(collection(db, "regions"), { name }); alert("Region Added!"); document.getElementById('regionName').value = ""; }
+    };
+
+    document.getElementById('saveState').onclick = async () => {
+        const region = document.getElementById('stateRegion').value;
+        const name = document.getElementById('stateName').value;
+        if(region && name) { await addDoc(collection(db, "states"), { region, name }); alert("State Added!"); }
+    };
+
+    document.getElementById('saveDivision').onclick = async () => {
+        const region = document.getElementById('divisionRegion').value;
+        const state = document.getElementById('divisionState').value;
+        const name = document.getElementById('divisionName').value;
+        if(region && state && name) { await addDoc(collection(db, "divisions"), { region, state, name }); alert("Division Added!"); }
+    };
+
+    // --- Load Data into Dropdowns ---
+    function loadDropdowns() {
+        // Load Regions
+        onSnapshot(collection(db, "regions"), (snap) => {
+            const selects = [document.getElementById('hubRegion'), document.getElementById('stateRegion'), document.getElementById('divisionRegion')];
+            selects.forEach(s => {
+                s.innerHTML = '<option value="">-- Select Region --</option>';
+                snap.forEach(d => s.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+            });
+        });
+
+        // Dynamic State loading based on region
+        document.getElementById('divisionRegion').onchange = async (e) => {
+            const q = query(collection(db, "states"), where("region", "==", e.target.value));
+            const snap = await getDocs(q);
+            const stateSelect = document.getElementById('divisionState');
+            stateSelect.innerHTML = '<option value="">-- Select State --</option>';
+            snap.forEach(d => stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>');
+        };
+    }
+
+    // --- Existing Hubs Functionality ---
     let allHubs = [];
-
-    // UPDATED: Submit Handler to handle BOTH Add and Update
     document.getElementById('hubControlForm').onsubmit = async (e) => {
         e.preventDefault();
         const editId = document.getElementById('editHubId').value;
@@ -526,72 +567,17 @@
         };
 
         if (editId) {
-            // Update Existing
             await updateDoc(doc(db, "hubs", editId), data);
-            alert("Hub Updated Successfully!");
+            alert("Hub Updated!");
         } else {
-            // Create New
             await addDoc(collection(db, "hubs"), data);
-            alert("Hub Saved Successfully!");
+            alert("Hub Saved!");
         }
         document.getElementById('hubControlForm').reset();
-        document.getElementById('editHubId').value = "";
     };
 
-    // NEW: Edit Function
-    window.editHub = (id) => {
-        const hub = allHubs.find(h => h.id === id);
-        document.getElementById('editHubId').value = hub.id;
-        document.getElementById('hubCode').value = hub.code;
-        document.getElementById('hubName').value = hub.name;
-        document.getElementById('hubManager').value = hub.manager;
-        document.getElementById('hubRegion').value = hub.region;
-        document.getElementById('hubState').value = hub.state;
-        document.getElementById('hubDivision').value = hub.division;
-        document.getElementById('totalCapacity').value = hub.capacity;
-        document.getElementById('hubAddress').value = hub.address;
-        document.getElementById('hubStatus').value = hub.status;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    // NEW: Search Filter Logic
-    document.getElementById('searchHubField').onkeyup = function() {
-        const val = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#hubRegistryTableBody tr');
-        rows.forEach(row => {
-            row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
-        });
-    };
-
-    // UPDATED: Snapshot with Edit Button
-    function startHubsListener() {
-        onSnapshot(collection(db, "hubs"), (snapshot) => {
-            allHubs = []; // Store for edit lookup
-            const tbody = document.getElementById('hubRegistryTableBody');
-            tbody.innerHTML = "";
-            snapshot.forEach(docSnap => {
-                const h = docSnap.data();
-                allHubs.push({id: docSnap.id, ...h});
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${h.code}</td><td>${h.name}</td><td>${h.state}</td>
-                    <td>${h.division}</td><td>${h.manager}</td><td>${h.capacity}</td>
-                    <td><span class="status-badge ${h.status === 'Active' ? 'status-active' : 'status-inactive'}">${h.status}</span></td>
-                    <td>
-                        <button class="op-btn op-edit" onclick="editHub('${docSnap.id}')"><i class="fa-solid fa-edit"></i></button>
-                        <button class="op-btn op-delete" data-id="${docSnap.id}"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-            // Re-attach delete listeners
-            document.querySelectorAll('.op-delete').forEach(btn => {
-                btn.onclick = async () => {
-                    if(confirm("Delete this hub?")) await deleteDoc(doc(db, "hubs", btn.getAttribute('data-id')));
-                };
-            });
-        });
-    }
+    // Initialize
+    loadDropdowns();
 </script>
 </body>
 </html>
