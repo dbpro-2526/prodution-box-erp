@@ -1,927 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Donation Box Department ERP | Login</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
-}
-
-body{
-
-background:linear-gradient(135deg,#0F4C81,#2563EB,#38BDF8);
-background-size:300% 300%;
-animation:bg 12s ease infinite;
-
-height:100vh;
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-}
-
-@keyframes bg{
-
-0%{background-position:0% 50%;}
-
-50%{background-position:100% 50%;}
-
-100%{background-position:0% 50%;}
-
-}
-
-.login-box{
-
-width:430px;
-
-background:#fff;
-
-border-radius:18px;
-
-box-shadow:0 25px 60px rgba(0,0,0,.30);
-
-padding:35px;
-
-}
-
-.logo{
-
-text-align:center;
-
-margin-bottom:20px;
-
-}
-
-.logo img{
-
-width:90px;
-
-height:90px;
-
-border-radius:15px;
-
-object-fit:cover;
-
-}
-
-.title{
-
-text-align:center;
-
-font-size:28px;
-
-font-weight:700;
-
-color:#0F4C81;
-
-}
-
-.subtitle{
-
-text-align:center;
-
-font-size:14px;
-
-margin-top:6px;
-
-margin-bottom:25px;
-
-color:#555;
-
-}
-
-.input-group{
-
-margin-bottom:18px;
-
-}
-
-.input-group label{
-
-display:block;
-
-font-size:14px;
-
-font-weight:600;
-
-margin-bottom:8px;
-
-color:#333;
-
-}
-
-.input-group input{
-
-width:100%;
-
-height:48px;
-
-border:1px solid #ddd;
-
-border-radius:10px;
-
-padding-left:15px;
-
-padding-right:45px;
-
-font-size:15px;
-
-outline:none;
-
-transition:.3s;
-
-}
-
-.input-group input:focus{
-
-border-color:#2563EB;
-
-box-shadow:0 0 8px rgba(37,99,235,.25);
-
-}
-
-.password-box{
-
-position:relative;
-
-}
-
-.password-box i{
-
-position:absolute;
-
-right:15px;
-
-top:16px;
-
-cursor:pointer;
-
-color:#2563EB;
-
-}
-
-.remember{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-margin-bottom:20px;
-
-font-size:14px;
-
-}
-
-.login-btn{
-
-width:100%;
-
-height:48px;
-
-background:#2563EB;
-
-border:none;
-
-color:#fff;
-
-font-size:17px;
-
-font-weight:600;
-
-border-radius:10px;
-
-cursor:pointer;
-
-transition:.3s;
-
-}
-
-.login-btn:hover{
-
-background:#0F4C81;
-
-}
-
-.footer{
-
-text-align:center;
-
-margin-top:25px;
-
-font-size:13px;
-
-color:#666;
-
-}
-
-.loading{
-
-display:none;
-
-text-align:center;
-
-margin-top:15px;
-
-color:#2563EB;
-
-font-weight:600;
-
-}
-
-.error{
-
-display:none;
-
-background:#ffe5e5;
-
-color:#b30000;
-
-padding:12px;
-
-border-radius:8px;
-
-margin-bottom:15px;
-
-font-size:14px;
-
-}
-
-.success{
-
-display:none;
-
-background:#d9ffe4;
-
-color:#006b28;
-
-padding:12px;
-
-border-radius:8px;
-
-margin-bottom:15px;
-
-font-size:14px;
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Box Department ERP | Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0F4C81, #2563EB, #38BDF8);
+            background-size: 300% 300%;
+            animation: bg 12s ease infinite;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .login-box {
+            width: 430px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.30);
+            padding: 35px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            width: 90px;
+            height: 90px;
+            border-radius: 15px;
+            object-fit: cover;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #0F4C81;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 6px;
+            margin-bottom: 25px;
+            color: #555;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            height: 48px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding-left: 15px;
+            padding-right: 45px;
+            font-size: 15px;
+            outline: none;
+            transition: .3s;
+        }
+
+        .input-group input:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 8px rgba(37,99,235,.25);
+        }
+
+        .password-box {
+            position: relative;
+        }
+
+        .password-box i {
+            position: absolute;
+            right: 15px;
+            top: 16px;
+            cursor: pointer;
+            color: #2563EB;
+        }
+
+        .remember {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 48px;
+            background: #2563EB;
+            border: none;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .login-btn:hover {
+            background: #0F4C81;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+            color: #2563EB;
+            font-weight: 600;
+        }
+
+        .error {
+            display: none;
+            background: #ffe5e5;
+            color: #b30000;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .success {
+            display: none;
+            background: #d9ffe4;
+            color: #006b28;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="login-box">
+    <div class="logo">
+        <img src="images/dblogo.png" alt="Logo">
+    </div>
 
-<div class="logo">
+    <div class="title">Donation Box ERP</div>
+    <div class="subtitle">Donation Box Department<br>Inventory & Warehouse Management</div>
 
-<img src="images/dblogo.png">
+    <div id="error" class="error"></div>
+    <div id="success" class="success"></div>
 
+    <form id="loginForm">
+        <div class="input-group">
+            <label>Employee Code</label>
+            <input type="text" id="employeeCode" placeholder="Enter Employee Code" required>
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <div class="password-box">
+                <input type="password" id="password" placeholder="Enter Password" required>
+                <i class="fa-solid fa-eye" id="togglePassword"></i>
+            </div>
+        </div>
+
+        <div class="remember">
+            <label>
+                <input type="checkbox" id="remember"> Remember Me
+            </label>
+            <a href="#">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="login-btn">LOGIN</button>
+
+        <div class="loading" id="loading">Please Wait...</div>
+    </form>
+
+    <div class="footer">Version 1.0.0</div>
 </div>
 
-<div class="title">
-
-Donation Box ERP
-
-</div>
-
-<div class="subtitle">
-
-Donation Box Department<br>
-
-Inventory & Warehouse Management
-
-</div>
-
-<div id="error" class="error"></div>
-
-<div id="success" class="success"></div>
-
-<form id="loginForm">
-
-<div class="input-group">
-
-<label>
-
-Employee Code
-
-</label>
-
-<input
-
-type="text"
-
-id="employeeCode"
-
-placeholder="Enter Employee Code"
-
-required>
-
-</div>
-
-<div class="input-group">
-
-<label>
-
-Password
-
-</label>
-
-<div class="password-box">
-
-<input
-
-type="password"
-
-id="password"
-
-placeholder="Enter Password"
-
-required>
-
-<i
-
-class="fa-solid fa-eye"
-
-id="togglePassword">
-
-</i>
-
-</div>
-
-</div>
-
-<div class="remember">
-
-<label>
-
-<input type="checkbox" id="remember">
-
-Remember Me
-
-</label>
-
-<a href="#">
-
-Forgot Password?
-
-</a>
-
-</div>
-
-<button
-
-type="submit"
-
-class="login-btn">
-
-LOGIN
-
-</button>
-
-<div
-
-class="loading"
-
-id="loading">
-
-Please Wait...
-
-</div>
-
-</form>
-
-<div class="footer">
-
-Version 1.0.0
-
-</div>
-
-</div>
-
-    <!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Donation Box Department ERP | Login</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
-}
-
-body{
-
-background:linear-gradient(135deg,#0F4C81,#2563EB,#38BDF8);
-background-size:300% 300%;
-animation:bg 12s ease infinite;
-
-height:100vh;
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-}
-
-@keyframes bg{
-
-0%{background-position:0% 50%;}
-
-50%{background-position:100% 50%;}
-
-100%{background-position:0% 50%;}
-
-}
-
-.login-box{
-
-width:430px;
-
-background:#fff;
-
-border-radius:18px;
-
-box-shadow:0 25px 60px rgba(0,0,0,.30);
-
-padding:35px;
-
-}
-
-.logo{
-
-text-align:center;
-
-margin-bottom:20px;
-
-}
-
-.logo img{
-
-width:90px;
-
-height:90px;
-
-border-radius:15px;
-
-object-fit:cover;
-
-}
-
-.title{
-
-text-align:center;
-
-font-size:28px;
-
-font-weight:700;
-
-color:#0F4C81;
-
-}
-
-.subtitle{
-
-text-align:center;
-
-font-size:14px;
-
-margin-top:6px;
-
-margin-bottom:25px;
-
-color:#555;
-
-}
-
-.input-group{
-
-margin-bottom:18px;
-
-}
-
-.input-group label{
-
-display:block;
-
-font-size:14px;
-
-font-weight:600;
-
-margin-bottom:8px;
-
-color:#333;
-
-}
-
-.input-group input{
-
-width:100%;
-
-height:48px;
-
-border:1px solid #ddd;
-
-border-radius:10px;
-
-padding-left:15px;
-
-padding-right:45px;
-
-font-size:15px;
-
-outline:none;
-
-transition:.3s;
-
-}
-
-.input-group input:focus{
-
-border-color:#2563EB;
-
-box-shadow:0 0 8px rgba(37,99,235,.25);
-
-}
-
-.password-box{
-
-position:relative;
-
-}
-
-.password-box i{
-
-position:absolute;
-
-right:15px;
-
-top:16px;
-
-cursor:pointer;
-
-color:#2563EB;
-
-}
-
-.remember{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-margin-bottom:20px;
-
-font-size:14px;
-
-}
-
-.login-btn{
-
-width:100%;
-
-height:48px;
-
-background:#2563EB;
-
-border:none;
-
-color:#fff;
-
-font-size:17px;
-
-font-weight:600;
-
-border-radius:10px;
-
-cursor:pointer;
-
-transition:.3s;
-
-}
-
-.login-btn:hover{
-
-background:#0F4C81;
-
-}
-
-.footer{
-
-text-align:center;
-
-margin-top:25px;
-
-font-size:13px;
-
-color:#666;
-
-}
-
-.loading{
-
-display:none;
-
-text-align:center;
-
-margin-top:15px;
-
-color:#2563EB;
-
-font-weight:600;
-
-}
-
-.error{
-
-display:none;
-
-background:#ffe5e5;
-
-color:#b30000;
-
-padding:12px;
-
-border-radius:8px;
-
-margin-bottom:15px;
-
-font-size:14px;
-
-}
-
-.success{
-
-display:none;
-
-background:#d9ffe4;
-
-color:#006b28;
-
-padding:12px;
-
-border-radius:8px;
-
-margin-bottom:15px;
-
-font-size:14px;
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="login-box">
-
-<div class="logo">
-
-<img src="images/dblogo.png">
-
-</div>
-
-<div class="title">
-
-Donation Box ERP
-
-</div>
-
-<div class="subtitle">
-
-Donation Box Department<br>
-
-Inventory & Warehouse Management
-
-</div>
-
-<div id="error" class="error"></div>
-
-<div id="success" class="success"></div>
-
-<form id="loginForm">
-
-<div class="input-group">
-
-<label>
-
-Employee Code
-
-</label>
-
-<input
-
-type="text"
-
-id="employeeCode"
-
-placeholder="Enter Employee Code"
-
-required>
-
-</div>
-
-<div class="input-group">
-
-<label>
-
-Password
-
-</label>
-
-<div class="password-box">
-
-<input
-
-type="password"
-
-id="password"
-
-placeholder="Enter Password"
-
-required>
-
-<i
-
-class="fa-solid fa-eye"
-
-id="togglePassword">
-
-</i>
-
-</div>
-
-</div>
-
-<div class="remember">
-
-<label>
-
-<input type="checkbox" id="remember">
-
-Remember Me
-
-</label>
-
-<a href="#">
-
-Forgot Password?
-
-</a>
-
-</div>
-
-<button
-
-type="submit"
-
-class="login-btn">
-
-LOGIN
-
-</button>
-
-<div
-
-class="loading"
-
-id="loading">
-
-Please Wait...
-
-</div>
-
-</form>
-
-<div class="footer">
-
-Version 1.0.0
-
-</div>
-
-</div>
-localStorage.setItem("userSession", JSON.stringify({
-
-uid: userData.uid || "",
-
-employeeCode: userData.employeeCode || "",
-
-fullName: userData.fullName || "",
-
-mobile: userData.mobile || "",
-
-email: userData.email || "",
-
-photo: userData.photo || "",
-
-role: userData.role || "",
-
-department: userData.department || "",
-
-designation: userData.designation || "",
-
-region: userData.region || "",
-
-state: userData.state || "",
-
-division: userData.division || "",
-
-warehouse: userData.warehouse || "",
-
-status: userData.status || ""
-
-}));
-
-
-localStorage.setItem("userRole", userData.role);
-
-localStorage.setItem("userName", userData.fullName);
-
-localStorage.setItem("employeeCode", userData.employeeCode);
-
-localStorage.setItem("loginStatus","true");
-
-
-
-setTimeout(()=>{
-
-window.location.href="dashboard.html";
-
-},1200);
-
-}
-
-catch(err){
-
-loading.style.display="none";
-
-error.style.display="block";
-
-error.innerHTML=err.message;
-
-return;
-
-}
-
-
-
-loading.style.display="none";
-
-
-
+<script>
+const loginForm = document.getElementById("loginForm");
+const togglePassword = document.getElementById("togglePassword");
+const passwordInput = document.getElementById("password");
+const loading = document.getElementById("loading");
+const error = document.getElementById("error");
+const success = document.getElementById("success");
+
+// Password Show/Hide Feature
+togglePassword.addEventListener("click", function () {
+    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
+    this.classList.toggle("fa-eye-slash");
 });
 
+// Form Submit Handling
+loginForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    
+    error.style.display = "none";
+    success.style.display = "none";
+    loading.style.display = "block";
 
+    const empCode = document.getElementById("employeeCode").value;
+    const pass = passwordInput.value;
 
-window.addEventListener("keydown",(e)=>{
+    try {
+        // NOTE: Yahan aapko apna actual API fetch call lagana hoga.
+        // Yeh ek dummy userData object hai jo aapke data structure ke mutabiq kaam karega.
+        const userData = {
+            uid: "12345",
+            employeeCode: empCode,
+            fullName: "Test User",
+            mobile: "1234567890",
+            email: "user@example.com",
+            photo: "",
+            role: "Admin",
+            department: "IT",
+            designation: "Manager",
+            region: "Central",
+            state: "State Name",
+            division: "Div 1",
+            warehouse: "Main Warehouse",
+            status: "Active"
+        };
 
-if(e.key==="Enter"){
+        // Local Storage mein data save karna
+        localStorage.setItem("userSession", JSON.stringify({
+            uid: userData.uid || "",
+            employeeCode: userData.employeeCode || "",
+            fullName: userData.fullName || "",
+            mobile: userData.mobile || "",
+            email: userData.email || "",
+            photo: userData.photo || "",
+            role: userData.role || "",
+            department: userData.department || "",
+            designation: userData.designation || "",
+            region: userData.region || "",
+            state: userData.state || "",
+            division: userData.division || "",
+            warehouse: userData.warehouse || "",
+            status: userData.status || ""
+        }));
 
-loginForm.requestSubmit();
+        localStorage.setItem("userRole", userData.role);
+        localStorage.setItem("userName", userData.fullName);
+        localStorage.setItem("employeeCode", userData.employeeCode);
+        localStorage.setItem("loginStatus", "true");
 
-}
+        success.style.display = "block";
+        success.innerHTML = "Login Successful! Redirecting...";
+        loading.style.display = "none";
 
+        setTimeout(() => {
+            window.location.href = "dashboard.html";
+        }, 1200);
+
+    } catch (err) {
+        loading.style.display = "none";
+        error.style.display = "block";
+        error.innerHTML = err.message;
+    }
 });
 
-
-
+// Enter key press par form submit hona
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        loginForm.requestSubmit();
+    }
+});
 </script>
 
 </body>
-
 </html>
