@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Control - Donation Box ERP</title>
+    <title>Super Admin Dashboard - Donation Box ERP</title>
     
     <!-- Favicon & Fonts -->
     <link rel="icon" href="dblogo.png">
@@ -146,7 +146,53 @@
             border: 1px solid var(--border-color);
         }
 
-        /* --- User Management Layout --- */
+        /* --- Cards Container --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+        }
+
+        .stat-info h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .icon-blue { background: #e0f2fe; color: #0284c7; }
+        .icon-green { background: #dcfce7; color: #16a34a; }
+        .icon-purple { background: #f3e8ff; color: #9333ea; }
+        .icon-amber { background: #fef3c7; color: #d97706; }
+
+        /* --- User Management Grid --- */
         .manager-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -171,7 +217,7 @@
             gap: 10px;
         }
 
-        /* --- Forms Setup --- */
+        /* --- Form Setup --- */
         .user-form {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -240,7 +286,6 @@
             object-fit: cover;
         }
 
-        /* --- Buttons Styling --- */
         .action-bar {
             display: flex;
             gap: 12px;
@@ -347,8 +392,8 @@
             <h2>Donation Box</h2>
         </div>
         <div class="sidebar-menu">
-            <a href="#" class="menu-item"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-            <a href="#" class="menu-item active"><i class="fa-solid fa-users"></i> All Users Setup</a>
+            <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-users"></i> All Users Setup</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> Pending Approvals</a>
@@ -366,8 +411,8 @@
         <!-- Header Section -->
         <div class="header-top">
             <div>
-                <h1 style="font-size: 24px; font-weight: 700;">All Users Setup</h1>
-                <p style="color: var(--text-muted); font-size: 14px;">Manage administrative staff, access keys, and system levels.</p>
+                <h1 style="font-size: 24px; font-weight: 700;">Super Admin Control Hub</h1>
+                <p style="color: var(--text-muted); font-size: 14px;">Welcome back to management dashboard.</p>
             </div>
             <div class="user-profile">
                 <i class="fa-solid fa-circle-user" style="font-size: 20px; color: var(--primary-color);"></i>
@@ -375,16 +420,47 @@
             </div>
         </div>
 
+        <!-- Counters Grid Area -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="countUsers">0</h3>
+                    <p>Total Registered Users</p>
+                </div>
+                <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="countHubs">0</h3>
+                    <p>Active Warehouses/Hubs</p>
+                </div>
+                <div class="stat-icon icon-green"><i class="fa-solid fa-warehouse"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="countItems">0</h3>
+                    <p>Total Inventory Items</p>
+                </div>
+                <div class="stat-icon icon-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="countPending">0</h3>
+                    <p>Pending Box Approvals</p>
+                </div>
+                <div class="stat-icon icon-amber"><i class="fa-solid fa-clock"></i></div>
+            </div>
+        </div>
+
         <div class="manager-grid">
             
-            <!-- Section 1: Add/Edit User Management Form -->
+            <!-- User Control Form Section -->
             <div class="dashboard-section">
                 <div class="section-title" id="formStateHeader">
                     <i class="fa-solid fa-user-plus"></i> Add New System User
                 </div>
                 
                 <form id="userControlForm" class="user-form">
-                    <!-- Hidden reference parameter for editing tracks -->
                     <input type="hidden" id="editUserId">
 
                     <div class="form-group">
@@ -404,13 +480,13 @@
 
                     <div class="form-group" id="passInputContainer">
                         <label>System Password</label>
-                        <input type="password" id="userPassword" placeholder="Set default login secure key" required>
+                        <input type="password" id="userPassword" placeholder="Set default secure password" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Role / Scope Selection</label>
+                        <label>Role Selection</label>
                         <select id="userRole" required>
-                            <option value="">-- Choose Assigned Access Layer --</option>
+                            <option value="">-- Choose Assigned Role --</option>
                             <option value="Super Admin">Super Admin</option>
                             <option value="Admin">Admin</option>
                             <option value="Regional Manager">Regional Manager</option>
@@ -424,10 +500,10 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Account Default Status</label>
+                        <label>Account Status</label>
                         <select id="userStatus">
-                            <option value="Active">Active / Operational</option>
-                            <option value="Inactive">Inactive / Locked</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
                         </select>
                     </div>
 
@@ -453,14 +529,13 @@
                 </form>
             </div>
 
-            <!-- Section 2: Active User Base Registry List -->
+            <!-- Registry Registry Table Section -->
             <div class="dashboard-section">
                 <div class="controls-row">
                     <div class="section-title" style="margin-bottom:0;">
                         <i class="fa-solid fa-address-book"></i> Active Registered Staff List
                     </div>
                     
-                    <!-- Search Field Component -->
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <input type="text" id="searchUserField" placeholder="Search by name, code, or role...">
@@ -480,7 +555,6 @@
                             </tr>
                         </thead>
                         <tbody id="userRegistryTableBody">
-                            <!-- Dynamic content injection module hook -->
                             <tr>
                                 <td colspan="6" style="text-align:center; color:var(--text-muted); padding:30px;">
                                     <i class="fa-solid fa-spinner fa-spin"></i> Synchronization with database ongoing...
@@ -494,7 +568,7 @@
         </div>
     </div>
 
-    <!-- Firebase System Module Operations Layer Logic -->
+    <!-- Firebase SDK Operations Layer -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -513,20 +587,20 @@
 
         let localUsersCache = [];
 
-        // Dynamic ID Auto-Generator Realization
+        // Emp Code Auto-Generator Logic
         function triggerEmpCodeGeneration() {
             const patternCode = "DBE-" + Math.floor(10000 + Math.random() * 90000);
             document.getElementById('empCode').value = patternCode;
         }
 
-        // Photo Upload Conversion Utility Base64 Line
+        // Photo Upload Base64 Conversion
         document.getElementById('photoUpload').addEventListener('change', function(e) {
             const targetFile = e.target.files[0];
             if (targetFile) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     document.getElementById('photoDataUrl').value = event.target.result;
-                    document.getElementById('avatarBox').innerHTML = `<img src="${event.target.result}" class="preview-avatar" style="width:100%; height:100%;">`;
+                    document.getElementById('avatarBox').innerHTML = `<img src="${event.target.result}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
                 };
                 reader.readAsDataURL(targetFile);
             }
@@ -546,32 +620,44 @@
             syncUsersCollectionEngine();
         });
 
-        // Core Collection Engine Pull Sync
+        // Core Engine Pull Sync & Counters Loading
         async function syncUsersCollectionEngine() {
             try {
+                // Fetch snapshots for counters
+                const hubsSnap = await getDocs(collection(db, "hubs"));
+                const itemsSnap = await getDocs(collection(db, "inventory"));
+                const pendingSnap = await getDocs(collection(db, "approvals"));
+                
+                document.getElementById('countHubs').innerText = hubsSnap.size || 0;
+                document.getElementById('countItems').innerText = itemsSnap.size || 0;
+                document.getElementById('countPending').innerText = pendingSnap.size || 0;
+
+                // Fetch snap for users data table
                 const snap = await getDocs(collection(db, "users"));
                 localUsersCache = [];
                 snap.forEach(docItem => {
                     localUsersCache.push({ id: docItem.id, ...docItem.data() });
                 });
+                
+                document.getElementById('countUsers').innerText = localUsersCache.length || 0;
                 renderUserInterfaceRegistry(localUsersCache);
             } catch (err) {
-                console.error("Error reading users mapping table", err);
+                console.error("Database sync error: ", err);
             }
         }
 
-        // Render Table Functionality
+        // Render Table Interface
         function renderUserInterfaceRegistry(dataSet) {
             const registryBody = document.getElementById('userRegistryTableBody');
             if (dataSet.length === 0) {
-                registryBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No records discovered matching matrix definitions.</td></tr>`;
+                registryBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No records discovered matching database logs.</td></tr>`;
                 return;
             }
 
             registryBody.innerHTML = "";
             dataSet.forEach(user => {
                 const placeholderAvatar = `<div class="preview-avatar" style="width:36px; height:36px;"><i class="fa-solid fa-user"></i></div>`;
-                const avatarRender = user.avatarUrl ? `<img src="${user.avatarUrl}" alt="Avatar">` : placeholderAvatar;
+                const avatarRender = user.avatarUrl ? `<img src="${user.avatarUrl}" alt="Avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : placeholderAvatar;
                 const activeLabelClass = user.status === 'Active' ? 'status-active' : 'status-inactive';
 
                 const tableRow = document.createElement('tr');
@@ -604,7 +690,7 @@
             bindInteractiveFunctionalTriggers();
         }
 
-        // Search Field Implementation
+        // Live Real-time Engine Search Feature
         document.getElementById('searchUserField').addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase().trim();
             const filteredSet = localUsersCache.filter(user => 
@@ -616,9 +702,9 @@
             renderUserInterfaceRegistry(filteredSet);
         });
 
-        // Trigger Binding Dynamic Interoperability Components
+        // Binding Triggers (Edit, Delete, Reset, Status Toggle)
         function bindInteractiveFunctionalTriggers() {
-            // Status Toggle Operations
+            // Status Toggle Controller
             document.querySelectorAll('.status-toggle').forEach(btn => {
                 btn.onclick = async (e) => {
                     const targetId = btn.getAttribute('data-id');
@@ -628,7 +714,7 @@
                 };
             });
 
-            // Edit Action Matrix Configuration Route
+            // Edit Action Router
             document.querySelectorAll('.op-edit').forEach(btn => {
                 btn.onclick = (e) => {
                     const targetId = btn.getAttribute('data-id');
@@ -641,13 +727,12 @@
                         document.getElementById('userRole').value = entry.role || "";
                         document.getElementById('userStatus').value = entry.status || "Active";
                         
-                        // Password setup control handling for modifications
                         document.getElementById('userPassword').removeAttribute('required');
                         document.getElementById('passInputContainer').style.display = 'none';
                         
                         if(entry.avatarUrl) {
                             document.getElementById('photoDataUrl').value = entry.avatarUrl;
-                            document.getElementById('avatarBox').innerHTML = `<img src="${entry.avatarUrl}" class="preview-avatar" style="width:100%; height:100%;">`;
+                            document.getElementById('avatarBox').innerHTML = `<img src="${entry.avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
                         }
 
                         document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-pen"></i> Edit User: ${entry.employeeCode}`;
@@ -656,26 +741,26 @@
                 };
             });
 
-            // Password Reset Functionality Module Action
+            // Password Reset Module Action
             document.querySelectorAll('.op-reset').forEach(btn => {
                 btn.onclick = async (e) => {
                     const targetId = btn.getAttribute('data-id');
                     const entry = localUsersCache.find(u => u.id === targetId);
-                    const promptPass = prompt(`Set new secure credentials password key for ${entry.name}:`);
+                    const promptPass = prompt(`Set new dynamic password for ${entry.name}:`);
                     if (promptPass && promptPass.trim().length >= 4) {
                         await updateDoc(doc(db, "users", targetId), { password: promptPass.trim() });
-                        alert("Password updated successfully for account security verification layers.");
+                        alert("Password configuration synchronized successfully.");
                     } else if (promptPass) {
-                        alert("Validation error: Password metric must match minimum 4 digits structure constraints.");
+                        alert("Validation error: Password must be minimum 4 characters.");
                     }
                 };
             });
 
-            // Structural Record Eraser Route
+            // Delete Record Route
             document.querySelectorAll('.op-delete').forEach(btn => {
                 btn.onclick = async (e) => {
                     const targetId = btn.getAttribute('data-id');
-                    if (confirm("Are you absolutely sure you want to permanently erase this user account from system logs database registers?")) {
+                    if (confirm("Are you sure you want to permanently erase this user account?")) {
                         await deleteDoc(doc(db, "users", targetId));
                         syncUsersCollectionEngine();
                     }
@@ -683,7 +768,7 @@
             });
         }
 
-        // Form Submit Handler Interface Router (Unified Add / Edit)
+        // Unified Add / Edit Form Submit Processor
         document.getElementById('userControlForm').onsubmit = async (e) => {
             e.preventDefault();
             const editId = document.getElementById('editUserId').value;
@@ -698,21 +783,21 @@
             };
 
             if (!editId) {
-                // Add mode execution path
+                // Add Mode Path
                 packetPayload.password = document.getElementById('userPassword').value;
                 await addDoc(collection(db, "users"), packetPayload);
                 alert("New user added successfully.");
             } else {
-                // Update configuration structural edits
+                // Update Mode Path
                 await updateDoc(doc(db, "users", editId), packetPayload);
-                alert("Identity mapping record verified and synchronized successfully.");
+                alert("User record verified and synchronized successfully.");
             }
 
             triggerClearFormInterfaceAction();
             syncUsersCollectionEngine();
         };
 
-        // UI View State Reset Cleaner
+        // Form View States Reset Cleaner
         function triggerClearFormInterfaceAction() {
             document.getElementById('userControlForm').reset();
             document.getElementById('editUserId').value = "";
