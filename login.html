@@ -373,7 +373,7 @@
 
                 // Send welcome notification
                 try {
-                    await sendWelcomeEmail(email, userData.fullName || 'Staff');
+                 await sendWelcomeEmail(userData.email, userData.fullName || 'Staff');
                 } catch(e) {
                     console.log("Email notifications fallback triggered.");
                 }
@@ -397,7 +397,7 @@
         // Pre-fill remembered email
         window.addEventListener('DOMContentLoaded', () => {
             const rememberedCode = localStorage.getItem('rememberCode');
-            if (rememberedEmail) {
+          if (rememberedCode) {
                 document.getElementById('loginCode').value = rememberedCode;
                 document.getElementById('rememberMe').checked = true;
             }
