@@ -393,16 +393,17 @@
 
         // Security Route Validation Guard Rule
         window.addEventListener('DOMContentLoaded', () => {
-            const activeUser = JSON.parse(localStorage.getItem('activeUser'));
-            
-            // Validation: Agar login state khali h ya role "Super Admin" nahi h, to access band
-            if (!activeUser || activeUser.role !== 'Super Admin') {
-                alert("Unauthorized Entry! Pehle System Me Login Karein.");
-                window.location.href = 'login.html'; // Login page par reverse redirect
-            } else {
-                document.getElementById('adminName').innerText = activeUser.name || "Super Admin";
-                fetchLiveDashboardStats();
-            }
+           const activeUser = JSON.parse(localStorage.getItem('userSession'));
+
+                  if (!activeUser || activeUser.role !== "Super Admin") {
+                  alert("Unauthorized Entry! Super Admin Access Required.");
+                  window.location.href = "login.html";
+                  } else {
+                  document.getElementById("adminName").innerText =
+               activeUser.fullName || "Super Admin";
+
+             fetchLiveDashboardStats();
+             }
         });
 
         // Real-time Counters Setup
@@ -424,7 +425,11 @@
 
         // Logout Session Process
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('activeUser'); // Session end
+           localStorage.removeItem("userSession");
+           localStorage.removeItem("userRole");
+           localStorage.removeItem("userName");
+           localStorage.removeItem("employeeCode");
+           localStorage.removeItem("loginStatus"); // Session end
             window.location.href = 'login.html'; // Redirect
         });
     </script>
