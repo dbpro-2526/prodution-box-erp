@@ -407,9 +407,9 @@
     </div>
 
     <!-- Firebase System -->
-    <script type="module">
+   <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc, getDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
@@ -423,66 +423,94 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let localHubsCache = [];
         let dropdownMetadata = { regions: [], states: [], divisions: [] };
 
-        // 1. Session Protection Fix
         window.addEventListener('DOMContentLoaded', async () => {
             const session = localStorage.getItem('userSession') || localStorage.getItem('activeUser');
-            if (!session) {
-                window.location.href = 'login.html';
-                return;
-            }
+            if (!session) { window.location.href = 'login.html'; return; }
             
-            const userData = JSON.parse(session);
-            document.getElementById('adminName').innerText = userData.fullName || "Admin";
+            document.getElementById('adminName').innerText = JSON.parse(session).fullName || "Admin";
             
             await loadDropdownMetaDataEngine();
-            syncHubsCollectionEngine();
+            attachListeners();
+            startHubsListener();
         });
 
-        // 2. Robust Metadata Loader
+        // 1. Metadata Management (Popups)
         async function loadDropdownMetaDataEngine() {
-            try {
-                const settingsRef = doc(db, "settings", "hubOptions");
-                const settingsSnap = await getDoc(settingsRef);
-                
-                if (settingsSnap.exists()) {
-                    dropdownMetadata = settingsSnap.data();
-                } else {
-                    // Create default if missing
-                    dropdownMetadata = {
-                        regions: ["North", "South", "East", "West"],
-                        states: ["Gujarat", "Maharashtra", "Delhi"],
-                        divisions: ["Division 1", "Division 2"]
-                    };
-                    await setDoc(settingsRef, dropdownMetadata);
-                }
+            const settingsRef = doc(db, "settings", "hubOptions");
+            const snap = await getDoc(settingsRef);
+            if (snap.exists()) {
+                dropdownMetadata = snap.data();
+            } else {
+                dropdownMetadata = { regions: ["North", "South"], states: ["Gujarat"], divisions: ["Div 1"] };
+                await setDoc(settingsRef, dropdownMetadata);
+            }
+            populateDropdownUI();
+        }
+
+        async function promptAndSaveMeta(field, label) {
+            const newValue = prompt(`Enter new ${label}:`);
+            if (newValue && newValue.trim() !== "") {
+                dropdownMetadata[field].push(newValue.trim());
+                await setDoc(doc(db, "settings", "hubOptions"), dropdownMetadata);
                 populateDropdownUI();
-            } catch(e) { 
-                console.error("Metadata load error", e); 
-                alert("Database connection error. Check your internet.");
             }
         }
 
-        // ... (Baaki functions wahi rahenge jo maine pehle diye the: populateDropdownUI, promptAndSaveMeta, syncHubsCollectionEngine, etc.)
-        
-        // --- Copy paste these remaining functions from the previous code provided ---
         function populateDropdownUI() {
             renderOptions('hubRegion', dropdownMetadata.regions, "-- Select Region --");
             renderOptions('hubState', dropdownMetadata.states, "-- Select State --");
             renderOptions('hubDivision', dropdownMetadata.divisions, "-- Select Division --");
         }
 
-        function renderOptions(elementId, arrayData, placeholderText) {
-            const selectEl = document.getElementById(elementId);
-            selectEl.innerHTML = `<option value="">${placeholderText}</option>`;
-            arrayData.forEach(item => {
-                selectEl.innerHTML += `<option value="${item}">${item}</option>`;
+        function renderOptions(id, data, placeholder) {
+            const el = document.getElementById(id);
+            el.innerHTML = `<option value="">${placeholder}</option>`;
+            data.forEach(item => el.innerHTML += `<option value="${item}">${item}</option>`);
+        }
+
+        // 2. Button Listeners
+        function attachListeners() {
+            document.getElementById('addNewRegionBtn').onclick = () => promptAndSaveMeta('regions', 'Region');
+            document.getElementById('addNewStateBtn').onclick = () => promptAndSaveMeta('states', 'State');
+            document.getElementById('addNewDivisionBtn').onclick = () => promptAndSaveMeta('divisions', 'Division');
+            
+            document.getElementById('hubControlForm').onsubmit = async (e) => {
+                e.preventDefault();
+                const data = {
+                    code: document.getElementById('hubCode').value,
+                    name: document.getElementById('hubName').value,
+                    manager: document.getElementById('hubManager').value,
+                    region: document.getElementById('hubRegion').value,
+                    state: document.getElementById('hubState').value,
+                    division: document.getElementById('hubDivision').value,
+                    capacity: document.getElementById('totalCapacity').value,
+                    address: document.getElementById('hubAddress').value,
+                    status: document.getElementById('hubStatus').value
+                };
+                await addDoc(collection(db, "hubs"), data);
+                alert("Hub Saved Successfully!");
+                document.getElementById('hubControlForm').reset();
+            };
+        }
+
+        // 3. Real-time Table Updates
+        function startHubsListener() {
+            onSnapshot(collection(db, "hubs"), (snapshot) => {
+                const tbody = document.getElementById('hubRegistryTableBody');
+                tbody.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const h = doc.data();
+                    tbody.innerHTML += `<tr>
+                        <td>${h.code}</td><td>${h.name}</td><td>${h.state}</td>
+                        <td>${h.division}</td><td>${h.manager}</td><td>${h.capacity}</td>
+                        <td><span class="status-badge ${h.status === 'Active' ? 'status-active' : 'status-inactive'}">${h.status}</span></td>
+                        <td><button class="op-btn op-delete" onclick="deleteHub('${doc.id}')"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>`;
+                });
             });
         }
-        
-        // ... (yahan se baki sabhi functions add kar lein)
     </script>
 </body>
 </html>
