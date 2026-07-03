@@ -169,8 +169,6 @@
             gap: 6px;
         }
 
-      
-
         .form-group.full-width { grid-column: 1 / -1; }
 
         label { font-size: 13px; font-weight: 600; color: var(--text-dark); }
@@ -182,6 +180,7 @@
             font-size: 14px;
             outline: none;
             background: #f8fafc;
+            width: 100%;
         }
         input:focus, select:focus { border-color: var(--accent-color); background: #fff; }
 
@@ -257,7 +256,7 @@
             </div>
             <div class="user-profile">
                 <i class="fa-solid fa-circle-user" style="font-size: 20px; color: var(--primary-color);"></i>
-                <span id="adminName" style="font-weight: 600; font-size: 14px;">Loading...</span>
+                <span id="adminName" style="font-weight: 600; font-size: 14px;">Admin Panel</span>
             </div>
         </div>
 
@@ -290,11 +289,9 @@
                     <div class="form-group">
                         <label>Region Allocation</label>
                         <div class="dynamic-select-container">
-    <select id="hubRegion" required>
-        <option value="">-- Select Region --</option>
-    </select>
-</div>
-                           
+                            <select id="hubRegion" required>
+                                <option value="">-- Select Region --</option>
+                            </select>
                         </div>
                     </div>
 
@@ -302,22 +299,20 @@
                     <div class="form-group">
                         <label>State Location</label>
                         <div class="dynamic-select-container">
-    <select id="hubState" required>
-        <option value="">-- Select State --</option>
-    </select>
-</div>
-                        
+                            <select id="hubState" required>
+                                <option value="">-- Select State --</option>
+                            </select>
                         </div>
                     </div>
 
                     <!-- Dynamic Division Field -->
                     <div class="form-group">
                         <label>Division</label>
-                       <div class="dynamic-select-container">
-    <select id="hubDivision" required>
-        <option value="">-- Select Division --</option>
-    </select>
-</div>
+                        <div class="dynamic-select-container">
+                            <select id="hubDivision" required>
+                                <option value="">-- Select Division --</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -345,120 +340,52 @@
                         <button type="button" class="btn-action btn-clear" id="resetFormBtn">Clear Fields</button>
                     </div>
                 </form>
-        <!-- ================= MASTER DATA ================= -->
-
-<div class="dashboard-section" style="margin-top:30px;">
-
-    <div class="section-title">
-        <i class="fa-solid fa-database"></i>
-        Master Data
-    </div>
-
-    <div class="hub-form">
-
-        <!-- REGION -->
-
-        <div class="form-group">
-
-            <label>Region Name</label>
-
-            <input
-                type="text"
-                id="regionName"
-                placeholder="Enter Region Name">
-
-            <button
-                type="button"
-                class="btn-action btn-save"
-                id="saveRegion"
-                style="margin-top:10px;">
-
-                <i class="fa-solid fa-plus"></i>
-
-                Add Region
-
-            </button>
-
-        </div>
-
-        <!-- STATE -->
-
-        <div class="form-group">
-
-            <label>Select Region</label>
-
-            <select id="stateRegion">
-
-                <option value="">Select Region</option>
-
-            </select>
-
-            <input
-                type="text"
-                id="stateName"
-                placeholder="Enter State Name"
-                style="margin-top:10px;">
-
-            <button
-                type="button"
-                class="btn-action btn-save"
-                id="saveState"
-                style="margin-top:10px;">
-
-                <i class="fa-solid fa-plus"></i>
-
-                Add State
-
-            </button>
-
-        </div>
-
-        <!-- DIVISION -->
-
-        <div class="form-group">
-
-            <label>Select Region</label>
-
-            <select id="divisionRegion">
-
-                <option value="">Select Region</option>
-
-            </select>
-
-            <select
-                id="divisionState"
-                style="margin-top:10px;">
-
-                <option value="">Select State</option>
-
-            </select>
-
-            <input
-                type="text"
-                id="divisionName"
-                placeholder="Enter Division Name"
-                style="margin-top:10px;">
-
-            <button
-                type="button"
-                class="btn-action btn-save"
-                id="saveDivision"
-                style="margin-top:10px;">
-
-                <i class="fa-solid fa-plus"></i>
-
-                Add Division
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- ================= END MASTER DATA ================= -->
             </div>
+
+            <!-- ================= MASTER DATA ================= -->
+            <div class="dashboard-section">
+                <div class="section-title">
+                    <i class="fa-solid fa-database"></i> Master Data Setup
+                </div>
+                <div class="hub-form">
+                    <!-- REGION -->
+                    <div class="form-group">
+                        <label>Region Name</label>
+                        <input type="text" id="regionName" placeholder="Enter Region Name">
+                        <button type="button" class="btn-action btn-save" id="saveRegion" style="margin-top:10px;">
+                            <i class="fa-solid fa-plus"></i> Add Region
+                        </button>
+                    </div>
+
+                    <!-- STATE -->
+                    <div class="form-group">
+                        <label>Select Region</label>
+                        <select id="stateRegion">
+                            <option value="">Select Region</option>
+                        </select>
+                        <input type="text" id="stateName" placeholder="Enter State Name" style="margin-top:10px;">
+                        <button type="button" class="btn-action btn-save" id="saveState" style="margin-top:10px;">
+                            <i class="fa-solid fa-plus"></i> Add State
+                        </button>
+                    </div>
+
+                    <!-- DIVISION -->
+                    <div class="form-group">
+                        <label>Select Region</label>
+                        <select id="divisionRegion">
+                            <option value="">Select Region</option>
+                        </select>
+                        <select id="divisionState" style="margin-top:10px;">
+                            <option value="">Select State</option>
+                        </select>
+                        <input type="text" id="divisionName" placeholder="Enter Division Name" style="margin-top:10px;">
+                        <button type="button" class="btn-action btn-save" id="saveDivision" style="margin-top:10px;">
+                            <i class="fa-solid fa-plus"></i> Add Division
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- ================= END MASTER DATA ================= -->
 
             <!-- Registry Table -->
             <div class="dashboard-section">
@@ -499,67 +426,109 @@
         </div>
     </div>
 
-    <!-- Replace your old code with this full block -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // --- Firebase Setup (Ensure your config is here) ---
-      const firebaseConfig = {
-            apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
-            authDomain: "prodution-box-erp.firebaseapp.com",
-            projectId: "prodution-box-erp",
-            storageBucket: "prodution-box-erp.firebasestorage.app",
-            messagingSenderId: "426698063494",
-            appId: "1:426698063494:web:880dd323f24bd4121ddb07",
-            measurementId: "G-948852RZLB"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
+        authDomain: "prodution-box-erp.firebaseapp.com",
+        projectId: "prodution-box-erp",
+        storageBucket: "prodution-box-erp.firebasestorage.app",
+        messagingSenderId: "426698063494",
+        appId: "1:426698063494:web:880dd323f24bd4121ddb07",
+        measurementId: "G-948852RZLB"
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    let allHubs = [];
+
     // --- Save Master Data Logic ---
     document.getElementById('saveRegion').onclick = async () => {
-        const name = document.getElementById('regionName').value;
-        if(name) { await addDoc(collection(db, "regions"), { name }); alert("Region Added!"); document.getElementById('regionName').value = ""; }
+        const name = document.getElementById('regionName').value.trim();
+        if(name) { 
+            await addDoc(collection(db, "regions"), { name }); 
+            alert("Region Added Successfully!"); 
+            document.getElementById('regionName').value = ""; 
+        } else { alert("Please enter a Region Name"); }
     };
 
     document.getElementById('saveState').onclick = async () => {
         const region = document.getElementById('stateRegion').value;
-        const name = document.getElementById('stateName').value;
-        if(region && name) { await addDoc(collection(db, "states"), { region, name }); alert("State Added!"); }
+        const name = document.getElementById('stateName').value.trim();
+        if(region && name) { 
+            await addDoc(collection(db, "states"), { region, name }); 
+            alert("State Added Successfully!"); 
+            document.getElementById('stateName').value = "";
+        } else { alert("Select Region and enter State Name"); }
     };
 
     document.getElementById('saveDivision').onclick = async () => {
         const region = document.getElementById('divisionRegion').value;
         const state = document.getElementById('divisionState').value;
-        const name = document.getElementById('divisionName').value;
-        if(region && state && name) { await addDoc(collection(db, "divisions"), { region, state, name }); alert("Division Added!"); }
+        const name = document.getElementById('divisionName').value.trim();
+        if(region && state && name) { 
+            await addDoc(collection(db, "divisions"), { region, state, name }); 
+            alert("Division Added Successfully!"); 
+            document.getElementById('divisionName').value = "";
+        } else { alert("Please fill all Division master fields"); }
     };
 
-    // --- Load Data into Dropdowns ---
+    // --- Load Data into Dropdowns & Cascading Select Logic ---
     function loadDropdowns() {
-        // Load Regions
+        // Load Regions Live
         onSnapshot(collection(db, "regions"), (snap) => {
-            const selects = [document.getElementById('hubRegion'), document.getElementById('stateRegion'), document.getElementById('divisionRegion')];
+            const selects = [
+                document.getElementById('hubRegion'), 
+                document.getElementById('stateRegion'), 
+                document.getElementById('divisionRegion')
+            ];
             selects.forEach(s => {
-                s.innerHTML = '<option value="">-- Select Region --</option>';
-            snap.forEach(d => {
-    stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`;
-});
+                if(s) {
+                    s.innerHTML = '<option value="">-- Select Region --</option>';
+                    snap.forEach(d => s.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+                }
+            });
         });
 
-        // Dynamic State loading based on region
+        // Setup Form - Cascade Region to State
+        document.getElementById('hubRegion').onchange = async (e) => {
+            const regionVal = e.target.value;
+            const stateSelect = document.getElementById('hubState');
+            stateSelect.innerHTML = '<option value="">-- Loading States --</option>';
+            
+            const q = query(collection(db, "states"), where("region", "==", regionVal));
+            const snap = await getDocs(q);
+            stateSelect.innerHTML = '<option value="">-- Select State --</option>';
+            snap.forEach(d => stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+            document.getElementById('hubDivision').innerHTML = '<option value="">-- Select Division --</option>';
+        };
+
+        // Setup Form - Cascade State to Division
+        document.getElementById('hubState').onchange = async (e) => {
+            const stateVal = e.target.value;
+            const divSelect = document.getElementById('hubDivision');
+            divSelect.innerHTML = '<option value="">-- Loading Divisions --</option>';
+            
+            const q = query(collection(db, "divisions"), where("state", "==", stateVal));
+            const snap = await getDocs(q);
+            divSelect.innerHTML = '<option value="">-- Select Division --</option>';
+            snap.forEach(d => divSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+        };
+
+        // Master Setup - Region to State Change
         document.getElementById('divisionRegion').onchange = async (e) => {
             const q = query(collection(db, "states"), where("region", "==", e.target.value));
             const snap = await getDocs(q);
             const stateSelect = document.getElementById('divisionState');
-            stateSelect.innerHTML = '<option value="">-- Select State --</option>';
-            snap.forEach(d => stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>');
+            stateSelect.innerHTML = '<option value="">Select State</option>';
+            snap.forEach(d => stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
         };
     }
 
-    // --- Existing Hubs Functionality ---
-    let allHubs = [];
+    // --- Save / Update Hub Configuration ---
     document.getElementById('hubControlForm').onsubmit = async (e) => {
         e.preventDefault();
         const editId = document.getElementById('editHubId').value;
@@ -570,22 +539,146 @@
             region: document.getElementById('hubRegion').value,
             state: document.getElementById('hubState').value,
             division: document.getElementById('hubDivision').value,
-            capacity: document.getElementById('totalCapacity').value,
+            capacity: Number(document.getElementById('totalCapacity').value),
             address: document.getElementById('hubAddress').value,
             status: document.getElementById('hubStatus').value
         };
 
-        if (editId) {
-            await updateDoc(doc(db, "hubs", editId), data);
-            alert("Hub Updated!");
-        } else {
-            await addDoc(collection(db, "hubs"), data);
-            alert("Hub Saved!");
+        try {
+            if (editId) {
+                await updateDoc(doc(db, "hubs", editId), data);
+                alert("Hub Configuration Updated!");
+            } else {
+                await addDoc(collection(db, "hubs"), data);
+                alert("New Hub Saved Successfully!");
+            }
+            resetForm();
+        } catch(err) {
+            console.error(err);
+            alert("Error saving hub data.");
         }
-        document.getElementById('hubControlForm').reset();
     };
 
-    // Initialize
+    // --- Reset Form Helper ---
+    function resetForm() {
+        document.getElementById('hubControlForm').reset();
+        document.getElementById('editHubId').value = "";
+        document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Hub Configuration';
+        document.getElementById('formStateHeader').innerHTML = '<i class="fa-solid fa-plus-minus"></i> Setup New Warehouse / Hub';
+    }
+    document.getElementById('resetFormBtn').onclick = resetForm;
+
+    // --- Render Hubs Registry Table ---
+    function renderTable(hubsList) {
+        const tbody = document.getElementById('hubRegistryTableBody');
+        if(hubsList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-muted);">No records found.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = "";
+        hubsList.forEach(hub => {
+            const statusClass = hub.status === 'Active' ? 'status-active' : 'status-inactive';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-weight:600; color:var(--primary-color);">${hub.code}</td>
+                <td>${hub.name}</td>
+                <td>
+                    <strong>${hub.region}</strong>, ${hub.state}
+                    <span class="meta-sub-text">${hub.address}</span>
+                </td>
+                <td>${hub.division}</td>
+                <td>${hub.manager}</td>
+                <td>${hub.capacity.toLocaleString()} Boxes</td>
+                <td><span class="status-badge ${statusClass}">${hub.status}</span></td>
+                <td>
+                    <div class="operations-btns">
+                        <button class="op-btn op-edit" data-id="${hub.id}"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button class="op-btn op-delete" data-id="${hub.id}"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Attach Event Listeners to Edit/Delete Buttons
+        document.querySelectorAll('.op-edit').forEach(btn => {
+            btn.onclick = () => editHub(btn.getAttribute('data-id'));
+        });
+        document.querySelectorAll('.op-delete').forEach(btn => {
+            btn.onclick = () => deleteHub(btn.getAttribute('data-id'));
+        });
+    }
+
+    // --- Edit Hub Logic ---
+    async function editHub(id) {
+        const hub = allHubs.find(h => h.id === id);
+        if(!hub) return;
+
+        document.getElementById('editHubId').value = hub.id;
+        document.getElementById('hubCode').value = hub.code;
+        document.getElementById('hubName').value = hub.name;
+        document.getElementById('hubManager').value = hub.manager;
+        
+        document.getElementById('hubRegion').value = hub.region;
+        
+        // Load states dynamically for this region before setting value
+        const stateSelect = document.getElementById('hubState');
+        const qState = query(collection(db, "states"), where("region", "==", hub.region));
+        const snapState = await getDocs(qState);
+        stateSelect.innerHTML = '<option value="">-- Select State --</option>';
+        snapState.forEach(d => stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+        stateSelect.value = hub.state;
+
+        // Load divisions dynamically for this state before setting value
+        const divSelect = document.getElementById('hubDivision');
+        const qDiv = query(collection(db, "divisions"), where("state", "==", hub.state));
+        const snapDiv = await getDocs(qDiv);
+        divSelect.innerHTML = '<option value="">-- Select Division --</option>';
+        snapDiv.forEach(d => divSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+        divSelect.value = hub.division;
+
+        document.getElementById('totalCapacity').value = hub.capacity;
+        document.getElementById('hubAddress').value = hub.address;
+        document.getElementById('hubStatus').value = hub.status;
+
+        document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Update Hub Configuration';
+        document.getElementById('formStateHeader').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Editing Hub: ' + hub.code;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- Delete Hub Logic ---
+    async function deleteHub(id) {
+        if(confirm("Are you sure you want to delete this Hub Registry?")) {
+            await deleteDoc(doc(db, "hubs", id));
+            alert("Hub Deleted.");
+        }
+    }
+
+    // --- Real-time Logs Listener ---
+    onSnapshot(collection(db, "hubs"), (snapshot) => {
+        allHubs = [];
+        snapshot.forEach(doc => {
+            allHubs.push({ id: doc.id, ...doc.data() });
+        });
+        renderTable(allHubs);
+    });
+
+    // --- Live Search Feature ---
+    document.getElementById('searchHubField').oninput = (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allHubs.filter(h => 
+            h.code.toLowerCase().includes(term) ||
+            h.name.toLowerCase().includes(term) ||
+            h.region.toLowerCase().includes(term) ||
+            h.state.toLowerCase().includes(term) ||
+            h.division.toLowerCase().includes(term) ||
+            h.manager.toLowerCase().includes(term)
+        );
+        renderTable(filtered);
+    };
+
+    // Initialize Page Dropdowns
     loadDropdowns();
 </script>
 </body>
