@@ -291,125 +291,77 @@ loginForm.addEventListener("submit", function (e) {
     const empCode = document.getElementById("employeeCode").value.trim();
     const pass = passwordInput.value.trim();
 
-    // Firebase Realtime Database se "users/EmployeeCode" node check karna
+    // Firestore query collection "users" ke liye
     db.collection("users")
-.where("employeeCode", "==", empCode)
-.get()
-.then((querySnapshot) => {
+    .where("employeeCode", "==", empCode)
+    .get()
+    .then((querySnapshot) => {
 
-    if (querySnapshot.empty) {
-        loading.style.display = "none";
-        error.style.display = "block";
-        error.innerHTML = "Employee Code not found!";
-        return;
-    }
-
-    const doc = querySnapshot.docs[0];
-    const userData = doc.data();
-
-    if (userData.password === pass) {
-
-        if (userData.status !== "Active") {
-            loading.style.display = "none";
-            error.style.display = "block";
-            error.innerHTML = "Your account is inactive. Contact Admin.";
-            return;
-        }
-
-        localStorage.setItem("userSession", JSON.stringify(userData));
-
-        localStorage.setItem("userRole", userData.role);
-        localStorage.setItem("userName", userData.fullName);
-        localStorage.setItem("employeeCode", userData.employeeCode);
-
-        success.style.display = "block";
-        success.innerHTML =
-        `Welcome ${userData.role}<br>${userData.fullName}`;
-
-        loading.style.display = "none";
-
-        setTimeout(() => {
-            window.location.href = "dashboard.html";
-        }, 1500);
-
-    } else {
-
-        loading.style.display = "none";
-        error.style.display = "block";
-        error.innerHTML = "Incorrect Password!";
-
-    }
-
-})
-.catch((err) => {
-
-    loading.style.display = "none";
-    error.style.display = "block";
-    error.innerHTML = err.message;
-
-});.then((snapshot) => {
-        if (snapshot.exists()) {
-            const userData = snapshot.val();
-
-            // Database ke password se match check karna
-            if (userData.password === pass) {
-                
-                if (userData.status === "Inactive") {
-                    loading.style.display = "none";
-                    error.style.display = "block";
-                    error.innerHTML = "Your account is inactive. Contact Admin.";
-                    return;
-                }
-
-                // Poora data structure local storage mein save karna (Designation, Role, etc.)
-                localStorage.setItem("userSession", JSON.stringify({
-                    uid: userData.uid || "",
-                    employeeCode: empCode,
-                    fullName: userData.fullName || "",
-                    mobile: userData.mobile || "",
-                    email: userData.email || "",
-                    photo: userData.photo || "",
-                    role: userData.role || "",
-                    department: userData.department || "",
-                    designation: userData.designation || "",
-                    region: userData.region || "",
-                    state: userData.state || "",
-                    division: userData.division || "",
-                    warehouse: userData.warehouse || "",
-                    status: userData.status || ""
-                }));
-
-                localStorage.setItem("userRole", userData.role || "");
-                localStorage.setItem("userName", userData.fullName || "");
-                localStorage.setItem("employeeCode", empCode);
-                localStorage.setItem("loginStatus", "true");
-
-                success.style.display = "block";
-                success.innerHTML = "Login Successful! Redirecting...";
-                loading.style.display = "none";
-
-                setTimeout(() => {
-                    window.location.href = "dashboard.html";
-                }, 1200);
-
-            } else {
-                loading.style.display = "none";
-                error.style.display = "block";
-                error.innerHTML = "Incorrect Password! Please try again.";
-            }
-        } else {
+        if (querySnapshot.empty) {
             loading.style.display = "none";
             error.style.display = "block";
             error.innerHTML = "Employee Code not found!";
+            return;
         }
-    }).catch((err) => {
+
+        const doc = querySnapshot.docs[0];
+        const userData = doc.data();
+
+        // Password verification
+        if (userData.password === pass) {
+
+            if (userData.status !== "Active" && userData.status !== "active") {
+                loading.style.display = "none";
+                error.style.display = "block";
+                error.innerHTML = "Your account is inactive. Contact Admin.";
+                return;
+            }
+
+            // LocalStorage mein data structured save karna
+            localStorage.setItem("userSession", JSON.stringify({
+                uid: doc.id || "",
+                employeeCode: userData.employeeCode || empCode,
+                fullName: userData.fullName || "",
+                mobile: userData.mobile || "",
+                email: userData.email || "",
+                photo: userData.photo || "",
+                role: userData.role || "",
+                department: userData.department || "",
+                designation: userData.designation || "",
+                region: userData.region || "",
+                state: userData.state || "",
+                division: userData.division || "",
+                warehouse: userData.warehouse || "",
+                status: userData.status || ""
+            }));
+
+            localStorage.setItem("userRole", userData.role || "");
+            localStorage.setItem("userName", userData.fullName || "");
+            localStorage.setItem("employeeCode", userData.employeeCode || empCode);
+            localStorage.setItem("loginStatus", "true");
+
+            success.style.display = "block";
+            success.innerHTML = `Welcome ${userData.role || ""}<br>${userData.fullName || ""}`;
+            loading.style.display = "none";
+
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 1500);
+
+        } else {
+            loading.style.display = "none";
+            error.style.display = "block";
+            error.innerHTML = "Incorrect Password!";
+        }
+    })
+    .catch((err) => {
         loading.style.display = "none";
         error.style.display = "block";
         error.innerHTML = "Database Error: " + err.message;
     });
 });
 
-// Enter key control
+// Enter key submit handling
 window.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
         loginForm.requestSubmit();
