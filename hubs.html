@@ -386,23 +386,25 @@
                 </div>
             </div>
             <!-- ================= END MASTER DATA ================= -->
+
+            <!-- Master Data Grid Logs -->
             <div class="dashboard-section" style="margin-top:30px;">
-    <div class="section-title"><i class="fa-solid fa-list-ul"></i> Existing Master Data Registry</div>
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Region</th>
-                    <th>State</th>
-                    <th>Division</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="masterTableBody"></tbody>
-        </table>
-    </div>
-</div>
+                <div class="section-title"><i class="fa-solid fa-list-ul"></i> Existing Master Data Registry</div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Region</th>
+                                <th>State</th>
+                                <th>Division</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="masterTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
 
             <!-- Registry Table -->
             <div class="dashboard-section">
@@ -498,7 +500,6 @@
 
     // --- Load Data into Dropdowns & Cascading Select Logic ---
     function loadDropdowns() {
-        // Setup Form - Cascade Region to State
         document.getElementById('hubRegion').onchange = async (e) => {
             const regionVal = e.target.value;
             const stateSelect = document.getElementById('hubState');
@@ -511,7 +512,6 @@
             document.getElementById('hubDivision').innerHTML = '<option value="">-- Select Division --</option>';
         };
 
-        // Setup Form - Cascade State to Division
         document.getElementById('hubState').onchange = async (e) => {
             const stateVal = e.target.value;
             const divSelect = document.getElementById('hubDivision');
@@ -523,7 +523,6 @@
             snap.forEach(d => divSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
         };
 
-        // Master Setup - Region to State Change
         document.getElementById('divisionRegion').onchange = async (e) => {
             const q = query(collection(db, "states"), where("region", "==", e.target.value));
             const snap = await getDocs(q);
@@ -564,7 +563,6 @@
         }
     };
 
-    // --- Reset Form Helper ---
     function resetForm() {
         document.getElementById('hubControlForm').reset();
         document.getElementById('editHubId').value = "";
@@ -614,7 +612,6 @@
         });
     }
 
-    // --- Edit Hub Logic ---
     async function editHub(id) {
         const hub = allHubs.find(h => h.id === id);
         if(!hub) return;
@@ -648,7 +645,6 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // --- Delete Hub Logic ---
     async function deleteHub(id) {
         if(confirm("Are you sure you want to delete this Hub Registry?")) {
             await deleteDoc(doc(db, "hubs", id));
@@ -656,7 +652,6 @@
         }
     }
 
-    // --- Real-time Logs Listener ---
     onSnapshot(collection(db, "hubs"), (snapshot) => {
         allHubs = [];
         snapshot.forEach(doc => {
@@ -665,7 +660,6 @@
         renderTable(allHubs);
     });
 
-    // --- Live Search Feature ---
     document.getElementById('searchHubField').oninput = (e) => {
         const term = e.target.value.toLowerCase();
         const filtered = allHubs.filter(h => 
@@ -679,14 +673,12 @@
         renderTable(filtered);
     };
 
-    // --- Optimized Master Data Realtime Synchronization & Render ---
+    // --- Master Data Sync Logic ---
     function syncMasterDropdownsAndTable() {
-        // 1. Regions Listener
         onSnapshot(collection(db, "regions"), (snap) => {
             masterRegions = [];
             snap.forEach(d => masterRegions.push({ id: d.id, ...d.data() }));
             
-            // Dropdowns Update
             const selects = [document.getElementById('hubRegion'), document.getElementById('stateRegion'), document.getElementById('divisionRegion')];
             selects.forEach(s => {
                 if(s) {
@@ -697,14 +689,12 @@
             renderMasterTable();
         });
 
-        // 2. States Listener
         onSnapshot(collection(db, "states"), (snap) => {
             masterStates = [];
             snap.forEach(d => masterStates.push({ id: d.id, ...d.data() }));
             renderMasterTable();
         });
 
-        // 3. Divisions Listener
         onSnapshot(collection(db, "divisions"), (snap) => {
             masterDivisions = [];
             snap.forEach(d => masterDivisions.push({ id: d.id, ...d.data() }));
@@ -716,48 +706,60 @@
         const tbody = document.getElementById('masterTableBody');
         tbody.innerHTML = "";
 
-        // Function to handle Edit
-        window.editMaster = async (col, id, currentName) => {
-            const newName = prompt("Update Name:", currentName);
-            if(newName && newName !== currentName) {
-                await updateDoc(doc(db, col, id), { name: newName });
-            }
-        };
-
-        masterRegions.forEach(r => tbody.innerHTML += `<tr><td><span class="status-badge" style="background:#fef3c7; color:#d97706;">Region</span></td><td>${r.name}</td><td>-</td><td>-</td><td><button class="op-btn" onclick="window.editMaster('regions','${r.id}','${r.name}')" style="color:blue;"><i class="fa-solid fa-pen"></i></button> <button class="op-btn op-delete-master" data-col="regions" data-id="${r.id}" style="color:red;"><i class="fa-solid fa-trash"></i></button></td></tr>`);
-        masterStates.forEach(s => tbody.innerHTML += `<tr><td><span class="status-badge" style="background:#dcfce7; color:#15803d;">State</span></td><td>${s.region}</td><td>${s.name}</td><td>-</td><td><button class="op-btn" onclick="window.editMaster('states','${s.id}','${s.name}')" style="color:blue;"><i class="fa-solid fa-pen"></i></button> <button class="op-btn op-delete-master" data-col="states" data-id="${s.id}" style="color:red;"><i class="fa-solid fa-trash"></i></button></td></tr>`);
-        masterDivisions.forEach(div => tbody.innerHTML += `<tr><td><span class="status-badge" style="background:#e0f2fe; color:#0369a1;">Division</span></td><td>${div.region}</td><td>${div.state}</td><td>${div.name}</td><td><button class="op-btn" onclick="window.editMaster('divisions','${div.id}','${div.name}')" style="color:blue;"><i class="fa-solid fa-pen"></i></button> <button class="op-btn op-delete-master" data-col="divisions" data-id="${div.id}" style="color:red;"><i class="fa-solid fa-trash"></i></button></td></tr>`);
-
-        document.querySelectorAll('.op-delete-master').forEach(btn => {
-            btn.onclick = async () => { if(confirm("Are you sure?")) await deleteDoc(doc(db, btn.getAttribute('data-col'), btn.getAttribute('data-id'))); };
+        masterRegions.forEach(r => {
+            tbody.innerHTML += `<tr>
+                <td><span class="status-badge" style="background:#fef3c7; color:#d97706;">Region</span></td>
+                <td>${r.name}</td><td>-</td><td>-</td>
+                <td>
+                    <button class="op-btn op-edit-master" data-col="regions" data-id="${r.id}" data-name="${r.name}" style="color:blue; margin-right:8px;"><i class="fa-solid fa-pen"></i></button>
+                    <button class="op-btn op-delete-master" data-col="regions" data-id="${r.id}" style="color:red;"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
         });
-    }
 
-        // Append States
         masterStates.forEach(s => {
             tbody.innerHTML += `<tr>
                 <td><span class="status-badge" style="background:#dcfce7; color:#15803d;">State</span></td>
                 <td>${s.region}</td><td>${s.name}</td><td>-</td>
-                <td><button class="op-btn op-delete-master" data-col="states" data-id="${s.id}"><i class="fa-solid fa-trash"></i></button></td>
+                <td>
+                    <button class="op-btn op-edit-master" data-col="states" data-id="${s.id}" data-name="${s.name}" style="color:blue; margin-right:8px;"><i class="fa-solid fa-pen"></i></button>
+                    <button class="op-btn op-delete-master" data-col="states" data-id="${s.id}" style="color:red;"><i class="fa-solid fa-trash"></i></button>
+                </td>
             </tr>`;
         });
 
-        // Append Divisions
         masterDivisions.forEach(div => {
             tbody.innerHTML += `<tr>
                 <td><span class="status-badge" style="background:#e0f2fe; color:#0369a1;">Division</span></td>
                 <td>${div.region}</td><td>${div.state}</td><td>${div.name}</td>
-                <td><button class="op-btn op-delete-master" data-col="divisions" data-id="${div.id}"><i class="fa-solid fa-trash"></i></button></td>
+                <td>
+                    <button class="op-btn op-edit-master" data-col="divisions" data-id="${div.id}" data-name="${div.name}" style="color:blue; margin-right:8px;"><i class="fa-solid fa-pen"></i></button>
+                    <button class="op-btn op-delete-master" data-col="divisions" data-id="${div.id}" style="color:red;"><i class="fa-solid fa-trash"></i></button>
+                </td>
             </tr>`;
         });
 
-        // Safe Dynamic Click Binding within Module Scope
+        // Event Handling for Delete Master
         document.querySelectorAll('.op-delete-master').forEach(btn => {
             btn.onclick = async () => {
                 const targetCollection = btn.getAttribute('data-col');
                 const targetId = btn.getAttribute('data-id');
                 if(confirm("Are you sure? This will remove it from the master registry logs.")) {
                     await deleteDoc(doc(db, targetCollection, targetId));
+                }
+            };
+        });
+
+        // Event Handling for Edit Master
+        document.querySelectorAll('.op-edit-master').forEach(btn => {
+            btn.onclick = async () => {
+                const targetCollection = btn.getAttribute('data-col');
+                const targetId = btn.getAttribute('data-id');
+                const currentName = btn.getAttribute('data-name');
+                const newName = prompt("Update Master Entry Name:", currentName);
+                if(newName && newName.trim() !== currentName) {
+                    await updateDoc(doc(db, targetCollection, targetId), { name: newName.trim() });
+                    alert("Master Record Updated Successfully!");
                 }
             };
         });
