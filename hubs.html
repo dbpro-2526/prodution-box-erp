@@ -406,119 +406,99 @@
         </div>
     </div>
 
-    <!-- Firebase System -->
-  <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <!-- Replace your old code with this full block -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, setDoc, getDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
-            authDomain: "prodution-box-erp.firebaseapp.com",
-            projectId: "prodution-box-erp",
-            storageBucket: "prodution-box-erp.firebasestorage.app",
-            messagingSenderId: "426698063494",
-            appId: "1:426698063494:web:880dd323f24bd4121ddb07"
+    // ... (Keep your existing firebaseConfig here)
+
+    // NEW: Variable to store all hubs for search
+    let allHubs = [];
+
+    // UPDATED: Submit Handler to handle BOTH Add and Update
+    document.getElementById('hubControlForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('editHubId').value;
+        const data = {
+            code: document.getElementById('hubCode').value,
+            name: document.getElementById('hubName').value,
+            manager: document.getElementById('hubManager').value,
+            region: document.getElementById('hubRegion').value,
+            state: document.getElementById('hubState').value,
+            division: document.getElementById('hubDivision').value,
+            capacity: document.getElementById('totalCapacity').value,
+            address: document.getElementById('hubAddress').value,
+            status: document.getElementById('hubStatus').value
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        if (editId) {
+            // Update Existing
+            await updateDoc(doc(db, "hubs", editId), data);
+            alert("Hub Updated Successfully!");
+        } else {
+            // Create New
+            await addDoc(collection(db, "hubs"), data);
+            alert("Hub Saved Successfully!");
+        }
+        document.getElementById('hubControlForm').reset();
+        document.getElementById('editHubId').value = "";
+    };
 
-        let dropdownMetadata = { regions: [], states: [], divisions: [] };
+    // NEW: Edit Function
+    window.editHub = (id) => {
+        const hub = allHubs.find(h => h.id === id);
+        document.getElementById('editHubId').value = hub.id;
+        document.getElementById('hubCode').value = hub.code;
+        document.getElementById('hubName').value = hub.name;
+        document.getElementById('hubManager').value = hub.manager;
+        document.getElementById('hubRegion').value = hub.region;
+        document.getElementById('hubState').value = hub.state;
+        document.getElementById('hubDivision').value = hub.division;
+        document.getElementById('totalCapacity').value = hub.capacity;
+        document.getElementById('hubAddress').value = hub.address;
+        document.getElementById('hubStatus').value = hub.status;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            const session = localStorage.getItem('userSession') || localStorage.getItem('activeUser');
-            if (!session) { window.location.href = 'login.html'; return; }
-            
-            document.getElementById('adminName').innerText = JSON.parse(session).fullName || "Admin";
-            
-            await loadDropdownMetaDataEngine();
-            attachListeners();
-            startHubsListener();
+    // NEW: Search Filter Logic
+    document.getElementById('searchHubField').onkeyup = function() {
+        const val = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#hubRegistryTableBody tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
         });
+    };
 
-        async function loadDropdownMetaDataEngine() {
-            const settingsRef = doc(db, "settings", "hubOptions");
-            const snap = await getDoc(settingsRef);
-            if (snap.exists()) {
-                dropdownMetadata = snap.data();
-            } else {
-                dropdownMetadata = { regions: ["North", "South"], states: ["Gujarat"], divisions: ["Div 1"] };
-                await setDoc(settingsRef, dropdownMetadata);
-            }
-            populateDropdownUI();
-        }
-
-        async function promptAndSaveMeta(field, label) {
-            const newValue = prompt(`Enter new ${label}:`);
-            if (newValue && newValue.trim() !== "") {
-                dropdownMetadata[field].push(newValue.trim());
-                await setDoc(doc(db, "settings", "hubOptions"), dropdownMetadata);
-                populateDropdownUI();
-            }
-        }
-
-        function populateDropdownUI() {
-            renderOptions('hubRegion', dropdownMetadata.regions, "-- Select Region --");
-            renderOptions('hubState', dropdownMetadata.states, "-- Select State --");
-            renderOptions('hubDivision', dropdownMetadata.divisions, "-- Select Division --");
-        }
-
-        function renderOptions(id, data, placeholder) {
-            const el = document.getElementById(id);
-            el.innerHTML = `<option value="">${placeholder}</option>`;
-            data.forEach(item => el.innerHTML += `<option value="${item}">${item}</option>`);
-        }
-
-        function attachListeners() {
-            document.getElementById('addNewRegionBtn').onclick = () => promptAndSaveMeta('regions', 'Region');
-            document.getElementById('addNewStateBtn').onclick = () => promptAndSaveMeta('states', 'State');
-            document.getElementById('addNewDivisionBtn').onclick = () => promptAndSaveMeta('divisions', 'Division');
-            
-            document.getElementById('hubControlForm').onsubmit = async (e) => {
-                e.preventDefault();
-                const data = {
-                    code: document.getElementById('hubCode').value,
-                    name: document.getElementById('hubName').value,
-                    manager: document.getElementById('hubManager').value,
-                    region: document.getElementById('hubRegion').value,
-                    state: document.getElementById('hubState').value,
-                    division: document.getElementById('hubDivision').value,
-                    capacity: document.getElementById('totalCapacity').value,
-                    address: document.getElementById('hubAddress').value,
-                    status: document.getElementById('hubStatus').value
-                };
-                await addDoc(collection(db, "hubs"), data);
-                alert("Hub Saved Successfully!");
-                document.getElementById('hubControlForm').reset();
-            };
-        }
-
-        function startHubsListener() {
-            onSnapshot(collection(db, "hubs"), (snapshot) => {
-                const tbody = document.getElementById('hubRegistryTableBody');
-                tbody.innerHTML = "";
-                snapshot.forEach(docSnap => {
-                    const h = docSnap.data();
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${h.code}</td><td>${h.name}</td><td>${h.state}</td>
-                        <td>${h.division}</td><td>${h.manager}</td><td>${h.capacity}</td>
-                        <td><span class="status-badge ${h.status === 'Active' ? 'status-active' : 'status-inactive'}">${h.status}</span></td>
-                        <td><button class="op-btn op-delete" data-id="${docSnap.id}"><i class="fa-solid fa-trash"></i></button></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-
-                // Attach delete logic here after table is rendered
-                document.querySelectorAll('.op-delete').forEach(btn => {
-                    btn.onclick = async () => {
-                        if(confirm("Delete this hub?")) {
-                            await deleteDoc(doc(db, "hubs", btn.getAttribute('data-id')));
-                        }
-                    };
-                });
+    // UPDATED: Snapshot with Edit Button
+    function startHubsListener() {
+        onSnapshot(collection(db, "hubs"), (snapshot) => {
+            allHubs = []; // Store for edit lookup
+            const tbody = document.getElementById('hubRegistryTableBody');
+            tbody.innerHTML = "";
+            snapshot.forEach(docSnap => {
+                const h = docSnap.data();
+                allHubs.push({id: docSnap.id, ...h});
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${h.code}</td><td>${h.name}</td><td>${h.state}</td>
+                    <td>${h.division}</td><td>${h.manager}</td><td>${h.capacity}</td>
+                    <td><span class="status-badge ${h.status === 'Active' ? 'status-active' : 'status-inactive'}">${h.status}</span></td>
+                    <td>
+                        <button class="op-btn op-edit" onclick="editHub('${docSnap.id}')"><i class="fa-solid fa-edit"></i></button>
+                        <button class="op-btn op-delete" data-id="${docSnap.id}"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
-        }
-    </script>
+            // Re-attach delete listeners
+            document.querySelectorAll('.op-delete').forEach(btn => {
+                btn.onclick = async () => {
+                    if(confirm("Delete this hub?")) await deleteDoc(doc(db, "hubs", btn.getAttribute('data-id')));
+                };
+            });
+        });
+    }
+</script>
 </body>
 </html>
