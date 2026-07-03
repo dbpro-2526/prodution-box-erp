@@ -30,7 +30,6 @@
             --border-color: #e2e8f0;
             --success-color: #16a34a;
             --danger-color: #ef4444;
-            --warning-color: #d97706;
         }
 
         body {
@@ -61,17 +60,8 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .sidebar-brand img {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-        }
-
-        .sidebar-brand h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
+        .sidebar-brand img { width: 40px; height: 40px; border-radius: 8px; }
+        .sidebar-brand h2 { font-size: 18px; font-weight: 700; color: var(--primary-color); }
 
         .sidebar-menu {
             padding: 20px 15px;
@@ -99,10 +89,7 @@
             color: var(--accent-color);
         }
 
-        .sidebar-footer {
-            padding: 20px 15px;
-            border-top: 1px solid var(--border-color);
-        }
+        .sidebar-footer { padding: 20px 15px; border-top: 1px solid var(--border-color); }
 
         .btn-logout {
             width: 100%;
@@ -117,12 +104,9 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: background 0.2s;
         }
 
-        .btn-logout:hover { background: #fca5a5; }
-
-        /* --- Main Content Area --- */
+        /* --- Main Content --- */
         .main-content {
             margin-left: var(--sidebar-width);
             width: calc(100% - var(--sidebar-width));
@@ -146,7 +130,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* --- Grid Setup --- */
         .manager-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -158,7 +141,6 @@
             padding: 30px;
             border-radius: 16px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
         }
 
         .section-title {
@@ -171,20 +153,15 @@
             gap: 10px;
         }
 
-        /* --- Form Config --- */
+        /* --- Dynamic Input Controls --- */
         .hub-form {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
 
-        @media (max-width: 900px) {
-            .hub-form { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (max-width: 600px) {
-            .hub-form { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .hub-form { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .hub-form { grid-template-columns: 1fr; } }
 
         .form-group {
             display: flex;
@@ -192,16 +169,32 @@
             gap: 6px;
         }
 
-        .form-group.full-width {
-            grid-column: 1 / -1;
+        .dynamic-select-container {
+            display: flex;
+            gap: 6px;
         }
 
-        label {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-dark);
+        .dynamic-select-container select { flex-grow: 1; }
+        
+        .btn-inline-add {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
         }
+        .btn-inline-add:hover { background: var(--accent-color); }
 
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        label { font-size: 13px; font-weight: 600; color: var(--text-dark); }
         input, select {
             height: 44px;
             padding: 0 14px;
@@ -210,20 +203,10 @@
             font-size: 14px;
             outline: none;
             background: #f8fafc;
-            transition: border 0.2s;
         }
+        input:focus, select:focus { border-color: var(--accent-color); background: #fff; }
 
-        input:focus, select:focus {
-            border-color: var(--accent-color);
-            background: #fff;
-        }
-
-        .action-bar {
-            display: flex;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
+        .action-bar { display: flex; gap: 12px; margin-top: 10px; }
         .btn-action {
             padding: 12px 24px;
             border: none;
@@ -234,14 +217,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: opacity 0.2s;
         }
-
-        .btn-action:hover { opacity: 0.9; }
         .btn-save { background: var(--accent-color); color: white; }
         .btn-clear { background: #e2e8f0; color: var(--text-dark); }
 
-        /* --- Controls & Tables --- */
+        /* --- Tables --- */
         .controls-row {
             display: flex;
             justify-content: space-between;
@@ -250,56 +230,29 @@
             gap: 15px;
         }
 
-        .search-box {
-            position: relative;
-            flex-grow: 1;
-            max-width: 400px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding-left: 40px;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
+        .search-box { position: relative; flex-grow: 1; max-width: 400px; }
+        .search-box input { width: 100%; padding-left: 40px; }
+        .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: #f8fafc; padding: 14px 16px; color: var(--text-muted); font-weight: 600; font-size: 13px; border-bottom: 2px solid var(--border-color); }
-        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); font-size: 14px; vertical-align: middle; }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
 
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
         .status-active { background: #dcfce7; color: var(--success-color); }
         .status-inactive { background: #fee2e2; color: var(--danger-color); }
 
-        .meta-sub-text {
-            font-size: 11px;
-            color: var(--text-muted);
-            display: block;
-            margin-top: 2px;
-        }
-
+        .meta-sub-text { font-size: 11px; color: var(--text-muted); display: block; margin-top: 2px; }
         .operations-btns { display: flex; gap: 10px; }
-        .op-btn { background: none; border: none; cursor: pointer; font-size: 15px; transition: color 0.2s; }
+        .op-btn { background: none; border: none; cursor: pointer; font-size: 15px; }
         .op-edit { color: var(--accent-color); }
         .op-delete { color: var(--danger-color); }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar Menu Navigation -->
+    <!-- Sidebar Menu -->
     <div class="sidebar">
         <div class="sidebar-brand">
             <img src="dblogo.png" alt="Logo">
@@ -310,22 +263,18 @@
             <a href="users.html" class="menu-item"><i class="fa-solid fa-users"></i> All Users Setup</a>
             <a href="hubs.html" class="menu-item active"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
-            <a href="#" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> Pending Approvals</a>
         </div>
         <div class="sidebar-footer">
-            <button class="btn-logout" id="logoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout System
-            </button>
+            <button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        
         <div class="header-top">
             <div>
                 <h1 style="font-size: 24px; font-weight: 700;">Warehouse & Hubs Management</h1>
-                <p style="color: var(--text-muted); font-size: 14px;">Add, allocate capacity, and update regional storage networks.</p>
+                <p style="color: var(--text-muted); font-size: 14px;">Setup dynamic regions, states, divisions, and operational capacity.</p>
             </div>
             <div class="user-profile">
                 <i class="fa-solid fa-circle-user" style="font-size: 20px; color: var(--primary-color);"></i>
@@ -334,8 +283,7 @@
         </div>
 
         <div class="manager-grid">
-            
-            <!-- Hub Configuration Form -->
+            <!-- Hub Setup Form -->
             <div class="dashboard-section">
                 <div class="section-title" id="formStateHeader">
                     <i class="fa-solid fa-plus-minus"></i> Setup New Warehouse / Hub
@@ -346,37 +294,50 @@
 
                     <div class="form-group">
                         <label>Hub Code (Unique)</label>
-                        <input type="text" id="hubCode" placeholder="e.g. WH-NORTH-01, HUB-MUM" required style="font-weight:600; color:var(--primary-color);">
+                        <input type="text" id="hubCode" placeholder="e.g. WH-NORTH-01" required style="font-weight:600; color:var(--primary-color);">
                     </div>
 
                     <div class="form-group">
                         <label>Warehouse / Hub Name</label>
-                        <input type="text" id="hubName" placeholder="e.g. Central Warehouse, Delhi Hub" required>
+                        <input type="text" id="hubName" placeholder="e.g. Central Warehouse" required>
                     </div>
 
                     <div class="form-group">
                         <label>Assigned Manager Name</label>
-                        <input type="text" id="hubManager" placeholder="Enter full manager name" required>
+                        <input type="text" id="hubManager" placeholder="Enter manager name" required>
                     </div>
 
+                    <!-- Dynamic Region Field -->
                     <div class="form-group">
                         <label>Region Allocation</label>
-                        <select id="hubRegion" required>
-                            <option value="North Region">North Region</option>
-                            <option value="South Region">South Region</option>
-                            <option value="East Region">East Region</option>
-                            <option value="West Region">West Region</option>
-                        </select>
+                        <div class="dynamic-select-container">
+                            <select id="hubRegion" required>
+                                <option value="">-- Select Region --</option>
+                            </select>
+                            <button type="button" class="btn-inline-add" id="addNewRegionBtn" title="Add New Region"><i class="fa-solid fa-plus"></i></button>
+                        </div>
                     </div>
 
+                    <!-- Dynamic State Field -->
                     <div class="form-group">
                         <label>State Location</label>
-                        <select id="hubState" required>
-                            <option value="Delhi">Delhi</option>
-                            <option value="Mumbai">Mumbai</option>
-                            <option value="UP">UP</option>
-                            <option value="Punjab">Punjab</option>
-                        </select>
+                        <div class="dynamic-select-container">
+                            <select id="hubState" required>
+                                <option value="">-- Select State --</option>
+                            </select>
+                            <button type="button" class="btn-inline-add" id="addNewStateBtn" title="Add New State"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Division Field -->
+                    <div class="form-group">
+                        <label>Division</label>
+                        <div class="dynamic-select-container">
+                            <select id="hubDivision" required>
+                                <option value="">-- Select Division --</option>
+                            </select>
+                            <button type="button" class="btn-inline-add" id="addNewDivisionBtn" title="Add New Division"><i class="fa-solid fa-plus"></i></button>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -401,14 +362,12 @@
                         <button type="submit" class="btn-action btn-save" id="submitBtn">
                             <i class="fa-solid fa-floppy-disk"></i> Save Hub Configuration
                         </button>
-                        <button type="button" class="btn-action btn-clear" id="resetFormBtn">
-                            Clear Fields
-                        </button>
+                        <button type="button" class="btn-action btn-clear" id="resetFormBtn">Clear Fields</button>
                     </div>
                 </form>
             </div>
 
-            <!-- Hub Grid Registry Table -->
+            <!-- Registry Table -->
             <div class="dashboard-section">
                 <div class="controls-row">
                     <div class="section-title" style="margin-bottom:0;">
@@ -416,7 +375,7 @@
                     </div>
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="searchHubField" placeholder="Search by name, code, or manager...">
+                        <input type="text" id="searchHubField" placeholder="Search by name, code, region, division...">
                     </div>
                 </div>
 
@@ -425,9 +384,10 @@
                         <thead>
                             <tr>
                                 <th>Hub Code</th>
-                                <th>Warehouse / Hub Name</th>
-                                <th>Location Details</th>
-                                <th>Manager Attached</th>
+                                <th>Warehouse Name</th>
+                                <th>Location details</th>
+                                <th>Division</th>
+                                <th>Manager</th>
                                 <th>Storage Capacity</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -435,22 +395,21 @@
                         </thead>
                         <tbody id="hubRegistryTableBody">
                             <tr>
-                                <td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Fetching active storage networks...
+                                <td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Fetching logs...
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Firebase SDK Operations Layer -->
+    <!-- Firebase System -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
@@ -458,109 +417,131 @@
             projectId: "prodution-box-erp",
             storageBucket: "prodution-box-erp.firebasestorage.app",
             messagingSenderId: "426698063494",
-            appId: "1:426698063494:web:880dd323f24bd4121ddb07",
-            measurementId: "G-948852RZLB"
+            appId: "1:426698063494:web:880dd323f24bd4121ddb07"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         let localHubsCache = [];
-        let currentUserSession = null;
+        let dropdownMetadata = { regions: [], states: [], divisions: [] };
 
         window.addEventListener('DOMContentLoaded', async () => {
-            currentUserSession = JSON.parse(localStorage.getItem('userSession')) || JSON.parse(localStorage.getItem('activeUser'));
+            const session = JSON.parse(localStorage.getItem('userSession')) || JSON.parse(localStorage.getItem('activeUser'));
+            if (!session) { window.location.href = 'login.html'; return; }
+            document.getElementById('adminName').innerText = session.fullName || "Admin System";
             
-            if (!currentUserSession) {
-                alert("Unauthorized Entry! Redirecting to login space.");
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            document.getElementById('adminName').innerText = currentUserSession.fullName || "System User";
+            await loadDropdownMetaDataEngine();
             syncHubsCollectionEngine();
         });
 
-        async function syncHubsCollectionEngine() {
+        // Load metadata options from firestore settings doc
+        async function loadDropdownMetaDataEngine() {
             try {
-                const snap = await getDocs(collection(db, "hubs"));
-                localHubsCache = [];
-                snap.forEach(docItem => {
-                    localHubsCache.push({ id: docItem.id, ...docItem.data() });
-                });
-                renderHubsRegistry(localHubsCache);
-            } catch (err) {
-                console.error("Database connection sync error on hubs: ", err);
+                const settingsRef = doc(db, "settings", "hubOptions");
+                const settingsSnap = await getDoc(settingsRef);
+                
+                if (settingsSnap.exists()) {
+                    dropdownMetadata = settingsSnap.data();
+                } else {
+                    // Fallback seed data if doc doesn't exist yet
+                    dropdownMetadata = {
+                        regions: ["North Region", "South Region"],
+                        states: ["Delhi", "Mumbai"],
+                        divisions: ["Division A", "Division B"]
+                    };
+                    await setDoc(settingsRef, dropdownMetadata);
+                }
+                populateDropdownUI();
+            } catch(e) { console.error("Metadata load error", e); }
+        }
+
+        function populateDropdownUI() {
+            renderOptions('hubRegion', dropdownMetadata.regions, "-- Select Region --");
+            renderOptions('hubState', dropdownMetadata.states, "-- Select State --");
+            renderOptions('hubDivision', dropdownMetadata.divisions, "-- Select Division --");
+        }
+
+        function renderOptions(elementId, arrayData, placeholderText) {
+            const selectEl = document.getElementById(elementId);
+            selectEl.innerHTML = `<option value="">${placeholderText}</option>`;
+            arrayData.forEach(item => {
+                selectEl.innerHTML += `<option value="${item}">${item}</option>`;
+            });
+        }
+
+        // Inline configuration click actions
+        document.getElementById('addNewRegionBtn').onclick = () => promptAndSaveMeta('regions', 'Region Name');
+        document.getElementById('addNewStateBtn').onclick = () => promptAndSaveMeta('states', 'State Name');
+        document.getElementById('addNewDivisionBtn').onclick = () => promptAndSaveMeta('divisions', 'Division/City Name');
+
+        async function promptAndSaveMeta(key, promptLabel) {
+            const newVal = prompt(`Enter new ${promptLabel}:`);
+            if (newVal && newVal.trim() !== "") {
+                const formattedVal = newVal.trim();
+                if (!dropdownMetadata[key].includes(formattedVal)) {
+                    dropdownMetadata[key].push(formattedVal);
+                    await setDoc(doc(db, "settings", "hubOptions"), dropdownMetadata);
+                    populateDropdownUI();
+                    alert(`${promptLabel} added securely.`);
+                } else { alert("Entry already exists."); }
             }
+        }
+
+        async function syncHubsCollectionEngine() {
+            const snap = await getDocs(collection(db, "hubs"));
+            localHubsCache = [];
+            snap.forEach(d => localHubsCache.push({ id: d.id, ...d.data() }));
+            renderHubsRegistry(localHubsCache);
         }
 
         function renderHubsRegistry(dataSet) {
-            const registryBody = document.getElementById('hubRegistryTableBody');
-            
+            const body = document.getElementById('hubRegistryTableBody');
             if (dataSet.length === 0) {
-                registryBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No warehouse configurations logged in system.</td></tr>`;
+                body.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">No records registered.</td></tr>`;
                 return;
             }
-
-            registryBody.innerHTML = "";
+            body.innerHTML = "";
             dataSet.forEach(hub => {
-                const activeLabelClass = hub.status === 'Active' ? 'status-active' : 'status-inactive';
-                const totalCap = hub.totalCapacity || 0;
-
-                const tableRow = document.createElement('tr');
-                tableRow.innerHTML = `
-                    <td style="font-weight:600; color:var(--primary-color);">${hub.code || 'N/A'}</td>
-                    <td>
-                        <strong>${hub.name || 'N/A'}</strong>
-                        <span class="meta-sub-text"><i class="fa-solid fa-location-dot"></i> ${hub.address || ''}</span>
-                    </td>
-                    <td>${hub.state} <span class="meta-sub-text">${hub.region}</span></td>
-                    <td><i class="fa-solid fa-user-tie"></i> ${hub.manager || 'Unassigned'}</td>
-                    <td><strong>${totalCap} Units</strong></td>
-                    <td><span class="status-badge ${activeLabelClass}">● ${hub.status || 'Active'}</span></td>
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight:600; color:var(--primary-color);">${hub.code || ''}</td>
+                    <td><strong>${hub.name || ''}</strong><span class="meta-sub-text"><i class="fa-solid fa-location-dot"></i> ${hub.address || ''}</span></td>
+                    <td>${hub.state || ''} <span class="meta-sub-text">${hub.region || ''}</span></td>
+                    <td><i class="fa-solid fa-network-wired"></i> ${hub.division || 'N/A'}</td>
+                    <td>${hub.manager || ''}</td>
+                    <td><strong>${hub.totalCapacity || 0} Units</strong></td>
+                    <td><span class="status-badge ${hub.status === 'Active' ? 'status-active' : 'status-inactive'}">● ${hub.status || 'Active'}</span></td>
                     <td>
                         <div class="operations-btns">
-                            <button class="op-btn op-edit" data-id="${hub.id}" title="Edit Configuration"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="op-btn op-delete" data-id="${hub.id}" title="Delete Hub permanently"><i class="fa-solid fa-trash-can"></i></button>
+                            <button class="op-btn op-edit" data-id="${hub.id}"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="op-btn op-delete" data-id="${hub.id}"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </td>
                 `;
-                registryBody.appendChild(tableRow);
+                body.appendChild(row);
             });
-
-            bindInteractiveTriggers();
+            bindTriggers();
         }
 
-        // Live Search Filtration
-        document.getElementById('searchHubField').addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase().trim();
-            const filteredSet = localHubsCache.filter(hub => 
-                (hub.name && hub.name.toLowerCase().includes(query)) ||
-                (hub.code && hub.code.toLowerCase().includes(query)) ||
-                (hub.manager && hub.manager.toLowerCase().includes(query)) ||
-                (hub.region && hub.region.toLowerCase().includes(query))
-            );
-            renderHubsRegistry(filteredSet);
-        });
-
-        function bindInteractiveTriggers() {
+        function bindTriggers() {
             document.querySelectorAll('.op-edit').forEach(btn => {
                 btn.onclick = () => {
-                    const targetId = btn.getAttribute('data-id');
-                    const entry = localHubsCache.find(h => h.id === targetId);
+                    const entry = localHubsCache.find(h => h.id === btn.getAttribute('data-id'));
                     if (entry) {
                         document.getElementById('editHubId').value = entry.id;
                         document.getElementById('hubCode').value = entry.code || "";
                         document.getElementById('hubName').value = entry.name || "";
                         document.getElementById('hubManager').value = entry.manager || "";
-                        document.getElementById('hubRegion').value = entry.region || "North Region";
-                        document.getElementById('hubState').value = entry.state || "Delhi";
+                        document.getElementById('hubRegion').value = entry.region || "";
+                        document.getElementById('hubState').value = entry.state || "";
+                        document.getElementById('hubDivision').value = entry.division || "";
                         document.getElementById('totalCapacity').value = entry.totalCapacity || "";
                         document.getElementById('hubAddress').value = entry.address || "";
                         document.getElementById('hubStatus').value = entry.status || "Active";
                         
-                        document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-warehouse"></i> Modify Hub Configuration: ${entry.code}`;
-                        document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Update Hub Setup`;
+                        document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-warehouse"></i> Modify Hub: ${entry.code}`;
+                        document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Update Setup`;
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 };
@@ -568,9 +549,8 @@
 
             document.querySelectorAll('.op-delete').forEach(btn => {
                 btn.onclick = async () => {
-                    const targetId = btn.getAttribute('data-id');
-                    if (confirm("Are you sure you want to completely erase this warehouse network log?")) {
-                        await deleteDoc(doc(db, "hubs", targetId));
+                    if (confirm("Permanently erase this hub log?")) {
+                        await deleteDoc(doc(db, "hubs", btn.getAttribute('data-id')));
                         syncHubsCollectionEngine();
                     }
                 };
@@ -580,50 +560,49 @@
         document.getElementById('hubControlForm').onsubmit = async (e) => {
             e.preventDefault();
             const editId = document.getElementById('editHubId').value;
-            
-            const hubPayload = {
+            const payload = {
                 code: document.getElementById('hubCode').value.trim().toUpperCase(),
                 name: document.getElementById('hubName').value.trim(),
-                hubName: document.getElementById('hubName').value.trim(), // Dual mapping for fallback setup
+                hubName: document.getElementById('hubName').value.trim(),
                 manager: document.getElementById('hubManager').value.trim(),
                 region: document.getElementById('hubRegion').value,
                 state: document.getElementById('hubState').value,
+                division: document.getElementById('hubDivision').value,
                 totalCapacity: parseInt(document.getElementById('totalCapacity').value),
                 address: document.getElementById('hubAddress').value.trim(),
                 status: document.getElementById('hubStatus').value
             };
 
             if(!editId) {
-                // Duplicate check
-                const codeDuplicate = localHubsCache.some(h => h.code.toLowerCase() === hubPayload.code.toLowerCase());
-                if(codeDuplicate) {
-                    alert("Operation Denied: This Unique Hub Code already exists.");
-                    return;
+                if(localHubsCache.some(h => h.code.toLowerCase() === payload.code.toLowerCase())) {
+                    alert("Hub Code already exists."); return;
                 }
-                await addDoc(collection(db, "hubs"), hubPayload);
-                alert("New Logistics Storage Hub Added Successfully.");
+                await addDoc(collection(db, "hubs"), payload);
             } else {
-                await updateDoc(doc(db, "hubs", editId), hubPayload);
-                alert("Warehouse network parameters updated successfully.");
+                await updateDoc(doc(db, "hubs", editId), payload);
             }
-
-            clearHubFormInterfaceAction();
-            syncHubsCollectionEngine();
+            resetForm(); syncHubsCollectionEngine();
         };
 
-        function clearHubFormInterfaceAction() {
+        function resetForm() {
             document.getElementById('hubControlForm').reset();
             document.getElementById('editHubId').value = "";
             document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-plus-minus"></i> Setup New Warehouse / Hub`;
             document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Hub Configuration`;
         }
+        document.getElementById('resetFormBtn').onclick = resetForm;
 
-        document.getElementById('resetFormBtn').onclick = clearHubFormInterfaceAction;
+        document.getElementById('searchHubField').addEventListener('input', function(e) {
+            const q = e.target.value.toLowerCase().trim();
+            const filtered = localHubsCache.filter(h => 
+                h.name.toLowerCase().includes(q) || h.code.toLowerCase().includes(q) || 
+                h.region.toLowerCase().includes(q) || h.division.toLowerCase().includes(q)
+            );
+            renderHubsRegistry(filtered);
+        });
 
         document.getElementById('logoutBtn').onclick = () => {
-            localStorage.removeItem('userSession');
-            localStorage.removeItem('activeUser');
-            window.location.href = 'login.html';
+            localStorage.clear(); window.location.href = 'login.html';
         };
     </script>
 </body>
