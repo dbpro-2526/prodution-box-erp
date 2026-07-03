@@ -153,14 +153,14 @@
         /* --- Cards Container --- */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 40px;
         }
 
         .stat-card {
             background: #fff;
-            padding: 25px;
+            padding: 22px;
             border-radius: 16px;
             border: 1px solid var(--border-color);
             display: flex;
@@ -170,7 +170,7 @@
         }
 
         .stat-info h3 {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: var(--primary-color);
         }
@@ -182,19 +182,21 @@
         }
 
         .stat-icon {
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 20px;
         }
 
         .icon-blue { background: #e0f2fe; color: #0284c7; }
         .icon-green { background: #dcfce7; color: #16a34a; }
         .icon-purple { background: #f3e8ff; color: #9333ea; }
         .icon-amber { background: #fef3c7; color: #d97706; }
+        .icon-emerald { background: #ecfdf5; color: #059669; }
+        .icon-rose { background: #fff1f2; color: #e11d48; }
 
         /* --- Data Section Layout --- */
         .dashboard-section {
@@ -251,7 +253,6 @@
             font-size: 14px;
         }
 
-        /* Naya Style: Link ko blue aur clickable dikhane ke liye */
         .user-click-link {
             color: var(--accent-color);
             text-decoration: none;
@@ -269,6 +270,8 @@
         }
 
         .badge-admin { background: #eff6ff; color: #2563EB; }
+        .badge-in { background: #dcfce7; color: #16a34a; }
+        .badge-out { background: #ffe4e6; color: #e11d48; }
 
         .actions-btn {
             background: none;
@@ -294,7 +297,6 @@
         </div>
         <div class="sidebar-menu">
             <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-            <!-- Sidebar Clickable Link -->
             <a href="users.html" class="menu-item"><i class="fa-solid fa-users"></i> All Users Setup</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
@@ -322,7 +324,7 @@
             </div>
         </div>
 
-        <!-- Dynamic Counter Cards -->
+        <!-- Dynamic Counter Cards (Updated with Stock In & Out) -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-info">
@@ -334,14 +336,14 @@
             <div class="stat-card">
                 <div class="stat-info">
                     <h3 id="countHubs">0</h3>
-                    <p>Active Warehouses/Hubs</p>
+                    <p>Active Warehouses</p>
                 </div>
                 <div class="stat-icon icon-green"><i class="fa-solid fa-warehouse"></i></div>
             </div>
             <div class="stat-card">
                 <div class="stat-info">
                     <h3 id="countItems">0</h3>
-                    <p>Total Inventory Items</p>
+                    <p>Inventory Items</p>
                 </div>
                 <div class="stat-icon icon-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
             </div>
@@ -351,6 +353,22 @@
                     <p>Pending Box Approvals</p>
                 </div>
                 <div class="stat-icon icon-amber"><i class="fa-solid fa-clock"></i></div>
+            </div>
+            <!-- NEW: Stock In Counter Card -->
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="countStockIn">0</h3>
+                    <p>Total Stock IN</p>
+                </div>
+                <div class="stat-icon icon-emerald"><i class="fa-solid fa-arrow-down-long"></i></div>
+            </div>
+            <!-- NEW: Stock Out Counter Card -->
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="countStockOut">0</h3>
+                    <p>Total Stock OUT</p>
+                </div>
+                <div class="stat-icon icon-rose"><i class="fa-solid fa-arrow-up-long"></i></div>
             </div>
         </div>
 
@@ -373,14 +391,36 @@
                     </thead>
                     <tbody id="overviewTableBody">
                         <tr>
-                            <!-- BADLAO YAHAN HAI: User name par href="users.html" laga diya hai -->
-                            <td>
-                                <a href="users.html" class="user-click-link">Markazi Warehouse User</a>
-                            </td>
+                            <td><a href="users.html" class="user-click-link">Markazi Warehouse User</a></td>
                             <td><span class="badge badge-admin">Super Admin</span></td>
                             <td><span style="color: #16a34a; font-weight: 500;">● Active</span></td>
                             <td>All Zones (Full Access)</td>
                             <td><button class="actions-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- NEW SECTION: Live Stock In/Out Ledger Transactions -->
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h2 style="font-size: 18px; font-weight: 600;"><i class="fa-solid fa-right-left"></i> Live Stock In / Out Log</h2>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Details</th>
+                            <th>Transaction Type</th>
+                            <th>Quantity</th>
+                            <th>Warehouse Hub</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockLedgerTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted);">Fetching transactions...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -391,7 +431,7 @@
     <!-- Firebase SDK Integration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
@@ -426,16 +466,57 @@
                 const hubsSnap = await getDocs(collection(db, "hubs"));
                 const itemsSnap = await getDocs(collection(db, "inventory"));
                 const pendingSnap = await getDocs(collection(db, "approvals"));
+                
+                // Fetching Stock Ledger data
+                const ledgerSnap = await getDocs(collection(db, "stock_ledger"));
 
                 document.getElementById('countUsers').innerText = usersSnap.size || 0;
                 document.getElementById('countHubs').innerText = hubsSnap.size || 0;
                 document.getElementById('countItems').innerText = itemsSnap.size || 0;
                 document.getElementById('countPending').innerText = pendingSnap.size || 0;
 
-                // Dynamic table loader from Firestore data
+                // Calulating Stock In and Out totals dynamically
+                let stockInTotal = 0;
+                let stockOutTotal = 0;
+                const ledgerTableBody = document.getElementById('stockLedgerTableBody');
+                ledgerTableBody.innerHTML = "";
+
+                if (!ledgerSnap.empty) {
+                    ledgerSnap.forEach((doc) => {
+                        const data = doc.data();
+                        const qty = parseInt(data.quantity) || 0;
+                        const type = data.type || "IN"; // IN ya OUT
+
+                        if (type.toUpperCase() === "IN") {
+                            stockInTotal += qty;
+                        } else {
+                            stockOutTotal += qty;
+                        }
+
+                        // Appending each entry to the new stock ledger table
+                        const row = `
+                            <tr>
+                                <td style="font-weight: 500;">${data.itemName || "Unnamed Item"}</td>
+                                <td><span class="badge ${type.toUpperCase() === 'IN' ? 'badge-in' : 'badge-out'}">${type.toUpperCase()}</span></td>
+                                <td style="font-weight: 600;">${qty} Pcs</td>
+                                <td>${data.hubName || "Main Hub"}</td>
+                                <td style="color: var(--text-muted); font-size: 13px;">${data.date || "N/A"}</td>
+                            </tr>
+                        `;
+                        ledgerTableBody.innerHTML += row;
+                    });
+                } else {
+                    ledgerTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No stock log records found.</td></tr>`;
+                }
+
+                // Updating Stock counters on screen
+                document.getElementById('countStockIn').innerText = stockInTotal;
+                document.getElementById('countStockOut').innerText = stockOutTotal;
+
+                // Dynamic table loader for Users
                 const tableBody = document.getElementById('overviewTableBody');
                 if(!usersSnap.empty) {
-                    tableBody.innerHTML = ""; // Purana static data clear karne ke liye
+                    tableBody.innerHTML = ""; 
                     
                     usersSnap.forEach((doc) => {
                         const userData = doc.data();
@@ -444,12 +525,9 @@
                         const status = userData.status || "Active";
                         const facility = userData.hub || userData.facility || "Not Assigned";
 
-                        // Har dynamic user ke naam par bhi users.html ka link de diya hai
                         const row = `
                             <tr>
-                                <td>
-                                    <a href="users.html" class="user-click-link">${name}</a>
-                                </td>
+                                <td><a href="users.html" class="user-click-link">${name}</a></td>
                                 <td><span class="badge badge-admin">${role}</span></td>
                                 <td><span style="color: ${status === 'Active' || status === 'active' ? '#16a34a' : '#ef4444'}; font-weight: 500;">● ${status}</span></td>
                                 <td>${facility}</td>
