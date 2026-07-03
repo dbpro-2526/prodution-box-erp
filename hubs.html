@@ -716,14 +716,22 @@
         const tbody = document.getElementById('masterTableBody');
         tbody.innerHTML = "";
 
-        // Append Regions
-        masterRegions.forEach(r => {
-            tbody.innerHTML += `<tr>
-                <td><span class="status-badge" style="background:#fef3c7; color:#d97706;">Region</span></td>
-                <td>${r.name}</td><td>-</td><td>-</td>
-                <td><button class="op-btn op-delete-master" data-col="regions" data-id="${r.id}"><i class="fa-solid fa-trash"></i></button></td>
-            </tr>`;
+        // Function to handle Edit
+        window.editMaster = async (col, id, currentName) => {
+            const newName = prompt("Update Name:", currentName);
+            if(newName && newName !== currentName) {
+                await updateDoc(doc(db, col, id), { name: newName });
+            }
+        };
+
+        masterRegions.forEach(r => tbody.innerHTML += `<tr><td><span class="status-badge" style="background:#fef3c7; color:#d97706;">Region</span></td><td>${r.name}</td><td>-</td><td>-</td><td><button class="op-btn" onclick="window.editMaster('regions','${r.id}','${r.name}')" style="color:blue;"><i class="fa-solid fa-pen"></i></button> <button class="op-btn op-delete-master" data-col="regions" data-id="${r.id}" style="color:red;"><i class="fa-solid fa-trash"></i></button></td></tr>`);
+        masterStates.forEach(s => tbody.innerHTML += `<tr><td><span class="status-badge" style="background:#dcfce7; color:#15803d;">State</span></td><td>${s.region}</td><td>${s.name}</td><td>-</td><td><button class="op-btn" onclick="window.editMaster('states','${s.id}','${s.name}')" style="color:blue;"><i class="fa-solid fa-pen"></i></button> <button class="op-btn op-delete-master" data-col="states" data-id="${s.id}" style="color:red;"><i class="fa-solid fa-trash"></i></button></td></tr>`);
+        masterDivisions.forEach(div => tbody.innerHTML += `<tr><td><span class="status-badge" style="background:#e0f2fe; color:#0369a1;">Division</span></td><td>${div.region}</td><td>${div.state}</td><td>${div.name}</td><td><button class="op-btn" onclick="window.editMaster('divisions','${div.id}','${div.name}')" style="color:blue;"><i class="fa-solid fa-pen"></i></button> <button class="op-btn op-delete-master" data-col="divisions" data-id="${div.id}" style="color:red;"><i class="fa-solid fa-trash"></i></button></td></tr>`);
+
+        document.querySelectorAll('.op-delete-master').forEach(btn => {
+            btn.onclick = async () => { if(confirm("Are you sure?")) await deleteDoc(doc(db, btn.getAttribute('data-col'), btn.getAttribute('data-id'))); };
         });
+    }
 
         // Append States
         masterStates.forEach(s => {
