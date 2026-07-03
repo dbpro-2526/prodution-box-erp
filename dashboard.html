@@ -251,6 +251,16 @@
             font-size: 14px;
         }
 
+        /* Naya Style: Link ko blue aur clickable dikhane ke liye */
+        .user-click-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .user-click-link:hover {
+            text-decoration: underline;
+        }
+
         .badge {
             padding: 4px 8px;
             border-radius: 6px;
@@ -284,6 +294,7 @@
         </div>
         <div class="sidebar-menu">
             <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <!-- Sidebar Clickable Link -->
             <a href="users.html" class="menu-item"><i class="fa-solid fa-users"></i> All Users Setup</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
             <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
@@ -347,7 +358,7 @@
         <div class="dashboard-section">
             <div class="section-header">
                 <h2 style="font-size: 18px; font-weight: 600;">System Administrative Overview</h2>
-                <button class="btn-add"><i class="fa-solid fa-plus"></i> Configure New Entity</button>
+                <button class="btn-add" onclick="window.location.href='users.html'"><i class="fa-solid fa-plus"></i> Configure New Entity</button>
             </div>
             <div class="table-responsive">
                 <table>
@@ -362,7 +373,10 @@
                     </thead>
                     <tbody id="overviewTableBody">
                         <tr>
-                            <td><strong>Markazi Warehouse User</strong></td>
+                            <!-- BADLAO YAHAN HAI: User name par href="users.html" laga diya hai -->
+                            <td>
+                                <a href="users.html" class="user-click-link">Markazi Warehouse User</a>
+                            </td>
                             <td><span class="badge badge-admin">Super Admin</span></td>
                             <td><span style="color: #16a34a; font-weight: 500;">● Active</span></td>
                             <td>All Zones (Full Access)</td>
@@ -396,7 +410,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             const activeUser = JSON.parse(localStorage.getItem('userSession'));
 
-            // Check if session data exists and user role matches
             if (!activeUser || activeUser.role !== "Super Admin") {
                 alert("Unauthorized Entry! Super Admin Access Required.");
                 window.location.href = "login.html";
@@ -406,7 +419,7 @@
             }
         });
 
-        // Real-time Counters Setup
+        // Real-time Counters Setup & Dynamic Table Loading
         async function fetchLiveDashboardStats() {
             try {
                 const usersSnap = await getDocs(collection(db, "users"));
@@ -418,6 +431,34 @@
                 document.getElementById('countHubs').innerText = hubsSnap.size || 0;
                 document.getElementById('countItems').innerText = itemsSnap.size || 0;
                 document.getElementById('countPending').innerText = pendingSnap.size || 0;
+
+                // Dynamic table loader from Firestore data
+                const tableBody = document.getElementById('overviewTableBody');
+                if(!usersSnap.empty) {
+                    tableBody.innerHTML = ""; // Purana static data clear karne ke liye
+                    
+                    usersSnap.forEach((doc) => {
+                        const userData = doc.data();
+                        const name = userData.fullName || userData.name || "Unknown User";
+                        const role = userData.role || "User";
+                        const status = userData.status || "Active";
+                        const facility = userData.hub || userData.facility || "Not Assigned";
+
+                        // Har dynamic user ke naam par bhi users.html ka link de diya hai
+                        const row = `
+                            <tr>
+                                <td>
+                                    <a href="users.html" class="user-click-link">${name}</a>
+                                </td>
+                                <td><span class="badge badge-admin">${role}</span></td>
+                                <td><span style="color: ${status === 'Active' || status === 'active' ? '#16a34a' : '#ef4444'}; font-weight: 500;">● ${status}</span></td>
+                                <td>${facility}</td>
+                                <td><button class="actions-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                }
             } catch (error) {
                 console.error("Firestore loading error: ", error);
             }
@@ -425,7 +466,7 @@
 
         // Logout Session Process
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.clear(); // Saara user data reset karne ke liye taaki session clear rahe
+            localStorage.clear(); 
             window.location.href = 'login.html'; 
         });
     </script>
