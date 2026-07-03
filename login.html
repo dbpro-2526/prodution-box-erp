@@ -1,0 +1,435 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAQ Login - Professional ERP Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px 30px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #0f766e, #14b8a6);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            cursor: pointer;
+            color: #0f766e;
+            font-size: 18px;
+            background: none;
+            border: none;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: #0f766e;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #0f766e, #14b8a6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(15, 118, 110, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #047857;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+            }
+
+            .login-header h1 {
+                font-size: 24px;
+            }
+
+            .remember-forgot {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h1>AAQ ERP Login</h1>
+                <p>Professional Event Management System</p>
+            </div>
+
+            <div id="alertBox" class="alert"></div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label" for="email">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="your@email.com"
+                        required
+                    >
+                </div>
+
+                <div class="form-group password-group">
+                    <label class="form-label" for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        <i class="fas fa-eye" id="toggleIcon"></i>
+                    </button>
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <span>Remember me</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <span class="loading-spinner" id="loadingSpinner"></span>
+                    <span id="btnText">Login</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db } from './js/firebase-config.js';
+        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { sendWelcomeEmail } from './js/email.js';
+
+        // Toggle password visibility
+        window.togglePassword = function() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        };
+
+        // Show alert
+        function showAlert(message, type = 'error') {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = `alert show alert-${type}`;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertBox.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Handle Login
+        window.handleLogin = async function(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const loginBtn = document.querySelector('.login-btn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const btnText = document.getElementById('btnText');
+
+            // Disable button and show loading
+            loginBtn.disabled = true;
+            loadingSpinner.style.display = 'inline-block';
+            btnText.textContent = 'Logging in...';
+
+            try {
+                // Admin check
+                const adminEmails = [
+                    'aaqsolutioninfoteam@gmail.com',
+                    'admin@aaq.com'
+                ];
+
+                if (adminEmails.includes(email)) {
+                    // Admin login - Match activeStaffUser for safety
+                    const adminData = {
+                        email: email,
+                        role: 'ADMIN',
+                        name: 'Administrator',
+                        position: 'System Administrator'
+                    };
+                    
+                    localStorage.setItem('loggedUser', 'Admin');
+                    localStorage.setItem('userRole', 'ADMIN');
+                    localStorage.setItem('currentUser', JSON.stringify(adminData));
+                    localStorage.setItem('activeStaffUser', JSON.stringify(adminData)); // Interlock matched
+
+                    if (rememberMe) {
+                        localStorage.setItem('rememberEmail', email);
+                    }
+
+                    showAlert('✅ Welcome Admin!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 1000);
+                    return;
+                }
+
+                // Staff check
+                const q = query(
+                    collection(db, 'staffs'),
+                    where('email', '==', email)
+                );
+
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    throw new Error('User not found');
+                }
+
+                let found = false;
+                let userData = null;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.password === password) {
+                        found = true;
+                        userData = {
+                            id: doc.id,
+                            ...data
+                        };
+                    }
+                });
+
+                if (!found) {
+                    throw new Error('Invalid password');
+                }
+
+                // SUCCESSFUL LOGIN - INTERLOCK FIX WITH DASHBOARD ENGINE
+                const staffSessionData = {
+                    name: userData.staffName || 'Staff Member',
+                    position: userData.position || 'Field Worker',
+                    photoUrl: userData.photoURL || 'https://i.imgur.com/6VBx3io.png'
+                };
+
+                // Saving standard legacy tokens
+                localStorage.setItem('staffId', userData.id);
+                localStorage.setItem('staffName', userData.staffName || 'Staff');
+                localStorage.setItem('staffEmail', userData.email);
+                localStorage.setItem('staffPhoto', userData.photoURL || '');
+                localStorage.setItem('userRole', 'STAFF');
+                localStorage.setItem('loggedUser', userData.staffName || 'Staff');
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+                
+                // CRITICAL FIXED: Match exactly what dashboard.html requires!
+                localStorage.setItem('activeStaffUser', JSON.stringify(staffSessionData));
+
+                if (rememberMe) {
+                    localStorage.setItem('rememberEmail', email);
+                }
+
+                // Send welcome notification
+                try {
+                    await sendWelcomeEmail(email, userData.staffName || 'Staff');
+                } catch(e) {
+                    console.log("Email notifications fallback triggered.");
+                }
+
+                showAlert('✅ Welcome back, ' + (userData.staffName || 'Staff'), 'success');
+                setTimeout(() => {
+                    window.location.href = 'staff-dashboard.html';
+                }, 1000);
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('❌ ' + (error.message || 'Login failed. Please try again.'), 'error');
+            } finally {
+                // Re-enable button
+                loginBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+                btnText.textContent = 'Login';
+            }
+        };
+
+        // Pre-fill remembered email
+        window.addEventListener('DOMContentLoaded', () => {
+            const rememberedEmail = localStorage.getItem('rememberEmail');
+            if (rememberedEmail) {
+                document.getElementById('email').value = rememberedEmail;
+                document.getElementById('rememberMe').checked = true;
+            }
+        });
+    </script>
+</body>
+</html>
