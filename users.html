@@ -146,7 +146,7 @@
             border: 1px solid var(--border-color);
         }
 
-        /* --- User Management Grid --- */
+        /* --- Grid Setup --- */
         .manager-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -171,7 +171,7 @@
             gap: 10px;
         }
 
-        /* --- Form Setup --- */
+        /* --- Form Config --- */
         .user-form {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -291,6 +291,17 @@
             color: var(--text-muted);
         }
 
+        .config-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f1f5f9;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
         /* --- Table Styling --- */
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -301,7 +312,6 @@
         .user-meta img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
 
         .status-toggle {
-            cursor: pointer;
             padding: 4px 10px;
             border-radius: 20px;
             font-size: 12px;
@@ -318,6 +328,13 @@
             border-radius: 6px;
             font-size: 12px;
             font-weight: 500;
+        }
+
+        .location-info {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 2px;
         }
 
         .operations-btns {
@@ -366,18 +383,18 @@
         <div class="header-top">
             <div>
                 <h1 style="font-size: 24px; font-weight: 700;">All Users Setup</h1>
-                <p style="color: var(--text-muted); font-size: 14px;">Manage administrative staff, roles, and access controls.</p>
+                <p style="color: var(--text-muted); font-size: 14px;">Manage administrative staff, regional roles, and structural hierarchies.</p>
             </div>
             <div class="user-profile">
                 <i class="fa-solid fa-circle-user" style="font-size: 20px; color: var(--primary-color);"></i>
-                <span id="adminName" style="font-weight: 600; font-size: 14px;">Super Admin</span>
+                <span id="adminName" style="font-weight: 600; font-size: 14px;">Loading...</span>
             </div>
         </div>
 
         <div class="manager-grid">
             
             <!-- User Control Form Section -->
-            <div class="dashboard-section">
+            <div class="dashboard-section" id="formContainerSection">
                 <div class="section-title" id="formStateHeader">
                     <i class="fa-solid fa-user-plus"></i> Add New System User
                 </div>
@@ -386,8 +403,8 @@
                     <input type="hidden" id="editUserId">
 
                     <div class="form-group">
-                        <label>Employee Code</label>
-                        <input type="text" id="empCode" placeholder="Auto Generating..." readonly style="font-weight:600; color:var(--primary-color);">
+                        <label>Employee Code (Manual Input)</label>
+                        <input type="text" id="empCode" placeholder="e.g. EMP1001, DBE-01" required style="font-weight:600; color:var(--primary-color);">
                     </div>
 
                     <div class="form-group">
@@ -396,13 +413,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Login Username / Email</label>
-                        <input type="email" id="userEmail" placeholder="username@domain.com" required>
+                        <label>Mobile Number</label>
+                        <input type="tel" id="userMobile" placeholder="Enter 10-digit mobile number" required>
                     </div>
 
                     <div class="form-group" id="passInputContainer">
                         <label>System Password</label>
-                        <input type="password" id="userPassword" placeholder="Set default secure password" required>
+                        <input type="password" id="userPassword" placeholder="Set secure password" required>
                     </div>
 
                     <div class="form-group">
@@ -418,6 +435,49 @@
                             <option value="Warehouse Manager">Warehouse Manager</option>
                             <option value="Employee">Employee</option>
                             <option value="Viewer">Viewer</option>
+                        </select>
+                    </div>
+
+                    <!-- Hierarchy Assignment Scope Fields (with explicit bypass fallback mapping) -->
+                    <div class="form-group">
+                        <label>Assign Region</label>
+                        <select id="userRegion" required>
+                            <option value="ALL">ALL (Full Access)</option>
+                            <option value="North Region">North Region</option>
+                            <option value="South Region">South Region</option>
+                            <option value="East Region">East Region</option>
+                            <option value="West Region">West Region</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Assign State</label>
+                        <select id="userState" required>
+                            <option value="ALL">ALL (Full Access)</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="UP">UP</option>
+                            <option value="Punjab">Punjab</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Assign Division</label>
+                        <select id="userDivision" required>
+                            <option value="ALL">ALL (Full Access)</option>
+                            <option value="Division A">Division A</option>
+                            <option value="Division B">Division B</option>
+                            <option value="Division C">Division C</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Assign Warehouse</label>
+                        <select id="userWarehouse" required>
+                            <option value="ALL">ALL (Full Access)</option>
+                            <option value="Central Warehouse">Central Warehouse</option>
+                            <option value="North Hub">North Hub</option>
+                            <option value="South Depot">South Depot</option>
                         </select>
                     </div>
 
@@ -455,12 +515,19 @@
             <div class="dashboard-section">
                 <div class="controls-row">
                     <div class="section-title" style="margin-bottom:0;">
-                        <i class="fa-solid fa-address-book"></i> Active Registered Staff List
+                        <i class="fa-solid fa-address-book"></i> Filtered Scope Staff Registry List
                     </div>
                     
+                    <!-- Admin Control Box for Sub-Manager Modification Capability toggling -->
+                    <div class="config-box" id="globalPermissionControl" style="display:none;">
+                        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" id="allowManagerEdits" checked> Allow Staff to Edit Profiles
+                        </label>
+                    </div>
+
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="searchUserField" placeholder="Search by name, code, or role...">
+                        <input type="text" id="searchUserField" placeholder="Search by name, code, or phone...">
                     </div>
                 </div>
 
@@ -469,9 +536,9 @@
                         <thead>
                             <tr>
                                 <th>Emp Code</th>
-                                <th>User Profiles Details</th>
-                                <th>Email / Username</th>
-                                <th>Role Tier</th>
+                                <th>User Profile Details</th>
+                                <th>Contact / Mobile</th>
+                                <th>Role Tier Scope</th>
                                 <th>Status Control</th>
                                 <th>System Actions</th>
                             </tr>
@@ -493,9 +560,8 @@
     <!-- Firebase SDK Operations Layer -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Production Project Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
             authDomain: "prodution-box-erp.firebaseapp.com",
@@ -510,14 +576,9 @@
         const db = getFirestore(app);
 
         let localUsersCache = [];
+        let currentUserSession = null;
+        let globalManagerEditPermission = true;
 
-        // Emp Code Auto-Generator Logic
-        function triggerEmpCodeGeneration() {
-            const patternCode = "DBE-" + Math.floor(10000 + Math.random() * 90000);
-            document.getElementById('empCode').value = patternCode;
-        }
-
-        // Photo Upload Base64 Conversion
         document.getElementById('photoUpload').addEventListener('change', function(e) {
             const targetFile = e.target.files[0];
             if (targetFile) {
@@ -530,21 +591,45 @@
             }
         });
 
-        // Security / Session Routing Guard Verification Check
-        window.addEventListener('DOMContentLoaded', () => {
-            const activeUser = JSON.parse(localStorage.getItem('userSession'));
-            if (!activeUser || activeUser.role !== 'Super Admin') {
-                alert("Unauthorized Entry! Super Admin Access Required.");
+        // Guard Routing Security Setup
+        window.addEventListener('DOMContentLoaded', async () => {
+            currentUserSession = JSON.parse(localStorage.getItem('userSession')) || JSON.parse(localStorage.getItem('activeUser'));
+            
+            if (!currentUserSession) {
+                alert("Unauthorized Entry! Redirecting to login space.");
                 window.location.href = 'login.html';
                 return;
             }
-            document.getElementById('adminName').innerText = activeUser.fullName || activeUser.name || "Super Admin";
             
-            triggerEmpCodeGeneration();
+            localStorage.setItem('userSession', JSON.stringify(currentUserSession));
+            document.getElementById('adminName').innerText = currentUserSession.fullName || currentUserSession.name || "System User";
+            
+            const currentRole = currentUserSession.role;
+            const isMasterAdmin = (currentRole === "Super Admin" || currentRole === "Admin");
+
+            if (isMasterAdmin) {
+                document.getElementById('globalPermissionControl').style.display = 'flex';
+            }
+
+            // Fetch Settings Control Switch
+            try {
+                const configRef = doc(db, "settings", "globalConfig");
+                const configSnap = await getDoc(configRef);
+                if (configSnap.exists()) {
+                    globalManagerEditPermission = configSnap.data().allowManagerEdits;
+                    document.getElementById('allowManagerEdits').checked = globalManagerEditPermission;
+                }
+            } catch(e) { console.log("Config mapping error:", e); }
+
             syncUsersCollectionEngine();
         });
 
-        // Database pulling logic
+        document.getElementById('allowManagerEdits').addEventListener('change', async function(e) {
+            globalManagerEditPermission = e.target.checked;
+            await setDoc(doc(db, "settings", "globalConfig"), { allowManagerEdits: globalManagerEditPermission }, { merge: true });
+            renderUserInterfaceRegistry(localUsersCache);
+        });
+
         async function syncUsersCollectionEngine() {
             try {
                 const snap = await getDocs(collection(db, "users"));
@@ -554,23 +639,85 @@
                 });
                 renderUserInterfaceRegistry(localUsersCache);
             } catch (err) {
-                console.error("Database sync error: ", err);
+                console.error("Database connection sync error: ", err);
             }
         }
 
-        // Render Table Interface
+        // Hierarchical Boundary Data Filtration Logic
+        function filterUsersByRoleHierarchy(dataSet) {
+            if (!currentUserSession) return [];
+            const role = currentUserSession.role;
+            
+            if (role === "Super Admin" || role === "Admin") return dataSet;
+
+            return dataSet.filter(user => {
+                // If checking user is admin, pass through
+                if (user.role === "Super Admin" || user.role === "Admin") return false;
+
+                if (role === "Regional Manager") {
+                    return currentUserSession.region === "ALL" || user.region === currentUserSession.region;
+                }
+                if (role === "State Manager" || role === "State Office") {
+                    const matchRegion = (currentUserSession.region === "ALL" || user.region === currentUserSession.region);
+                    const matchState = (currentUserSession.state === "ALL" || user.state === currentUserSession.state);
+                    return matchRegion && matchState;
+                }
+                if (role === "Division Manager") {
+                    const matchRegion = (currentUserSession.region === "ALL" || user.region === currentUserSession.region);
+                    const matchState = (currentUserSession.state === "ALL" || user.state === currentUserSession.state);
+                    const matchDiv = (currentUserSession.division === "ALL" || user.division === currentUserSession.division);
+                    return matchRegion && matchState && matchDiv;
+                }
+                if (role === "Warehouse Manager") {
+                    return currentUserSession.warehouse === "ALL" || user.warehouse === currentUserSession.warehouse;
+                }
+                
+                // Absolute fallback tracking lock
+                return user.employeeCode === (currentUserSession.employeeCode || currentUserSession.empCode);
+            });
+        }
+
         function renderUserInterfaceRegistry(dataSet) {
             const registryBody = document.getElementById('userRegistryTableBody');
-            if (dataSet.length === 0) {
-                registryBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No records discovered matching database logs.</td></tr>`;
+            const filteredSet = filterUsersByRoleHierarchy(dataSet);
+
+            if (filteredSet.length === 0) {
+                registryBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No records authorized or scope matches found.</td></tr>`;
                 return;
             }
 
+            const currentRole = currentUserSession ? currentUserSession.role : 'Viewer';
+            const isMasterAdmin = (currentRole === "Super Admin" || currentRole === "Admin");
+            const canModifyData = isMasterAdmin || globalManagerEditPermission;
+
             registryBody.innerHTML = "";
-            dataSet.forEach(user => {
+            filteredSet.forEach(user => {
                 const placeholderAvatar = `<div class="preview-avatar" style="width:36px; height:36px;"><i class="fa-solid fa-user"></i></div>`;
                 const avatarRender = user.avatarUrl ? `<img src="${user.avatarUrl}" alt="Avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : placeholderAvatar;
                 const activeLabelClass = user.status === 'Active' ? 'status-active' : 'status-inactive';
+
+                // Scope metadata rendering string logic
+                let scopeTracks = [];
+                if(user.region && user.region !== "ALL") scopeTracks.push(user.region);
+                if(user.state && user.state !== "ALL") scopeTracks.push(user.state);
+                if(user.division && user.division !== "ALL") scopeTracks.push(user.division);
+                if(user.warehouse && user.warehouse !== "ALL") scopeTracks.push(`WH: ${user.warehouse}`);
+                
+                const scopeString = scopeTracks.length > 0 
+                    ? `<span class="location-info"><i class="fa-solid fa-sitemap"></i> ${scopeTracks.join(' > ')}</span>`
+                    : `<span class="location-info"><i class="fa-solid fa-globe"></i> Global Access (ALL)</span>`;
+
+                const statusButtonHTML = isMasterAdmin 
+                    ? `<button class="status-toggle ${activeLabelClass}" data-id="${user.id}" data-current="${user.status}">● ${user.status}</button>`
+                    : `<span class="status-toggle ${activeLabelClass}">● ${user.status}</span>`;
+
+                const actionsHTML = canModifyData 
+                    ? `<div class="operations-btns">
+                        <button class="op-btn op-edit" data-id="${user.id}" title="Edit User Identity"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button class="op-btn op-reset" data-id="${user.id}" title="Reset Entry Password"><i class="fa-solid fa-key"></i></button>
+                        ${isMasterAdmin ? `<button class="op-btn op-delete" data-id="${user.id}" title="Delete User Record Permanently"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                       </div>`
+                    : `<span style="color:var(--text-muted); font-size:12px;"><i class="fa-solid fa-lock"></i> Locked</span>`;
 
                 const tableRow = document.createElement('tr');
                 tableRow.innerHTML = `
@@ -581,20 +728,10 @@
                             <strong>${user.name}</strong>
                         </div>
                     </td>
-                    <td>${user.email}</td>
-                    <td><span class="role-badge">${user.role}</span></td>
-                    <td>
-                        <button class="status-toggle ${activeLabelClass}" data-id="${user.id}" data-current="${user.status}">
-                            ● ${user.status}
-                        </button>
-                    </td>
-                    <td>
-                        <div class="operations-btns">
-                            <button class="op-btn op-edit" data-id="${user.id}" title="Edit User Identity"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="op-btn op-reset" data-id="${user.id}" title="Reset Security Password"><i class="fa-solid fa-key"></i></button>
-                            <button class="op-btn op-delete" data-id="${user.id}" title="Delete User Record Permanently"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                    </td>
+                    <td>${user.mobile || 'N/A'}</td>
+                    <td><span class="role-badge">${user.role}</span>${scopeString}</td>
+                    <td>${statusButtonHTML}</td>
+                    <td>${actionsHTML}</td>
                 `;
                 registryBody.appendChild(tableRow);
             });
@@ -602,42 +739,46 @@
             bindInteractiveFunctionalTriggers();
         }
 
-        // Live Real-time Engine Search Feature
+        // Live filtration tracking
         document.getElementById('searchUserField').addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase().trim();
             const filteredSet = localUsersCache.filter(user => 
                 (user.name && user.name.toLowerCase().includes(query)) ||
                 (user.employeeCode && user.employeeCode.toLowerCase().includes(query)) ||
                 (user.role && user.role.toLowerCase().includes(query)) ||
-                (user.email && user.email.toLowerCase().includes(query))
+                (user.mobile && user.mobile.includes(query))
             );
             renderUserInterfaceRegistry(filteredSet);
         });
 
-        // Binding Triggers (Edit, Delete, Reset, Status Toggle)
         function bindInteractiveFunctionalTriggers() {
-            // Status Toggle Controller
             document.querySelectorAll('.status-toggle').forEach(btn => {
-                btn.onclick = async (e) => {
-                    const targetId = btn.getAttribute('data-id');
-                    const nextState = btn.getAttribute('data-current') === 'Active' ? 'Inactive' : 'Active';
-                    await updateDoc(doc(db, "users", targetId), { status: nextState });
-                    syncUsersCollectionEngine();
-                };
+                if(btn.tagName === 'BUTTON') {
+                    btn.onclick = async () => {
+                        const targetId = btn.getAttribute('data-id');
+                        const nextState = btn.getAttribute('data-current') === 'Active' ? 'Inactive' : 'Active';
+                        await updateDoc(doc(db, "users", targetId), { status: nextState });
+                        syncUsersCollectionEngine();
+                    };
+                }
             });
 
-            // Edit Action Router
             document.querySelectorAll('.op-edit').forEach(btn => {
-                btn.onclick = (e) => {
+                btn.onclick = () => {
                     const targetId = btn.getAttribute('data-id');
                     const entry = localUsersCache.find(u => u.id === targetId);
                     if (entry) {
                         document.getElementById('editUserId').value = entry.id;
                         document.getElementById('empCode').value = entry.employeeCode || "";
                         document.getElementById('fullName').value = entry.name || "";
-                        document.getElementById('userEmail').value = entry.email || "";
+                        document.getElementById('userMobile').value = entry.mobile || "";
                         document.getElementById('userRole').value = entry.role || "";
+                        
                         document.getElementById('userStatus').value = entry.status || "Active";
+                        document.getElementById('userRegion').value = entry.region || "ALL";
+                        document.getElementById('userState').value = entry.state || "ALL";
+                        document.getElementById('userDivision').value = entry.division || "ALL";
+                        document.getElementById('userWarehouse').value = entry.warehouse || "ALL";
                         
                         document.getElementById('userPassword').removeAttribute('required');
                         document.getElementById('passInputContainer').style.display = 'none';
@@ -647,32 +788,31 @@
                             document.getElementById('avatarBox').innerHTML = `<img src="${entry.avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
                         }
 
-                        document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-pen"></i> Edit User: ${entry.employeeCode}`;
-                        document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Update User Profile`;
+                        document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-pen"></i> Modify Identity Scope: ${entry.employeeCode}`;
+                        document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Update Registry Record`;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 };
             });
 
-            // Password Reset Module Action
             document.querySelectorAll('.op-reset').forEach(btn => {
-                btn.onclick = async (e) => {
+                btn.onclick = async () => {
                     const targetId = btn.getAttribute('data-id');
                     const entry = localUsersCache.find(u => u.id === targetId);
-                    const promptPass = prompt(`Set new dynamic password for ${entry.name}:`);
+                    const promptPass = prompt(`Set new secure credentials password for ${entry.name}:`);
                     if (promptPass && promptPass.trim().length >= 4) {
                         await updateDoc(doc(db, "users", targetId), { password: promptPass.trim() });
-                        alert("Password configuration synchronized successfully.");
+                        alert("Password synchronized on registry server.");
                     } else if (promptPass) {
-                        alert("Validation error: Password must be minimum 4 characters.");
+                        alert("Validation Error: Minimum length requirement is 4 characters.");
                     }
                 };
             });
 
-            // Delete Record Route
             document.querySelectorAll('.op-delete').forEach(btn => {
-                btn.onclick = async (e) => {
+                btn.onclick = async () => {
                     const targetId = btn.getAttribute('data-id');
-                    if (confirm("Are you sure you want to permanently erase this user account?")) {
+                    if (confirm("Erase this entity profile entirely from Donation Box database log?")) {
                         await deleteDoc(doc(db, "users", targetId));
                         syncUsersCollectionEngine();
                     }
@@ -680,36 +820,42 @@
             });
         }
 
-        // Unified Add / Edit Form Submit Processor
         document.getElementById('userControlForm').onsubmit = async (e) => {
             e.preventDefault();
             const editId = document.getElementById('editUserId').value;
             
             const packetPayload = {
-                employeeCode: document.getElementById('empCode').value,
+                employeeCode: document.getElementById('empCode').value.trim(),
                 name: document.getElementById('fullName').value.trim(),
-                email: document.getElementById('userEmail').value.trim(),
+                mobile: document.getElementById('userMobile').value.trim(),
                 role: document.getElementById('userRole').value,
                 status: document.getElementById('userStatus').value,
+                region: document.getElementById('userRegion').value,
+                state: document.getElementById('userState').value,
+                division: document.getElementById('userDivision').value,
+                warehouse: document.getElementById('userWarehouse').value,
                 avatarUrl: document.getElementById('photoDataUrl').value || ""
             };
 
-            if (!editId) {
-                // Add Mode Path
+            // Double unique enforcement check for safety during insertion mapping
+            if(!editId) {
+                const codeDuplicate = localUsersCache.some(u => u.employeeCode.toLowerCase() === packetPayload.employeeCode.toLowerCase());
+                if(codeDuplicate) {
+                    alert("Operation Denied: This Employee Code already exists in database registry.");
+                    return;
+                }
                 packetPayload.password = document.getElementById('userPassword').value;
                 await addDoc(collection(db, "users"), packetPayload);
-                alert("New user added successfully.");
+                alert("New tier-structured profile saved successfully.");
             } else {
-                // Update Mode Path
                 await updateDoc(doc(db, "users", editId), packetPayload);
-                alert("User record verified and synchronized successfully.");
+                alert("User scope metadata tracking records updated.");
             }
 
             triggerClearFormInterfaceAction();
             syncUsersCollectionEngine();
         };
 
-        // Form View States Reset Cleaner
         function triggerClearFormInterfaceAction() {
             document.getElementById('userControlForm').reset();
             document.getElementById('editUserId').value = "";
@@ -720,15 +866,13 @@
             
             document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-plus"></i> Add New System User`;
             document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Entry Record`;
-            
-            triggerEmpCodeGeneration();
         }
 
         document.getElementById('resetFormBtn').onclick = triggerClearFormInterfaceAction;
 
-        // Logout Flow Action Integration
         document.getElementById('logoutBtn').onclick = () => {
             localStorage.removeItem('userSession');
+            localStorage.removeItem('activeUser');
             window.location.href = 'login.html';
         };
     </script>
