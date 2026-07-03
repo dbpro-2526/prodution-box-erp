@@ -461,6 +461,9 @@
     const db = getFirestore(app);
 
     let allHubs = [];
+    let masterRegions = [];
+    let masterStates = [];
+    let masterDivisions = [];
 
     // --- Save Master Data Logic ---
     document.getElementById('saveRegion').onclick = async () => {
@@ -495,21 +498,6 @@
 
     // --- Load Data into Dropdowns & Cascading Select Logic ---
     function loadDropdowns() {
-        // Load Regions Live
-        onSnapshot(collection(db, "regions"), (snap) => {
-            const selects = [
-                document.getElementById('hubRegion'), 
-                document.getElementById('stateRegion'), 
-                document.getElementById('divisionRegion')
-            ];
-            selects.forEach(s => {
-                if(s) {
-                    s.innerHTML = '<option value="">-- Select Region --</option>';
-                    snap.forEach(d => s.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
-                }
-            });
-        });
-
         // Setup Form - Cascade Region to State
         document.getElementById('hubRegion').onchange = async (e) => {
             const regionVal = e.target.value;
@@ -618,7 +606,6 @@
             tbody.appendChild(tr);
         });
 
-        // Attach Event Listeners to Edit/Delete Buttons
         document.querySelectorAll('.op-edit').forEach(btn => {
             btn.onclick = () => editHub(btn.getAttribute('data-id'));
         });
@@ -636,10 +623,8 @@
         document.getElementById('hubCode').value = hub.code;
         document.getElementById('hubName').value = hub.name;
         document.getElementById('hubManager').value = hub.manager;
-        
         document.getElementById('hubRegion').value = hub.region;
         
-        // Load states dynamically for this region before setting value
         const stateSelect = document.getElementById('hubState');
         const qState = query(collection(db, "states"), where("region", "==", hub.region));
         const snapState = await getDocs(qState);
@@ -647,7 +632,6 @@
         snapState.forEach(d => stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
         stateSelect.value = hub.state;
 
-        // Load divisions dynamically for this state before setting value
         const divSelect = document.getElementById('hubDivision');
         const qDiv = query(collection(db, "divisions"), where("state", "==", hub.state));
         const snapDiv = await getDocs(qDiv);
@@ -695,43 +679,85 @@
         renderTable(filtered);
     };
 
-    // Initialize Page Dropdowns
-    loadDropdowns();
-    // --- Master Data Table Listener ---
-onSnapshot(collection(db, "regions"), (snap) => updateMasterTable());
-onSnapshot(collection(db, "states"), (snap) => updateMasterTable());
-onSnapshot(collection(db, "divisions"), (snap) => updateMasterTable());
+    // --- Optimized Master Data Realtime Synchronization & Render ---
+    function syncMasterDropdownsAndTable() {
+        // 1. Regions Listener
+        onSnapshot(collection(db, "regions"), (snap) => {
+            masterRegions = [];
+            snap.forEach(d => masterRegions.push({ id: d.id, ...d.data() }));
+            
+            // Dropdowns Update
+            const selects = [document.getElementById('hubRegion'), document.getElementById('stateRegion'), document.getElementById('divisionRegion')];
+            selects.forEach(s => {
+                if(s) {
+                    s.innerHTML = '<option value="">-- Select Region --</option>';
+                    masterRegions.forEach(reg => s.innerHTML += `<option value="${reg.name}">${reg.name}</option>`);
+                }
+            });
+            renderMasterTable();
+        });
 
-async function updateMasterTable() {
-    const tbody = document.getElementById('masterTableBody');
-    tbody.innerHTML = "";
+        // 2. States Listener
+        onSnapshot(collection(db, "states"), (snap) => {
+            masterStates = [];
+            snap.forEach(d => masterStates.push({ id: d.id, ...d.data() }));
+            renderMasterTable();
+        });
 
-    // Load all in parallel
-    const [regs, stats, divs] = await Promise.all([
-        getDocs(collection(db, "regions")),
-        getDocs(collection(db, "states")),
-        getDocs(collection(db, "divisions"))
-    ]);
-
-    // Render Divisions (Sabse deep level)
-    divs.forEach(doc => {
-        const d = doc.data();
-        tbody.innerHTML += `<tr>
-            <td><span class="status-badge" style="background:#e0f2fe; color:#0369a1;">Division</span></td>
-            <td>${d.region}</td><td>${d.state}</td><td>${d.name}</td>
-            <td><button class="op-btn op-delete" onclick="deleteMaster('divisions', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td>
-        </tr>`;
-    });
-    
-    // Aap isi tarah State aur Region ke liye bhi rows add kar sakte hain
-}
-
-// Global Delete Function
-window.deleteMaster = async (col, id) => {
-    if(confirm("Are you sure? This will remove it from the list.")) {
-        await deleteDoc(doc(db, col, id));
+        // 3. Divisions Listener
+        onSnapshot(collection(db, "divisions"), (snap) => {
+            masterDivisions = [];
+            snap.forEach(d => masterDivisions.push({ id: d.id, ...d.data() }));
+            renderMasterTable();
+        });
     }
-};
+
+    function renderMasterTable() {
+        const tbody = document.getElementById('masterTableBody');
+        tbody.innerHTML = "";
+
+        // Append Regions
+        masterRegions.forEach(r => {
+            tbody.innerHTML += `<tr>
+                <td><span class="status-badge" style="background:#fef3c7; color:#d97706;">Region</span></td>
+                <td>${r.name}</td><td>-</td><td>-</td>
+                <td><button class="op-btn op-delete-master" data-col="regions" data-id="${r.id}"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>`;
+        });
+
+        // Append States
+        masterStates.forEach(s => {
+            tbody.innerHTML += `<tr>
+                <td><span class="status-badge" style="background:#dcfce7; color:#15803d;">State</span></td>
+                <td>${s.region}</td><td>${s.name}</td><td>-</td>
+                <td><button class="op-btn op-delete-master" data-col="states" data-id="${s.id}"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>`;
+        });
+
+        // Append Divisions
+        masterDivisions.forEach(div => {
+            tbody.innerHTML += `<tr>
+                <td><span class="status-badge" style="background:#e0f2fe; color:#0369a1;">Division</span></td>
+                <td>${div.region}</td><td>${div.state}</td><td>${div.name}</td>
+                <td><button class="op-btn op-delete-master" data-col="divisions" data-id="${div.id}"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>`;
+        });
+
+        // Safe Dynamic Click Binding within Module Scope
+        document.querySelectorAll('.op-delete-master').forEach(btn => {
+            btn.onclick = async () => {
+                const targetCollection = btn.getAttribute('data-col');
+                const targetId = btn.getAttribute('data-id');
+                if(confirm("Are you sure? This will remove it from the master registry logs.")) {
+                    await deleteDoc(doc(db, targetCollection, targetId));
+                }
+            };
+        });
+    }
+
+    // Initialization
+    loadDropdowns();
+    syncMasterDropdownsAndTable();
 </script>
 </body>
 </html>
