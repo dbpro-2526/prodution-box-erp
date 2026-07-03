@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Donation Box ERP</title>
+    
+    <!-- Favicon & Fonts -->
+    <link rel="icon" href="dblogo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary-color: #0F4C81;
+            --accent-color: #2563EB;
+            --bg-light: #f4f7fe;
+            --sidebar-width: 260px;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success-color: #16a34a;
+            --danger-color: #ef4444;
+            --warning-color: #d97706;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Sidebar Style --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #ffffff;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-brand img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu {
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: #eff6ff;
+            color: var(--accent-color);
+        }
+
+        .sidebar-footer {
+            padding: 20px 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            background: #fee2e2;
+            color: #ef4444;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover { background: #fca5a5; }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 40px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* --- User Management Grid --- */
+        .manager-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .dashboard-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- Form Setup --- */
+        .user-form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .user-form { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .user-form { grid-template-columns: 1fr; }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input, select {
+            height: 44px;
+            padding: 0 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: #f8fafc;
+            transition: border 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+            background: #fff;
+        }
+
+        .photo-upload-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .preview-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            object-fit: cover;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-action {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover { opacity: 0.9; }
+        .btn-save { background: var(--accent-color); color: white; }
+        .btn-clear { background: #e2e8f0; color: var(--text-dark); }
+
+        /* --- Search & Controls --- */
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding-left: 40px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* --- Table Styling --- */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f8fafc; padding: 14px 16px; color: var(--text-muted); font-weight: 600; font-size: 13px; border-bottom: 2px solid var(--border-color); }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); font-size: 14px; vertical-align: middle; }
+        
+        .user-meta { display: flex; align-items: center; gap: 12px; }
+        .user-meta img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+
+        .status-toggle {
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+        }
+        .status-active { background: #dcfce7; color: var(--success-color); }
+        .status-inactive { background: #fee2e2; color: var(--danger-color); }
+
+        .role-badge {
+            background: #eff6ff;
+            color: var(--accent-color);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .operations-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .op-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        .op-edit { color: var(--accent-color); }
+        .op-delete { color: var(--danger-color); }
+        .op-reset { color: var(--warning-color); }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Menu Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <img src="dblogo.png" alt="Logo">
+            <h2>Donation Box</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a href="users.html" class="menu-item active"><i class="fa-solid fa-users"></i> All Users Setup</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
+            <a href="#" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> Pending Approvals</a>
+        </div>
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="logoutBtn">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout System
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Workspace Content -->
+    <div class="main-content">
+        
+        <!-- Header Section -->
+        <div class="header-top">
+            <div>
+                <h1 style="font-size: 24px; font-weight: 700;">All Users Setup</h1>
+                <p style="color: var(--text-muted); font-size: 14px;">Manage administrative staff, roles, and access controls.</p>
+            </div>
+            <div class="user-profile">
+                <i class="fa-solid fa-circle-user" style="font-size: 20px; color: var(--primary-color);"></i>
+                <span id="adminName" style="font-weight: 600; font-size: 14px;">Super Admin</span>
+            </div>
+        </div>
+
+        <div class="manager-grid">
+            
+            <!-- User Control Form Section -->
+            <div class="dashboard-section">
+                <div class="section-title" id="formStateHeader">
+                    <i class="fa-solid fa-user-plus"></i> Add New System User
+                </div>
+                
+                <form id="userControlForm" class="user-form">
+                    <input type="hidden" id="editUserId">
+
+                    <div class="form-group">
+                        <label>Employee Code</label>
+                        <input type="text" id="empCode" placeholder="Auto Generating..." readonly style="font-weight:600; color:var(--primary-color);">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="fullName" placeholder="Enter full identity name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Login Username / Email</label>
+                        <input type="email" id="userEmail" placeholder="username@domain.com" required>
+                    </div>
+
+                    <div class="form-group" id="passInputContainer">
+                        <label>System Password</label>
+                        <input type="password" id="userPassword" placeholder="Set default secure password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role Selection</label>
+                        <select id="userRole" required>
+                            <option value="">-- Choose Assigned Role --</option>
+                            <option value="Super Admin">Super Admin</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Regional Manager">Regional Manager</option>
+                            <option value="State Manager">State Manager</option>
+                            <option value="State Office">State Office</option>
+                            <option value="Division Manager">Division Manager</option>
+                            <option value="Warehouse Manager">Warehouse Manager</option>
+                            <option value="Employee">Employee</option>
+                            <option value="Viewer">Viewer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Account Status</label>
+                        <select id="userStatus">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Profile Image File</label>
+                        <div class="photo-upload-wrapper">
+                            <div class="preview-avatar" id="avatarBox">
+                                <i class="fa-solid fa-camera"></i>
+                            </div>
+                            <input type="file" id="photoUpload" accept="image/*" style="border:none; background:none; height:auto; padding:0;">
+                            <input type="hidden" id="photoDataUrl">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width action-bar">
+                        <button type="submit" class="btn-action btn-save" id="submitBtn">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Entry Record
+                        </button>
+                        <button type="button" class="btn-action btn-clear" id="resetFormBtn">
+                            Clear Fields
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Registry Table Section -->
+            <div class="dashboard-section">
+                <div class="controls-row">
+                    <div class="section-title" style="margin-bottom:0;">
+                        <i class="fa-solid fa-address-book"></i> Active Registered Staff List
+                    </div>
+                    
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchUserField" placeholder="Search by name, code, or role...">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Emp Code</th>
+                                <th>User Profiles Details</th>
+                                <th>Email / Username</th>
+                                <th>Role Tier</th>
+                                <th>Status Control</th>
+                                <th>System Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userRegistryTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center; color:var(--text-muted); padding:30px;">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Synchronization with database ongoing...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDK Operations Layer -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Configuration (Yahan apni sahi API keys lagayein)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA...", 
+            authDomain: "donation-box-erp.firebaseapp.com",
+            projectId: "donation-box-erp",
+            storageBucket: "donation-box-erp.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:123456:web:abcde12345"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let localUsersCache = [];
+
+        // Emp Code Auto-Generator Logic
+        function triggerEmpCodeGeneration() {
+            const patternCode = "DBE-" + Math.floor(10000 + Math.random() * 90000);
+            document.getElementById('empCode').value = patternCode;
+        }
+
+        // Photo Upload Base64 Conversion
+        document.getElementById('photoUpload').addEventListener('change', function(e) {
+            const targetFile = e.target.files[0];
+            if (targetFile) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('photoDataUrl').value = event.target.result;
+                    document.getElementById('avatarBox').innerHTML = `<img src="${event.target.result}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                };
+                reader.readAsDataURL(targetFile);
+            }
+        });
+
+        // Security / Session Check
+        window.addEventListener('DOMContentLoaded', () => {
+            const activeUser = JSON.parse(localStorage.getItem('activeUser'));
+            if (!activeUser || activeUser.role !== 'Super Admin') {
+                alert("Unauthorized Entry! Super Admin Role Required.");
+                window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('adminName').innerText = activeUser.name || "Super Admin";
+            
+            triggerEmpCodeGeneration();
+            syncUsersCollectionEngine();
+        });
+
+        // Database pulling logic
+        async function syncUsersCollectionEngine() {
+            try {
+                const snap = await getDocs(collection(db, "users"));
+                localUsersCache = [];
+                snap.forEach(docItem => {
+                    localUsersCache.push({ id: docItem.id, ...docItem.data() });
+                });
+                renderUserInterfaceRegistry(localUsersCache);
+            } catch (err) {
+                console.error("Database sync error: ", err);
+            }
+        }
+
+        // Render Table Interface
+        function renderUserInterfaceRegistry(dataSet) {
+            const registryBody = document.getElementById('userRegistryTableBody');
+            if (dataSet.length === 0) {
+                registryBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No records discovered matching database logs.</td></tr>`;
+                return;
+            }
+
+            registryBody.innerHTML = "";
+            dataSet.forEach(user => {
+                const placeholderAvatar = `<div class="preview-avatar" style="width:36px; height:36px;"><i class="fa-solid fa-user"></i></div>`;
+                const avatarRender = user.avatarUrl ? `<img src="${user.avatarUrl}" alt="Avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : placeholderAvatar;
+                const activeLabelClass = user.status === 'Active' ? 'status-active' : 'status-inactive';
+
+                const tableRow = document.createElement('tr');
+                tableRow.innerHTML = `
+                    <td style="font-weight:600; color:var(--primary-color);">${user.employeeCode || 'N/A'}</td>
+                    <td>
+                        <div class="user-meta">
+                            ${avatarRender}
+                            <strong>${user.name}</strong>
+                        </div>
+                    </td>
+                    <td>${user.email}</td>
+                    <td><span class="role-badge">${user.role}</span></td>
+                    <td>
+                        <button class="status-toggle ${activeLabelClass}" data-id="${user.id}" data-current="${user.status}">
+                            ● ${user.status}
+                        </button>
+                    </td>
+                    <td>
+                        <div class="operations-btns">
+                            <button class="op-btn op-edit" data-id="${user.id}" title="Edit User Identity"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="op-btn op-reset" data-id="${user.id}" title="Reset Security Password"><i class="fa-solid fa-key"></i></button>
+                            <button class="op-btn op-delete" data-id="${user.id}" title="Delete User Record Permanently"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                `;
+                registryBody.appendChild(tableRow);
+            });
+
+            bindInteractiveFunctionalTriggers();
+        }
+
+        // Live Real-time Engine Search Feature
+        document.getElementById('searchUserField').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const filteredSet = localUsersCache.filter(user => 
+                (user.name && user.name.toLowerCase().includes(query)) ||
+                (user.employeeCode && user.employeeCode.toLowerCase().includes(query)) ||
+                (user.role && user.role.toLowerCase().includes(query)) ||
+                (user.email && user.email.toLowerCase().includes(query))
+            );
+            renderUserInterfaceRegistry(filteredSet);
+        });
+
+        // Binding Triggers (Edit, Delete, Reset, Status Toggle)
+        function bindInteractiveFunctionalTriggers() {
+            // Status Toggle Controller
+            document.querySelectorAll('.status-toggle').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const targetId = btn.getAttribute('data-id');
+                    const nextState = btn.getAttribute('data-current') === 'Active' ? 'Inactive' : 'Active';
+                    await updateDoc(doc(db, "users", targetId), { status: nextState });
+                    syncUsersCollectionEngine();
+                };
+            });
+
+            // Edit Action Router
+            document.querySelectorAll('.op-edit').forEach(btn => {
+                btn.onclick = (e) => {
+                    const targetId = btn.getAttribute('data-id');
+                    const entry = localUsersCache.find(u => u.id === targetId);
+                    if (entry) {
+                        document.getElementById('editUserId').value = entry.id;
+                        document.getElementById('empCode').value = entry.employeeCode || "";
+                        document.getElementById('fullName').value = entry.name || "";
+                        document.getElementById('userEmail').value = entry.email || "";
+                        document.getElementById('userRole').value = entry.role || "";
+                        document.getElementById('userStatus').value = entry.status || "Active";
+                        
+                        document.getElementById('userPassword').removeAttribute('required');
+                        document.getElementById('passInputContainer').style.display = 'none';
+                        
+                        if(entry.avatarUrl) {
+                            document.getElementById('photoDataUrl').value = entry.avatarUrl;
+                            document.getElementById('avatarBox').innerHTML = `<img src="${entry.avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                        }
+
+                        document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-pen"></i> Edit User: ${entry.employeeCode}`;
+                        document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Update User Profile`;
+                    }
+                };
+            });
+
+            // Password Reset Module Action
+            document.querySelectorAll('.op-reset').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const targetId = btn.getAttribute('data-id');
+                    const entry = localUsersCache.find(u => u.id === targetId);
+                    const promptPass = prompt(`Set new dynamic password for ${entry.name}:`);
+                    if (promptPass && promptPass.trim().length >= 4) {
+                        await updateDoc(doc(db, "users", targetId), { password: promptPass.trim() });
+                        alert("Password configuration synchronized successfully.");
+                    } else if (promptPass) {
+                        alert("Validation error: Password must be minimum 4 characters.");
+                    }
+                };
+            });
+
+            // Delete Record Route
+            document.querySelectorAll('.op-delete').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const targetId = btn.getAttribute('data-id');
+                    if (confirm("Are you sure you want to permanently erase this user account?")) {
+                        await deleteDoc(doc(db, "users", targetId));
+                        syncUsersCollectionEngine();
+                    }
+                };
+            });
+        }
+
+        // Unified Add / Edit Form Submit Processor
+        document.getElementById('userControlForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('editUserId').value;
+            
+            const packetPayload = {
+                employeeCode: document.getElementById('empCode').value,
+                name: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('userEmail').value.trim(),
+                role: document.getElementById('userRole').value,
+                status: document.getElementById('userStatus').value,
+                avatarUrl: document.getElementById('photoDataUrl').value || ""
+            };
+
+            if (!editId) {
+                // Add Mode Path
+                packetPayload.password = document.getElementById('userPassword').value;
+                await addDoc(collection(db, "users"), packetPayload);
+                alert("New user added successfully.");
+            } else {
+                // Update Mode Path
+                await updateDoc(doc(db, "users", editId), packetPayload);
+                alert("User record verified and synchronized successfully.");
+            }
+
+            triggerClearFormInterfaceAction();
+            syncUsersCollectionEngine();
+        };
+
+        // Form View States Reset Cleaner
+        function triggerClearFormInterfaceAction() {
+            document.getElementById('userControlForm').reset();
+            document.getElementById('editUserId').value = "";
+            document.getElementById('photoDataUrl').value = "";
+            document.getElementById('avatarBox').innerHTML = `<i class="fa-solid fa-camera"></i>`;
+            document.getElementById('passInputContainer').style.display = 'flex';
+            document.getElementById('userPassword').setAttribute('required', 'required');
+            
+            document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-plus"></i> Add New System User`;
+            document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Entry Record`;
+            
+            triggerEmpCodeGeneration();
+        }
+
+        document.getElementById('resetFormBtn').onclick = triggerClearFormInterfaceAction;
+
+        // Logout Flow Action Integration
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('activeUser');
+            window.location.href = 'login.html';
+        };
+    </script>
+</body>
+</html>
