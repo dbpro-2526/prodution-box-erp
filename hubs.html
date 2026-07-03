@@ -386,6 +386,23 @@
                 </div>
             </div>
             <!-- ================= END MASTER DATA ================= -->
+            <div class="dashboard-section" style="margin-top:30px;">
+    <div class="section-title"><i class="fa-solid fa-list-ul"></i> Existing Master Data Registry</div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Region</th>
+                    <th>State</th>
+                    <th>Division</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="masterTableBody"></tbody>
+        </table>
+    </div>
+</div>
 
             <!-- Registry Table -->
             <div class="dashboard-section">
@@ -680,6 +697,41 @@
 
     // Initialize Page Dropdowns
     loadDropdowns();
+    // --- Master Data Table Listener ---
+onSnapshot(collection(db, "regions"), (snap) => updateMasterTable());
+onSnapshot(collection(db, "states"), (snap) => updateMasterTable());
+onSnapshot(collection(db, "divisions"), (snap) => updateMasterTable());
+
+async function updateMasterTable() {
+    const tbody = document.getElementById('masterTableBody');
+    tbody.innerHTML = "";
+
+    // Load all in parallel
+    const [regs, stats, divs] = await Promise.all([
+        getDocs(collection(db, "regions")),
+        getDocs(collection(db, "states")),
+        getDocs(collection(db, "divisions"))
+    ]);
+
+    // Render Divisions (Sabse deep level)
+    divs.forEach(doc => {
+        const d = doc.data();
+        tbody.innerHTML += `<tr>
+            <td><span class="status-badge" style="background:#e0f2fe; color:#0369a1;">Division</span></td>
+            <td>${d.region}</td><td>${d.state}</td><td>${d.name}</td>
+            <td><button class="op-btn op-delete" onclick="deleteMaster('divisions', '${doc.id}')"><i class="fa-solid fa-trash"></i></button></td>
+        </tr>`;
+    });
+    
+    // Aap isi tarah State aur Region ke liye bhi rows add kar sakte hain
+}
+
+// Global Delete Function
+window.deleteMaster = async (col, id) => {
+    if(confirm("Are you sure? This will remove it from the list.")) {
+        await deleteDoc(doc(db, col, id));
+    }
+};
 </script>
 </body>
 </html>
