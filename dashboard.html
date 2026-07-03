@@ -131,6 +131,14 @@
         }
         .user-profile i { font-size: 20px; color: var(--primary-color); }
 
+        /* --- Action Controls Subheader --- */
+        .action-control-panel {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
         /* --- Cards Container --- */
         .stats-grid {
             display: grid;
@@ -189,6 +197,19 @@
             gap: 8px;
         }
 
+        .btn-secondary-action {
+            background: #e2e8f0;
+            color: var(--text-dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: #f8fafc; padding: 14px 16px; color: var(--text-muted); font-weight: 600; font-size: 13px; border-bottom: 2px solid var(--border-color); }
@@ -201,8 +222,21 @@
         .badge-admin { background: #eff6ff; color: #2563EB; }
         .badge-in { background: #dcfce7; color: #16a34a; }
         .badge-out { background: #ffe4e6; color: #e11d48; }
+        .badge-demand { background: #fef3c7; color: #b45309; }
+        
         .actions-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 4px; }
         .actions-btn:hover { color: var(--accent-color); }
+        
+        .inline-action-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -237,53 +271,53 @@
             </div>
         </div>
 
+        <!-- TRANSACTION ENTRIES GATEWAY INTERACTION ZONE -->
+        <div class="action-control-panel" id="operatorActionPanel">
+            <button class="btn-add" id="btnActionDemand" style="display:none;" onclick="alert('Triggering New Demand Form Logic...')"><i class="fa-solid fa-file-signature"></i> Create New Demand</button>
+            <button class="btn-secondary-action" id="btnActionStockIn" style="display:none;" onclick="alert('Triggering Stock IN Entry Window...')"><i class="fa-solid fa-square-plus"></i> Log Stock IN</button>
+            <button class="btn-secondary-action" id="btnActionStockOut" style="display:none;" onclick="alert('Triggering Stock OUT Entry Window...')"><i class="fa-solid fa-square-minus"></i> Log Stock OUT</button>
+        </div>
+
         <!-- Dynamic Counter Cards -->
         <div class="stats-grid">
             <div class="stat-card" id="cardUsers">
                 <div class="stat-info">
                     <h3 id="countUsers">0</h3>
-                    <p>Total Registered Users</p>
+                    <p>Total Scope Users</p>
                 </div>
                 <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
             </div>
             <div class="stat-card" id="cardHubs">
                 <div class="stat-info">
                     <h3 id="countHubs">0</h3>
-                    <p>Monitored Warehouses</p>
+                    <p>Monitored Hub Nodes</p>
                 </div>
                 <div class="stat-icon icon-green"><i class="fa-solid fa-warehouse"></i></div>
             </div>
-            <div class="stat-card" id="cardItems">
+            <div class="stat-card" id="cardDemands">
                 <div class="stat-info">
-                    <h3 id="countItems">0</h3>
-                    <p>Inventory SKUs</p>
+                    <h3 id="countDemands">0</h3>
+                    <p>Active Demands Pipeline</p>
                 </div>
-                <div class="stat-icon icon-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
-            </div>
-            <div class="stat-card" id="cardPending">
-                <div class="stat-info">
-                    <h3 id="countPending">0</h3>
-                    <p>Pending Box Approvals</p>
-                </div>
-                <div class="stat-icon icon-amber"><i class="fa-solid fa-clock"></i></div>
+                <div class="stat-icon icon-amber"><i class="fa-solid fa-file-pull-request"></i></div>
             </div>
             <div class="stat-card" id="cardStockIn">
                 <div class="stat-info">
                     <h3 id="countStockIn">0</h3>
-                    <p>Total Stock IN</p>
+                    <p>Total Stock IN Ledger</p>
                 </div>
                 <div class="stat-icon icon-emerald"><i class="fa-solid fa-arrow-down-long"></i></div>
             </div>
             <div class="stat-card" id="cardStockOut">
                 <div class="stat-info">
                     <h3 id="countStockOut">0</h3>
-                    <p>Total Stock OUT</p>
+                    <p>Total Stock OUT Ledger</p>
                 </div>
                 <div class="stat-icon icon-rose"><i class="fa-solid fa-arrow-up-long"></i></div>
             </div>
         </div>
 
-        <!-- Section: Overview Accounts List (Only for Admin, Regional & State Managers) -->
+        <!-- Section: Overview Accounts List -->
         <div class="dashboard-section" id="accountsOverviewSection">
             <div class="section-header">
                 <h2 style="font-size: 18px; font-weight: 600;">System Administrative Overview</h2>
@@ -296,8 +330,8 @@
                             <th>Name / Description</th>
                             <th>Role / Scope</th>
                             <th>Status</th>
-                            <th>Linked Facility</th>
-                            <th>Action</th>
+                            <th>Hierarchy Zone Links</th>
+                            <th>Action Controls</th>
                         </tr>
                     </thead>
                     <tbody id="overviewTableBody">
@@ -307,8 +341,31 @@
             </div>
         </div>
 
+        <!-- SECTION: Field Demand Pipeline Ledger Tracking (NEW INTEGRATION) -->
+        <div class="dashboard-section" id="demandsLedgerSection">
+            <div class="section-header">
+                <h2 style="font-size: 18px; font-weight: 600;"><i class="fa-solid fa-file-contract"></i> Active Material & Box Demands Ledger</h2>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Demand Ref ID</th>
+                            <th>Requesting Entity / Zone</th>
+                            <th>Required Items Summary</th>
+                            <th>Quantity</th>
+                            <th>Current Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="demandLedgerTableBody">
+                        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Fetching scoped demand flows...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- SECTION: Live Stock In/Out Ledger Transactions -->
-        <div class="dashboard-section">
+        <div class="dashboard-section" id="stockLedgerSection">
             <div class="section-header">
                 <h2 style="font-size: 18px; font-weight: 600;"><i class="fa-solid fa-right-left"></i> Live Stock In / Out Ledger Logs</h2>
             </div>
@@ -334,7 +391,7 @@
     <!-- Firebase SDK Integration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
@@ -351,6 +408,7 @@
 
         // Security Route Guard & Initialization Execution Block
         window.addEventListener('DOMContentLoaded', () => {
+            // Session Check Logic
             const activeUser = JSON.parse(localStorage.getItem('userSession'));
 
             if (!activeUser || !activeUser.role) {
@@ -361,187 +419,261 @@
 
             document.getElementById("adminName").innerText = activeUser.fullName || "User Panel";
             
-            // Step 1: Render dynamic components according to logged user role structure
+            // Step 1: Initialize User Workspace Rights Controls Matrix
             setupDashboardStructure(activeUser);
 
-            // Step 2: Build parameters to pull scoped logs from Firestore
+            // Step 2: Fetch and bind live data streams
             fetchScopedDataMetrics(activeUser);
         });
 
-        // UI Configuration Engine according to strict organizational hierarchal structure
+        // Dynamic Global UI Access Configuration Matrix Setup
         function setupDashboardStructure(user) {
             const menuContainer = document.getElementById('dynamicSidebarMenu');
             const titleEl = document.getElementById('dashboardTitle');
             const subEl = document.getElementById('dashboardSubtitle');
+            
             const confBtn = document.getElementById('configureEntityBtn');
+            const btnDemand = document.getElementById('btnActionDemand');
+            const btnIn = document.getElementById('btnActionStockIn');
+            const btnOut = document.getElementById('btnActionStockOut');
 
-            if (user.role === "Super Admin") {
-                titleEl.innerText = "Super Admin Control Hub";
-                subEl.innerText = "Full continuous global diagnostics across all operational networks.";
+            // Set standard menus for structural visibility
+            let genericMenus = `<a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>`;
+
+            // Clear all operational controls by default
+            if(confBtn) confBtn.style.display = "none";
+
+            // 1. ADMIN & SUPER ADMIN: Complete Master Read/Write Access
+            if (user.role === "Super Admin" || user.role === "Admin") {
+                titleEl.innerText = `${user.role} Global Console`;
+                subEl.innerText = "Full continuous read/write governance across all global nodes & logistics.";
+                if(confBtn) confBtn.style.display = "block";
                 
-                menuContainer.innerHTML = `
-                    <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-                    <a href="users.html" class="menu-item"><i class="fa-solid fa-users"></i> All Users Setup</a>
-                    <a href="hubs.html" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
-                    <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
-                    <a href="#" class="menu-item"><i class="fa-solid fa-file-invoice-dollar"></i> System Reports</a>
+                // Show Entry Action Panel Buttons
+                btnDemand.style.display = "inline-flex";
+                btnIn.style.display = "inline-flex";
+                btnOut.style.display = "inline-flex";
+
+                menuContainer.innerHTML = genericMenus + `
+                    <a href="users.html" class="menu-item"><i class="fa-solid fa-users"></i> Global User Master</a>
+                    <a href="hubs.html" class="menu-item"><i class="fa-solid fa-warehouse"></i> Strategic Node Master</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Master SKU Catalogs</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-file-invoice-dollar"></i> Global Audit Trails</a>
                 `;
             } 
+            // 2. REGIONAL MANAGER: Absolute view only for entire selected region
             else if (user.role === "Regional Manager") {
-                titleEl.innerText = `Regional Hub Monitor (${user.region || 'Assigned Zone'})`;
-                subEl.innerText = `Displaying comprehensive logs filtered specifically under Region: ${user.region || 'Global'}`;
-                if(confBtn) confBtn.style.display = "none";
-
-                menuContainer.innerHTML = `
-                    <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-                    <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Regional Warehouses</a>
-                    <a href="#" class="menu-item"><i class="fa-solid fa-file-waveform"></i> Zone Auditing</a>
-                `;
-                // Remove universal metrics blocks
-                document.getElementById('cardUsers').style.display = "none";
-            } 
-            else if (user.role === "State Manager") {
-                titleEl.innerText = `State Logistic Operations (${user.state || 'Assigned Territory'})`;
-                subEl.innerText = `Displaying strict monitoring scopes inside State Territory: ${user.state || 'N/A'}`;
-                if(confBtn) confBtn.style.display = "none";
-
-                menuContainer.innerHTML = `
-                    <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-                    <a href="#" class="menu-item"><i class="fa-solid fa-truck-ramp-box"></i> State Allocation</a>
-                `;
-                document.getElementById('cardUsers').style.display = "none";
-            } 
-            else if (user.role === "Hub Manager" || user.role === "Inventory Loader") {
-                titleEl.innerText = `${user.role} Control Console`;
-                subEl.innerText = `Facility Vault Location Link: ${user.hub || 'Unassigned Facility Store'}`;
+                titleEl.innerText = `Regional Supervisor Hub (${user.region || 'Assigned Region'})`;
+                subEl.innerText = `Holistic View-Only Monitoring across States and Divisions under Region: ${user.region || 'All'}`;
                 
-                if(confBtn) confBtn.style.display = "none";
+                menuContainer.innerHTML = genericMenus + `
+                    <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Regional Infrastructure</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-file-waveform"></i> Region Telemetry View</a>
+                `;
+            }
+            // 3. REGIONAL OFFICE: No New User Create, but can edit password/state/division mapping & enter items
+            else if (user.role === "Regional Office") {
+                titleEl.innerText = `Regional Operations Desk (${user.region || 'Assigned Region'})`;
+                subEl.innerText = `Authorized for user adjustments & execution pipeline entries under Region: ${user.region || 'All'}`;
+                
+                btnDemand.style.display = "inline-flex";
+                btnIn.style.display = "inline-flex";
+                btnOut.style.display = "inline-flex";
+
+                menuContainer.innerHTML = genericMenus + `
+                    <a href="#" class="menu-item"><i class="fa-solid fa-users-gear"></i> Regional Staff Mapping</a>
+                    <a href="#" class="menu-item"><i class="fa-solid fa-right-left"></i> Region Tx Entries</a>
+                `;
+            }
+            // 4. STATE MANAGER: Absolute view only for entire selected state
+            else if (user.role === "State Manager") {
+                titleEl.innerText = `State Inspector Command (${user.state || 'Assigned State'})`;
+                subEl.innerText = `Displaying telemetry grids across all divisions inside State: ${user.state || 'All'}`;
+                
+                menuContainer.innerHTML = genericMenus + `
+                    <a href="#" class="menu-item"><i class="fa-solid fa-truck-ramp-box"></i> State Allocation Ledgers</a>
+                `;
+            }
+            // 5. STATE OFFICE: Can enter Stock In/Out and Demands, Users are view-only
+            else if (user.role === "State Office") {
+                titleEl.innerText = `State Logistics Counter (${user.state || 'Assigned State'})`;
+                subEl.innerText = `Data execution pipelines enabled for State Territory: ${user.state || 'All'}`;
+                
+                btnDemand.style.display = "inline-flex";
+                btnIn.style.display = "inline-flex";
+                btnOut.style.display = "inline-flex";
+
+                menuContainer.innerHTML = genericMenus + `
+                    <a href="#" class="menu-item"><i class="fa-solid fa-right-left"></i> State Tx Inputs</a>
+                `;
+            }
+            // 6. DIVISION MANAGER: Only view data within their division & create division demand
+            else if (user.role === "Division Manager") {
+                titleEl.innerText = `Division Command Matrix (${user.division || 'Assigned Division'})`;
+                subEl.innerText = `Monitoring streams linked directly to local division segment: ${user.division || 'All'}`;
+                
+                btnDemand.style.display = "inline-flex"; // Can create demand entry
+
+                menuContainer.innerHTML = genericMenus + `
+                    <a href="#" class="menu-item"><i class="fa-solid fa-rectangle-list"></i> Division Taskbooks</a>
+                `;
+            }
+            // 7. WAREHOUSE MANAGER & HUB CONFIGURATIONS
+            else if (user.role === "Warehouse Manager" || user.role === "Hub Manager" || user.role === "Inventory Loader") {
+                titleEl.innerText = `${user.role} Vault Console`;
+                subEl.innerText = `Facility Link Node: ${user.hub || 'Local Node Station'}`;
+                
+                btnDemand.style.display = "inline-flex"; 
+                btnIn.style.display = "inline-flex";
+                btnOut.style.display = "inline-flex";
+
+                // Strip down telemetry components for loaders
                 document.getElementById('accountsOverviewSection').style.display = "none";
+                document.getElementById('cardUsers').style.display = "none";
 
-                // Strip down telemetry panels for site loaders/managers
-                ['cardUsers', 'cardHubs', 'cardPending'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if(el) el.style.display = "none";
-                });
-
-                menuContainer.innerHTML = `
-                    <a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-                    <a href="#" class="menu-item"><i class="fa-solid fa-right-left"></i> Execute Stock IN/OUT</a>
+                menuContainer.innerHTML = genericMenus + `
+                    <a href="#" class="menu-item"><i class="fa-solid fa-boxes-packing"></i> Local Hub Inventory</a>
                 `;
             }
         }
 
-        // Analytical Execution & Query Custom Pipeline
+        // Multi-Layer Rule Filtering Data Mapping Matrix
         async function fetchScopedDataMetrics(user) {
             try {
-                let usersList = [], hubsList = [], ledgerList = [];
+                let usersList = [], hubsList = [], ledgerList = [], demandsList = [];
                 
-                // --- 1. PULL MASTER COLLECTIONS BASED ON INHERITED PROFILE RIGHTS ---
+                // Pull master collections from Firestore
                 const usersRaw = await getDocs(collection(db, "users"));
                 const hubsRaw = await getDocs(collection(db, "hubs"));
                 const ledgerRaw = await getDocs(collection(db, "stock_ledger"));
+                const demandsRaw = await getDocs(collection(db, "demands"));
 
                 usersRaw.forEach(d => usersList.push({ id: d.id, ...d.data() }));
                 hubsRaw.forEach(d => hubsList.push({ id: d.id, ...d.data() }));
                 ledgerRaw.forEach(d => ledgerList.push({ id: d.id, ...d.data() }));
+                demandsRaw.forEach(d => demandsList.push({ id: d.id, ...d.data() }));
 
-                // --- 2. MULTI-LAYER ROLE FILTERING MATRIX ---
-                let allowedHubNames = [];
+                // Scope variables for dynamic runtime calculations
                 let filteredUsers = [];
                 let filteredLedger = [];
+                let filteredDemands = [];
+                let allowedHubNames = [];
 
-                if (user.role === "Super Admin") {
-                    allowedHubNames = hubsList.map(h => h.name);
+                // Define filtering logic according to hierarchal structures
+                if (user.role === "Super Admin" || user.role === "Admin") {
                     filteredUsers = usersList;
                     filteredLedger = ledgerList;
-
-                    document.getElementById('countUsers').innerText = usersList.length;
-                    document.getElementById('countHubs').innerText = hubsList.length;
-                    
-                    const approvalsRaw = await getDocs(collection(db, "approvals"));
-                    document.getElementById('countPending').innerText = approvalsRaw.size || 0;
+                    filteredDemands = demandsList;
+                    allowedHubNames = hubsList.map(h => h.name);
                 } 
-                else if (user.role === "Regional Manager") {
-                    // Filter matching Hub codes assigned to this specific region
-                    const targetHubs = hubsList.filter(h => h.region === user.region);
-                    allowedHubNames = targetHubs.map(h => h.name);
-
-                    // Filter User Base & Transaction Ledger rows assigned within this specific region
+                else if (user.role === "Regional Manager" || user.role === "Regional Office") {
+                    const regionalHubs = hubsList.filter(h => h.region === user.region);
+                    allowedHubNames = regionalHubs.map(h => h.name);
+                    
                     filteredUsers = usersList.filter(u => u.region === user.region);
                     filteredLedger = ledgerList.filter(l => allowedHubNames.includes(l.hubName));
-
-                    document.getElementById('countHubs').innerText = targetHubs.length;
-                    document.getElementById('countPending').innerText = "Restricted";
-                } 
-                else if (user.role === "State Manager") {
-                    const targetHubs = hubsList.filter(h => h.state === user.state);
-                    allowedHubNames = targetHubs.map(h => h.name);
+                    filteredDemands = demandsList.filter(d => d.region === user.region);
+                }
+                else if (user.role === "State Manager" || user.role === "State Office") {
+                    const stateHubs = hubsList.filter(h => h.state === user.state);
+                    allowedHubNames = stateHubs.map(h => h.name);
 
                     filteredUsers = usersList.filter(u => u.state === user.state);
                     filteredLedger = ledgerList.filter(l => allowedHubNames.includes(l.hubName));
+                    filteredDemands = demandsList.filter(d => d.state === user.state);
+                }
+                else if (user.role === "Division Manager") {
+                    const divHubs = hubsList.filter(h => h.division === user.division);
+                    allowedHubNames = divHubs.map(h => h.name);
 
-                    document.getElementById('countHubs').innerText = targetHubs.length;
-                } 
-                else if (user.role === "Hub Manager" || user.role === "Inventory Loader") {
+                    filteredUsers = usersList.filter(u => u.division === user.division);
+                    filteredLedger = ledgerList.filter(l => allowedHubNames.includes(l.hubName));
+                    filteredDemands = demandsList.filter(d => d.division === user.division);
+                }
+                else {
+                    // Warehouse Manager / Hub Manager / Inventory Loader
                     allowedHubNames = [user.hub || ""];
+                    filteredUsers = [];
                     filteredLedger = ledgerList.filter(l => l.hubName === user.hub);
+                    filteredDemands = demandsList.filter(d => d.hubName === user.hub);
                 }
 
-                // --- 3. RENDERING COUNTERS AND ARRAYS ---
-                // Calculate stock units metrics dynamically from filtered operations data rows
-                let stockInTotal = 0;
-                let stockOutTotal = 0;
+                // Render metrics counters dynamically
+                const cardUsersEl = document.getElementById('countUsers');
+                if (cardUsersEl) cardUsersEl.innerText = filteredUsers.length;
+                document.getElementById('countHubs').innerText = allowedHubNames.length;
+                document.getElementById('countDemands').innerText = filteredDemands.length;
+
+                // Process In/Out Ledger records
+                let stockInTotal = 0, stockOutTotal = 0;
                 const ledgerTableBody = document.getElementById('stockLedgerTableBody');
                 ledgerTableBody.innerHTML = "";
 
                 filteredLedger.forEach(data => {
                     const qty = parseInt(data.quantity) || 0;
                     const type = (data.type || "IN").toUpperCase();
-
-                    if (type === "IN") stockInTotal += qty;
-                    else stockOutTotal += qty;
+                    if (type === "IN") stockInTotal += qty; else stockOutTotal += qty;
 
                     ledgerTableBody.innerHTML += `
                         <tr>
-                            <td style="font-weight: 500;">${data.itemName || "Unnamed SKU Item"}</td>
+                            <td style="font-weight: 500;">${data.itemName || "Unnamed Asset SKU"}</td>
                             <td><span class="badge ${type === 'IN' ? 'badge-in' : 'badge-out'}">${type}</span></td>
                             <td style="font-weight: 600;">${qty.toLocaleString()} Pcs</td>
-                            <td>${data.hubName || "Unassigned Warehouse"}</td>
+                            <td>${data.hubName || "Local Node Warehouse"}</td>
                             <td style="color: var(--text-muted); font-size: 13px;">${data.date || "N/A"}</td>
                         </tr>
                     `;
                 });
-
-                if(filteredLedger.length === 0) {
-                    ledgerTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No asset ledger records found within your authorized organizational scope.</td></tr>`;
-                }
-
                 document.getElementById('countStockIn').innerText = stockInTotal.toLocaleString();
                 document.getElementById('countStockOut').innerText = stockOutTotal.toLocaleString();
 
-                // Generate dynamic count for active items matching authorized locations
-                const itemsRaw = await getDocs(collection(db, "inventory"));
-                let itemsCount = 0;
-                itemsRaw.forEach(doc => {
-                    if (allowedHubNames.includes(doc.data().hubName)) itemsCount++;
-                });
-                document.getElementById('countItems').innerText = itemsCount;
+                // Render integrated Field Demands Ledger View Table
+                const demandTableBody = document.getElementById('demandLedgerTableBody');
+                demandTableBody.innerHTML = "";
+                if(filteredDemands.length === 0) {
+                    demandTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No pipeline demand allocations configured inside this scope.</td></tr>`;
+                } else {
+                    filteredDemands.forEach(dData => {
+                        demandTableBody.innerHTML += `
+                            <tr>
+                                <td style="font-weight: 600; color: var(--primary-color);">${dData.id || "REF-ID"}</td>
+                                <td>${dData.requestedBy || "Field Hub Node"} (${dData.division || dData.state || "Global Division"})</td>
+                                <td style="font-weight: 500;">${dData.itemName || "Donation Box Serialized Asset"}</td>
+                                <td style="font-weight:600;">${parseInt(dData.quantity || 0).toLocaleString()} Pcs</td>
+                                <td><span class="badge badge-demand">${dData.status || "Pending Allocation"}</span></td>
+                            </tr>
+                        `;
+                    });
+                }
 
-                // --- 4. RENDER ACCOUNT OVERVIEW REGISTRY (IF PERMITTED) ---
+                // Render Administrative Overview Grid (If system scope permits)
                 const tableBody = document.getElementById('overviewTableBody');
-                if (user.role === "Super Admin" || user.role === "Regional Manager" || user.role === "State Manager") {
+                if (tableBody) {
                     tableBody.innerHTML = "";
                     if (filteredUsers.length === 0) {
-                        tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No records linked to this operational wing.</td></tr>`;
+                        tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No structural staff registry reports loaded within this network profile.</td></tr>`;
                     } else {
                         filteredUsers.forEach(userData => {
+                            let actionControlsMarkup = `---`;
+                            
+                            // Check operational overrides for Regional Office vs Admin
+                            if (user.role === "Super Admin" || user.role === "Admin") {
+                                actionControlsMarkup = `<button class="actions-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>`;
+                            } else if (user.role === "Regional Office") {
+                                // Regional Office can update user password, state, or division
+                                actionControlsMarkup = `
+                                    <button class="inline-action-btn" onclick="window.customResetPassword('${userData.id}')"><i class="fa-solid fa-key"></i> Reset</button>
+                                    <button class="inline-action-btn" style="background:#4b5563;" onclick="window.customUpdateMapping('${userData.id}')"><i class="fa-solid fa-map-location-dot"></i> Map</button>
+                                `;
+                            }
+
                             tableBody.innerHTML += `
                                 <tr>
-                                    <td><a href="users.html" class="user-click-link">${userData.fullName || "Unnamed Officer"}</a></td>
-                                    <td><span class="badge badge-admin">${userData.role || "User"}</span></td>
+                                    <td><span class="user-click-link" style="cursor:default;">${userData.fullName || "Field Officer"}</span></td>
+                                    <td><span class="badge badge-admin">${userData.role || "Operator"}</span></td>
                                     <td><span style="color: ${(userData.status || '').toLowerCase() === 'active' ? '#16a34a' : '#ef4444'}; font-weight: 500;">● ${userData.status || 'Active'}</span></td>
-                                    <td>${userData.hub || userData.state || userData.region || "Global Network"}</td>
-                                    <td><button class="actions-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+                                    <td>${userData.hub || userData.division || userData.state || userData.region || "Global Area Network"}</td>
+                                    <td>${actionControlsMarkup}</td>
                                 </tr>
                             `;
                         });
@@ -549,9 +681,31 @@
                 }
 
             } catch (error) {
-                console.error("Firestore localized multi-role mapping error: ", error);
+                console.error("Firestore global localization matrix runtime error: ", error);
             }
         }
+
+        // Exposed functions on window object for Regional Office operations
+        window.customResetPassword = async function(userId) {
+            const newPassword = prompt("Enter new security access password for this user:");
+            if(!newPassword) return;
+            try {
+                await updateDoc(doc(db, "users", userId), { password: newPassword });
+                alert("Security credentials modified successfully!");
+                location.reload();
+            } catch(e) { alert("Execution error updating credentials: " + e.message); }
+        };
+
+        window.customUpdateMapping = async function(userId) {
+            const newState = prompt("Enter new State configuration mapping:");
+            const newDiv = prompt("Enter new Division configuration mapping:");
+            if(!newState || !newDiv) return;
+            try {
+                await updateDoc(doc(db, "users", userId), { state: newState, division: newDiv });
+                alert("Territory configuration updated within global tracking indexes.");
+                location.reload();
+            } catch(e) { alert("Execution error processing zone limits: " + e.message); }
+        };
 
         // User Logout Clean Task Process
         document.getElementById('logoutBtn').addEventListener('click', () => {
