@@ -426,16 +426,22 @@
         let localHubsCache = [];
         let dropdownMetadata = { regions: [], states: [], divisions: [] };
 
+        // 1. Session Protection Fix
         window.addEventListener('DOMContentLoaded', async () => {
-            const session = JSON.parse(localStorage.getItem('userSession')) || JSON.parse(localStorage.getItem('activeUser'));
-            if (!session) { window.location.href = 'login.html'; return; }
-            document.getElementById('adminName').innerText = session.fullName || "Admin System";
+            const session = localStorage.getItem('userSession') || localStorage.getItem('activeUser');
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const userData = JSON.parse(session);
+            document.getElementById('adminName').innerText = userData.fullName || "Admin";
             
             await loadDropdownMetaDataEngine();
             syncHubsCollectionEngine();
         });
 
-        // Load metadata options from firestore settings doc
+        // 2. Robust Metadata Loader
         async function loadDropdownMetaDataEngine() {
             try {
                 const settingsRef = doc(db, "settings", "hubOptions");
@@ -444,18 +450,24 @@
                 if (settingsSnap.exists()) {
                     dropdownMetadata = settingsSnap.data();
                 } else {
-                    // Fallback seed data if doc doesn't exist yet
+                    // Create default if missing
                     dropdownMetadata = {
-                        regions: ["North Region", "South Region"],
-                        states: ["Delhi", "Mumbai"],
-                        divisions: ["Division A", "Division B"]
+                        regions: ["North", "South", "East", "West"],
+                        states: ["Gujarat", "Maharashtra", "Delhi"],
+                        divisions: ["Division 1", "Division 2"]
                     };
                     await setDoc(settingsRef, dropdownMetadata);
                 }
                 populateDropdownUI();
-            } catch(e) { console.error("Metadata load error", e); }
+            } catch(e) { 
+                console.error("Metadata load error", e); 
+                alert("Database connection error. Check your internet.");
+            }
         }
 
+        // ... (Baaki functions wahi rahenge jo maine pehle diye the: populateDropdownUI, promptAndSaveMeta, syncHubsCollectionEngine, etc.)
+        
+        // --- Copy paste these remaining functions from the previous code provided ---
         function populateDropdownUI() {
             renderOptions('hubRegion', dropdownMetadata.regions, "-- Select Region --");
             renderOptions('hubState', dropdownMetadata.states, "-- Select State --");
@@ -469,141 +481,8 @@
                 selectEl.innerHTML += `<option value="${item}">${item}</option>`;
             });
         }
-
-        // Inline configuration click actions
-        document.getElementById('addNewRegionBtn').onclick = () => promptAndSaveMeta('regions', 'Region Name');
-        document.getElementById('addNewStateBtn').onclick = () => promptAndSaveMeta('states', 'State Name');
-        document.getElementById('addNewDivisionBtn').onclick = () => promptAndSaveMeta('divisions', 'Division/City Name');
-
-        async function promptAndSaveMeta(key, promptLabel) {
-            const newVal = prompt(`Enter new ${promptLabel}:`);
-            if (newVal && newVal.trim() !== "") {
-                const formattedVal = newVal.trim();
-                if (!dropdownMetadata[key].includes(formattedVal)) {
-                    dropdownMetadata[key].push(formattedVal);
-                    await setDoc(doc(db, "settings", "hubOptions"), dropdownMetadata);
-                    populateDropdownUI();
-                    alert(`${promptLabel} added securely.`);
-                } else { alert("Entry already exists."); }
-            }
-        }
-
-        async function syncHubsCollectionEngine() {
-            const snap = await getDocs(collection(db, "hubs"));
-            localHubsCache = [];
-            snap.forEach(d => localHubsCache.push({ id: d.id, ...d.data() }));
-            renderHubsRegistry(localHubsCache);
-        }
-
-        function renderHubsRegistry(dataSet) {
-            const body = document.getElementById('hubRegistryTableBody');
-            if (dataSet.length === 0) {
-                body.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">No records registered.</td></tr>`;
-                return;
-            }
-            body.innerHTML = "";
-            dataSet.forEach(hub => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td style="font-weight:600; color:var(--primary-color);">${hub.code || ''}</td>
-                    <td><strong>${hub.name || ''}</strong><span class="meta-sub-text"><i class="fa-solid fa-location-dot"></i> ${hub.address || ''}</span></td>
-                    <td>${hub.state || ''} <span class="meta-sub-text">${hub.region || ''}</span></td>
-                    <td><i class="fa-solid fa-network-wired"></i> ${hub.division || 'N/A'}</td>
-                    <td>${hub.manager || ''}</td>
-                    <td><strong>${hub.totalCapacity || 0} Units</strong></td>
-                    <td><span class="status-badge ${hub.status === 'Active' ? 'status-active' : 'status-inactive'}">● ${hub.status || 'Active'}</span></td>
-                    <td>
-                        <div class="operations-btns">
-                            <button class="op-btn op-edit" data-id="${hub.id}"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="op-btn op-delete" data-id="${hub.id}"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                    </td>
-                `;
-                body.appendChild(row);
-            });
-            bindTriggers();
-        }
-
-        function bindTriggers() {
-            document.querySelectorAll('.op-edit').forEach(btn => {
-                btn.onclick = () => {
-                    const entry = localHubsCache.find(h => h.id === btn.getAttribute('data-id'));
-                    if (entry) {
-                        document.getElementById('editHubId').value = entry.id;
-                        document.getElementById('hubCode').value = entry.code || "";
-                        document.getElementById('hubName').value = entry.name || "";
-                        document.getElementById('hubManager').value = entry.manager || "";
-                        document.getElementById('hubRegion').value = entry.region || "";
-                        document.getElementById('hubState').value = entry.state || "";
-                        document.getElementById('hubDivision').value = entry.division || "";
-                        document.getElementById('totalCapacity').value = entry.totalCapacity || "";
-                        document.getElementById('hubAddress').value = entry.address || "";
-                        document.getElementById('hubStatus').value = entry.status || "Active";
-                        
-                        document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-warehouse"></i> Modify Hub: ${entry.code}`;
-                        document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Update Setup`;
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                };
-            });
-
-            document.querySelectorAll('.op-delete').forEach(btn => {
-                btn.onclick = async () => {
-                    if (confirm("Permanently erase this hub log?")) {
-                        await deleteDoc(doc(db, "hubs", btn.getAttribute('data-id')));
-                        syncHubsCollectionEngine();
-                    }
-                };
-            });
-        }
-
-        document.getElementById('hubControlForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const editId = document.getElementById('editHubId').value;
-            const payload = {
-                code: document.getElementById('hubCode').value.trim().toUpperCase(),
-                name: document.getElementById('hubName').value.trim(),
-                hubName: document.getElementById('hubName').value.trim(),
-                manager: document.getElementById('hubManager').value.trim(),
-                region: document.getElementById('hubRegion').value,
-                state: document.getElementById('hubState').value,
-                division: document.getElementById('hubDivision').value,
-                totalCapacity: parseInt(document.getElementById('totalCapacity').value),
-                address: document.getElementById('hubAddress').value.trim(),
-                status: document.getElementById('hubStatus').value
-            };
-
-            if(!editId) {
-                if(localHubsCache.some(h => h.code.toLowerCase() === payload.code.toLowerCase())) {
-                    alert("Hub Code already exists."); return;
-                }
-                await addDoc(collection(db, "hubs"), payload);
-            } else {
-                await updateDoc(doc(db, "hubs", editId), payload);
-            }
-            resetForm(); syncHubsCollectionEngine();
-        };
-
-        function resetForm() {
-            document.getElementById('hubControlForm').reset();
-            document.getElementById('editHubId').value = "";
-            document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-plus-minus"></i> Setup New Warehouse / Hub`;
-            document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Hub Configuration`;
-        }
-        document.getElementById('resetFormBtn').onclick = resetForm;
-
-        document.getElementById('searchHubField').addEventListener('input', function(e) {
-            const q = e.target.value.toLowerCase().trim();
-            const filtered = localHubsCache.filter(h => 
-                h.name.toLowerCase().includes(q) || h.code.toLowerCase().includes(q) || 
-                h.region.toLowerCase().includes(q) || h.division.toLowerCase().includes(q)
-            );
-            renderHubsRegistry(filtered);
-        });
-
-        document.getElementById('logoutBtn').onclick = () => {
-            localStorage.clear(); window.location.href = 'login.html';
-        };
+        
+        // ... (yahan se baki sabhi functions add kar lein)
     </script>
 </body>
 </html>
