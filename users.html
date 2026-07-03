@@ -8,7 +8,7 @@
     <!-- Favicon & Fonts -->
     <link rel="icon" href="dblogo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
@@ -492,29 +492,18 @@
 
     <!-- Firebase SDK Operations Layer -->
     <script type="module">
-        window.addEventListener('DOMContentLoaded', () => {
-    const activeUser = JSON.parse(localStorage.getItem('userSession'));
-
-    // Agar session nahi hai ya role Super Admin nahi hai toh nikal dega
-    if (!activeUser || activeUser.role !== "Super Admin") {
-        alert("Unauthorized Entry! Super Admin Access Required.");
-        window.location.href = "login.html";
-    } else {
-        console.log("Welcome:", activeUser.fullName);
-        // Yahan aapka users page load karne ka baaki code aayega
-    }
-});
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Configuration (Yahan apni sahi API keys lagayein)
+        // Firebase Production Project Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyA...", 
-            authDomain: "donation-box-erp.firebaseapp.com",
-            projectId: "donation-box-erp",
-            storageBucket: "donation-box-erp.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:123456:web:abcde12345"
+            apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
+            authDomain: "prodution-box-erp.firebaseapp.com",
+            projectId: "prodution-box-erp",
+            storageBucket: "prodution-box-erp.firebasestorage.app",
+            messagingSenderId: "426698063494",
+            appId: "1:426698063494:web:880dd323f24bd4121ddb07",
+            measurementId: "G-948852RZLB"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -541,15 +530,15 @@
             }
         });
 
-        // Security / Session Check
+        // Security / Session Routing Guard Verification Check
         window.addEventListener('DOMContentLoaded', () => {
-            const activeUser = JSON.parse(localStorage.getItem('activeUser'));
+            const activeUser = JSON.parse(localStorage.getItem('userSession'));
             if (!activeUser || activeUser.role !== 'Super Admin') {
-                alert("Unauthorized Entry! Super Admin Role Required.");
+                alert("Unauthorized Entry! Super Admin Access Required.");
                 window.location.href = 'login.html';
                 return;
             }
-            document.getElementById('adminName').innerText = activeUser.name || "Super Admin";
+            document.getElementById('adminName').innerText = activeUser.fullName || activeUser.name || "Super Admin";
             
             triggerEmpCodeGeneration();
             syncUsersCollectionEngine();
@@ -739,7 +728,7 @@
 
         // Logout Flow Action Integration
         document.getElementById('logoutBtn').onclick = () => {
-            localStorage.removeItem('activeUser');
+            localStorage.removeItem('userSession');
             window.location.href = 'login.html';
         };
     </script>
