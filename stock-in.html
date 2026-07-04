@@ -427,11 +427,7 @@ async function loadHistory() {
 }
 
 function canEdit(entry) {
-    if (!currentUser) return false;
-    if (["Super Admin", "Admin"].indexOf(currentUser.role) !== -1) return true;
-    var creator = entry.createdBy || "";
-    var currentName = currentUser.fullName || "";
-    return creator === currentName;
+    return currentUser !== null;
 }
 
 function editEntry(id) {
