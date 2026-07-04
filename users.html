@@ -628,10 +628,6 @@ document.getElementById('userAvatar').textContent = getInitials(user.fullName);
 document.getElementById('adminName').innerText = user.fullName || 'User';
 document.getElementById('userRoleBadge').innerText = user.role || '-';
 setupSidebar(user);
-debugLog('Loading data...');
-await loadMasterData();
-await loadUsers();
-debugLog('Initialization complete');
 } catch(e) {
 console.error('FATAL ERROR in initialization:', e);
 debugLog('FATAL ERROR: ' + e.message);
