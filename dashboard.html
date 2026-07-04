@@ -51,6 +51,23 @@ body{background:var(--bg);color:var(--text-dark);display:flex;min-height:100vh;o
 .filter-group input:focus,.filter-group select:focus{border-color:var(--accent)}
 .filter-group input:disabled,.filter-group select:disabled{background:#f1f5f9;cursor:not-allowed;opacity:0.7}
 .filter-group .lock-badge{font-size:10px;color:var(--text-muted);margin-top:2px;display:block}
+.ms-wrap{position:relative;width:100%}
+.ms-header{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:#fff;cursor:pointer;min-height:35px;gap:4px}
+.ms-header:hover{border-color:var(--accent)}
+.ms-header.disabled{background:#f1f5f9;cursor:not-allowed;opacity:0.7}
+.ms-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-arrow{font-size:10px;color:var(--text-muted);transition:transform 0.2s}
+.ms-arrow.open{transform:rotate(180deg)}
+.ms-drop{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:100;max-height:220px;overflow-y:auto;margin-top:2px}
+.ms-drop.open{display:block}
+.ms-opt{display:flex;align-items:center;gap:8px;padding:7px 10px;cursor:pointer;font-size:12px;border-bottom:1px solid #f1f5f9}
+.ms-opt:last-child{border-bottom:none}
+.ms-opt:hover{background:#f8fafc}
+.ms-opt input[type=checkbox]{margin:0;cursor:pointer;accent-color:var(--accent)}
+.ms-opt label{cursor:pointer;flex:1;margin:0;font-weight:400;font-size:12px}
+.ms-all{border-bottom:1px solid var(--border);padding:6px 10px;font-size:11px;font-weight:600;color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:8px}
+.ms-all:hover{background:#f8fafc}
+.ms-count{font-size:10px;color:var(--accent);font-weight:600}
 .filter-panel-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px}
 .filter-panel-footer button{flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none}
 .btn-filter-apply{background:var(--accent);color:#fff}
@@ -114,12 +131,12 @@ tr:hover td{background:#fafcff}
 </div>
 <div class="filter-panel-body">
 <div class="filter-group"><label>Date Range</label><input type="date" id="filterDate"></div>
-<div class="filter-group"><label>Item Name</label><select id="filterItem"><option value="">All Items</option></select><span class="lock-badge" id="lockItem"></span></div>
-<div class="filter-group"><label>Region</label><select id="filterRegion"><option value="">All Regions</option></select><span class="lock-badge" id="lockRegion"></span></div>
-<div class="filter-group"><label>State</label><select id="filterState"><option value="">All States</option></select><span class="lock-badge" id="lockState"></span></div>
-<div class="filter-group"><label>Division</label><select id="filterDivision"><option value="">All Divisions</option></select><span class="lock-badge" id="lockDivision"></span></div>
-<div class="filter-group"><label>User</label><select id="filterUser"><option value="">All Users</option></select><span class="lock-badge" id="lockUser"></span></div>
-<div class="filter-group"><label>Warehouse / Hub</label><select id="filterHub"><option value="">All Hubs</option></select><span class="lock-badge" id="lockHub"></span></div>
+<div class="filter-group"><label>Item Name</label><select id="filterItem"><option value="">All Items</option></select></div>
+<div class="filter-group"><label>Region</label><div class="ms-wrap" id="msRegion"><div class="ms-header" onclick="msToggle('msRegion')"><span class="ms-label">All Regions</span><span class="ms-count" id="msRegionCount"></span><i class="fa-solid fa-chevron-down ms-arrow"></i></div><div class="ms-drop" id="msRegionDrop"></div></div><span class="lock-badge" id="lockRegion"></span></div>
+<div class="filter-group"><label>State</label><div class="ms-wrap" id="msState"><div class="ms-header" onclick="msToggle('msState')"><span class="ms-label">All States</span><span class="ms-count" id="msStateCount"></span><i class="fa-solid fa-chevron-down ms-arrow"></i></div><div class="ms-drop" id="msStateDrop"></div></div><span class="lock-badge" id="lockState"></span></div>
+<div class="filter-group"><label>Division</label><div class="ms-wrap" id="msDivision"><div class="ms-header" onclick="msToggle('msDivision')"><span class="ms-label">All Divisions</span><span class="ms-count" id="msDivisionCount"></span><i class="fa-solid fa-chevron-down ms-arrow"></i></div><div class="ms-drop" id="msDivisionDrop"></div></div><span class="lock-badge" id="lockDivision"></span></div>
+<div class="filter-group"><label>User</label><div class="ms-wrap" id="msUser"><div class="ms-header" onclick="msToggle('msUser')"><span class="ms-label">All Users</span><span class="ms-count" id="msUserCount"></span><i class="fa-solid fa-chevron-down ms-arrow"></i></div><div class="ms-drop" id="msUserDrop"></div></div><span class="lock-badge" id="lockUser"></span></div>
+<div class="filter-group"><label>Warehouse / Hub</label><div class="ms-wrap" id="msHub"><div class="ms-header" onclick="msToggle('msHub')"><span class="ms-label">All Hubs</span><span class="ms-count" id="msHubCount"></span><i class="fa-solid fa-chevron-down ms-arrow"></i></div><div class="ms-drop" id="msHubDrop"></div></div><span class="lock-badge" id="lockHub"></span></div>
 </div>
 <div class="filter-panel-footer">
 <button class="btn-filter-reset" id="filterReset">Reset</button>
@@ -189,6 +206,13 @@ var db = firebase.firestore();
 var allLedger = [], allHubs = [], allUsers = [], allDemands = [], allItems = [];
 var currentUser = null;
 var filterApplied = false;
+
+function getHubInfo(name) {
+    for (var i = 0; i < allHubs.length; i++) {
+        if (allHubs[i].name === name || allHubs[i].hubName === name) return allHubs[i];
+    }
+    return null;
+}
 
 function showToast(msg, icon) {
     var t = document.getElementById("toast");
@@ -367,23 +391,32 @@ function getScopedData(user) {
     if (["Super Admin", "Admin"].indexOf(user.role) !== -1) {
         fU = allUsers; fL = allLedger; fD = allDemands; hN = allHubs.map(function(h){ return h.name });
     } else if (["Regional Manager", "Regional Office"].indexOf(user.role) !== -1) {
-        var rh = allHubs.filter(function(h){ return h.region === user.region });
-        hN = rh.map(function(h){ return h.name });
+        fL = allLedger.filter(function(l) {
+            if (l.region === user.region) return true;
+            var h = getHubInfo(l.hub || l.hubName);
+            return h && h.region === user.region;
+        });
+        hN = [...new Set(fL.map(function(l){ return l.hub || l.hubName }).filter(Boolean))];
         fU = allUsers.filter(function(u){ return u.region === user.region });
-        fL = allLedger.filter(function(l){ return hN.indexOf(l.hubName) !== -1 || hN.indexOf(l.hub) !== -1 || l.region === user.region });
-        fD = allDemands.filter(function(d){ return d.region === user.region });
+        fD = allDemands.filter(function(d){ return d.region === user.region || (getHubInfo(d.hub || d.hubName) || {}).region === user.region });
     } else if (["State Manager", "State Office"].indexOf(user.role) !== -1) {
-        var sh = allHubs.filter(function(h){ return h.state === user.state });
-        hN = sh.map(function(h){ return h.name });
+        fL = allLedger.filter(function(l) {
+            if (l.state === user.state) return true;
+            var h = getHubInfo(l.hub || l.hubName);
+            return h && h.state === user.state;
+        });
+        hN = [...new Set(fL.map(function(l){ return l.hub || l.hubName }).filter(Boolean))];
         fU = allUsers.filter(function(u){ return u.state === user.state });
-        fL = allLedger.filter(function(l){ return hN.indexOf(l.hubName) !== -1 || hN.indexOf(l.hub) !== -1 || l.state === user.state });
-        fD = allDemands.filter(function(d){ return d.state === user.state });
+        fD = allDemands.filter(function(d){ return d.state === user.state || (getHubInfo(d.hub || d.hubName) || {}).state === user.state });
     } else if (user.role === "Division Manager") {
-        var dh = allHubs.filter(function(h){ return h.division === user.division });
-        hN = dh.map(function(h){ return h.name });
+        fL = allLedger.filter(function(l) {
+            if (l.division === user.division) return true;
+            var h = getHubInfo(l.hub || l.hubName);
+            return h && h.division === user.division;
+        });
+        hN = [...new Set(fL.map(function(l){ return l.hub || l.hubName }).filter(Boolean))];
         fU = allUsers.filter(function(u){ return u.division === user.division });
-        fL = allLedger.filter(function(l){ return hN.indexOf(l.hubName) !== -1 || hN.indexOf(l.hub) !== -1 || l.division === user.division });
-        fD = allDemands.filter(function(d){ return d.division === user.division });
+        fD = allDemands.filter(function(d){ return d.division === user.division || (getHubInfo(d.hub || d.hubName) || {}).division === user.division });
     } else if (user.role === "User") {
         fU = []; fL = []; fD = []; hN = [];
     } else {
@@ -394,34 +427,114 @@ function getScopedData(user) {
     return { users: fU, ledger: fL, demands: fD, hubs: hN };
 }
 
-function populateFilterDropdowns(user) {
-    var hubs, regions, states, divisions, usernames;
-    if (["Super Admin", "Admin"].indexOf(user.role) !== -1) {
-        regions = [...new Set(allHubs.map(function(h){ return h.region }).filter(Boolean))].sort();
-        states = [...new Set(allHubs.map(function(h){ return h.state }).filter(Boolean))].sort();
-        divisions = [...new Set(allHubs.map(function(h){ return h.division }).filter(Boolean))].sort();
-        hubs = [...new Set(allHubs.map(function(h){ return h.name }).filter(Boolean))].sort();
-        usernames = allUsers.map(function(u){ return u.fullName || u.id }).filter(Boolean);
+function msToggle(id) {
+    var drop = document.getElementById(id + "Drop");
+    var arrow = document.querySelector("#" + id + " .ms-arrow");
+    if (drop.classList.contains("open")) {
+        drop.classList.remove("open");
+        if (arrow) arrow.classList.remove("open");
     } else {
-        var sh = allHubs;
-        if (user.region) sh = sh.filter(function(h){ return h.region === user.region });
-        if (user.state) sh = sh.filter(function(h){ return h.state === user.state });
-        if (user.division) sh = sh.filter(function(h){ return h.division === user.division });
-        if (user.hub) sh = sh.filter(function(h){ return h.name === user.hub || h.hubName === user.hub });
-        regions = [...new Set(sh.map(function(h){ return h.region }).filter(Boolean))].sort();
-        states = [...new Set(sh.map(function(h){ return h.state }).filter(Boolean))].sort();
-        divisions = [...new Set(sh.map(function(h){ return h.division }).filter(Boolean))].sort();
-        hubs = [...new Set(sh.map(function(h){ return h.name }).filter(Boolean))].sort();
-        var uf = allUsers;
-        if (user.region) uf = uf.filter(function(u){ return u.region === user.region });
-        if (user.state) uf = uf.filter(function(u){ return u.state === user.state });
-        if (user.division) uf = uf.filter(function(u){ return u.division === user.division });
-        usernames = uf.map(function(u){ return u.fullName || u.id }).filter(Boolean);
+        msCloseAll();
+        drop.classList.add("open");
+        if (arrow) arrow.classList.add("open");
     }
+}
+function msCloseAll() {
+    document.querySelectorAll(".ms-drop.open").forEach(function(el){ el.classList.remove("open") });
+    document.querySelectorAll(".ms-arrow.open").forEach(function(el){ el.classList.remove("open") });
+}
+document.addEventListener("click", function(e) {
+    if (!e.target.closest(".ms-wrap")) msCloseAll();
+});
+function msPopulate(id, items, lockedVal) {
+    var drop = document.getElementById(id + "Drop");
+    var header = document.querySelector("#" + id + " .ms-header");
+    drop.innerHTML = "";
+    if (lockedVal) {
+        header.classList.add("disabled");
+        header.onclick = null;
+        drop.innerHTML = '<div class="ms-opt"><input type="checkbox" checked disabled><label>' + esc(lockedVal) + '</label></div>';
+        document.querySelector("#" + id + " .ms-label").textContent = lockedVal;
+        document.getElementById(id.replace("ms","lock")).textContent = "Locked: " + lockedVal;
+        return;
+    }
+    header.classList.remove("disabled");
+    header.onclick = function(){ msToggle(id); };
+    var allDiv = document.createElement("div");
+    allDiv.className = "ms-all";
+    allDiv.innerHTML = '<input type="checkbox" id="' + id + '_all" checked> <label for="' + id + '_all">All</label>';
+    allDiv.onclick = function(e) {
+        var cb = allDiv.querySelector("input");
+        if (e.target.tagName !== "INPUT") cb.checked = !cb.checked;
+        var chs = drop.querySelectorAll(".ms-opt input");
+        for (var i = 0; i < chs.length; i++) chs[i].checked = cb.checked;
+        msUpdateLabel(id, items);
+    };
+    drop.appendChild(allDiv);
+    for (var i = 0; i < items.length; i++) {
+        var div = document.createElement("div");
+        div.className = "ms-opt";
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.value = items[i];
+        cb.checked = true;
+        cb.onchange = function() {
+            var allCb = document.getElementById(id + "_all");
+            var chs = drop.querySelectorAll(".ms-opt input");
+            var allChecked = true;
+            for (var j = 0; j < chs.length; j++) { if (!chs[j].checked) { allChecked = false; break; } }
+            if (allCb) allCb.checked = allChecked;
+            msUpdateLabel(id, items);
+        };
+        div.appendChild(cb);
+        var lb = document.createElement("label");
+        lb.textContent = items[i];
+        div.appendChild(lb);
+        drop.appendChild(div);
+    }
+    msUpdateLabel(id, items);
+}
+function msUpdateLabel(id, items) {
+    var chs = document.querySelectorAll("#" + id + "Drop .ms-opt input");
+    var sel = [];
+    for (var i = 0; i < chs.length; i++) { if (chs[i].checked) sel.push(chs[i].value); }
+    var label = document.querySelector("#" + id + " .ms-label");
+    var count = document.getElementById(id + "Count");
+    if (sel.length === 0 || sel.length === items.length) {
+        label.textContent = "All " + id.replace("ms","");
+        if (count) count.textContent = "";
+    } else {
+        label.textContent = sel.join(", ");
+        if (count) count.textContent = sel.length + " selected";
+    }
+}
+function msResetOne(id) {
+    var chs = document.querySelectorAll("#" + id + "Drop .ms-opt input");
+    for (var i = 0; i < chs.length; i++) chs[i].checked = true;
+    var allCb = document.getElementById(id + "_all");
+    if (allCb) allCb.checked = true;
+    var items = []; for (var i = 0; i < chs.length; i++) items.push(chs[i].value);
+    msUpdateLabel(id, items);
+}
+function msGetSelected(id) {
+    var chs = document.querySelectorAll("#" + id + "Drop .ms-opt input");
+    var sel = [];
+    for (var i = 0; i < chs.length; i++) { if (chs[i].checked) sel.push(chs[i].value); }
+    var allCb = document.getElementById(id + "_all");
+    if (allCb && allCb.checked) return [];
+    return sel;
+}
+
+function populateFilterDropdowns(user) {
+    var allRegions = [...new Set(allHubs.map(function(h){ return h.region }).filter(Boolean))].sort();
+    var allStates = [...new Set(allHubs.map(function(h){ return h.state }).filter(Boolean))].sort();
+    var allDivisions = [...new Set(allHubs.map(function(h){ return h.division }).filter(Boolean))].sort();
+    var allHubNames = [...new Set(allHubs.map(function(h){ return h.name }).filter(Boolean))].sort();
+    var allUsernames = allUsers.map(function(u){ return u.fullName || u.id }).filter(Boolean);
 
     function pop(id, items) {
         var s = document.getElementById(id);
-        s.innerHTML = '<option value="">All</option>';
+        s.innerHTML = '<option value="">All Items</option>';
         for (var i = 0; i < items.length; i++) {
             var o = document.createElement("option");
             o.value = items[i];
@@ -430,22 +543,11 @@ function populateFilterDropdowns(user) {
         }
     }
     pop("filterItem", allItems);
-    pop("filterRegion", regions);
-    pop("filterState", states);
-    pop("filterDivision", divisions);
-    pop("filterUser", usernames);
-    pop("filterHub", hubs);
-
-    function lock(id, bid, val, label) {
-        var s = document.getElementById(id);
-        var b = document.getElementById(bid);
-        if (val) { s.value = val; s.disabled = true; b.textContent = "Locked: " + label + " = " + val; }
-        else { b.textContent = ""; }
-    }
-    lock("filterRegion", "lockRegion", user.region, "Region");
-    lock("filterState", "lockState", user.state, "State");
-    lock("filterDivision", "lockDivision", user.division, "Division");
-    lock("filterHub", "lockHub", user.hub, "Hub");
+    msPopulate("msRegion", allRegions, (["Super Admin","Admin"].indexOf(user.role)===-1 && user.region) ? user.region : null);
+    msPopulate("msState", allStates, (["Super Admin","Admin"].indexOf(user.role)===-1 && user.state) ? user.state : null);
+    msPopulate("msDivision", allDivisions, (["Super Admin","Admin"].indexOf(user.role)===-1 && user.division) ? user.division : null);
+    msPopulate("msUser", allUsernames, null);
+    msPopulate("msHub", allHubNames, (["Super Admin","Admin"].indexOf(user.role)===-1 && user.hub) ? user.hub : null);
 }
 
 document.getElementById("filterApply").addEventListener("click", function() {
@@ -455,11 +557,17 @@ document.getElementById("filterApply").addEventListener("click", function() {
     showToast("Filter applied");
 });
 document.getElementById("filterReset").addEventListener("click", function() {
-    var selects = document.querySelectorAll("#filterPanel select");
-    for (var i = 0; i < selects.length; i++) {
-        if (!selects[i].disabled) selects[i].value = "";
-    }
     document.getElementById("filterDate").value = "";
+    document.getElementById("filterItem").value = "";
+    document.querySelectorAll(".ms-drop .ms-opt input").forEach(function(cb){ cb.checked = true });
+    document.querySelectorAll(".ms-drop .ms-all input").forEach(function(cb){ cb.checked = true });
+    ["msRegion","msState","msDivision","msUser","msHub"].forEach(function(id){
+        var hdr = document.querySelector("#" + id + " .ms-header");
+        if (hdr && hdr.classList.contains("disabled")) return;
+        var items = document.querySelectorAll("#" + id + "Drop .ms-opt input");
+        var arr = []; for (var i=0;i<items.length;i++) arr.push(items[i].value);
+        msUpdateLabel(id, arr);
+    });
     filterApplied = false;
     applyFiltersAndRender(currentUser);
     closeFilter();
@@ -471,40 +579,40 @@ function applyFiltersAndRender(user) {
     var data = scoped.ledger;
     var demands = scoped.demands;
 
-    var f = {
-        date: document.getElementById("filterDate").value,
-        item: document.getElementById("filterItem").value,
-        region: document.getElementById("filterRegion").value,
-        state: document.getElementById("filterState").value,
-        division: document.getElementById("filterDivision").value,
-        user: document.getElementById("filterUser").value,
-        hub: document.getElementById("filterHub").value
-    };
+    var fDate = document.getElementById("filterDate").value;
+    var fItem = document.getElementById("filterItem").value;
+    var fRegion = msGetSelected("msRegion");
+    var fState = msGetSelected("msState");
+    var fDivision = msGetSelected("msDivision");
+    var fUser = msGetSelected("msUser");
+    var fHub = msGetSelected("msHub");
 
     if (filterApplied) {
-        if (f.date) data = data.filter(function(d){ return d.date && d.date === f.date });
-        if (f.item) data = data.filter(function(d){ return d.itemName === f.item });
-        if (f.region) data = data.filter(function(d){ return d.region === f.region });
-        if (f.state) data = data.filter(function(d){ return d.state === f.state });
-        if (f.division) data = data.filter(function(d){ return d.division === f.division });
-        if (f.user) data = data.filter(function(d){ return d.userName === f.user || d.createdBy === f.user });
-        if (f.hub) data = data.filter(function(d){ return d.hubName === f.hub || d.hub === f.hub });
+        if (fDate) data = data.filter(function(d){ return d.date && d.date === fDate });
+        if (fItem) data = data.filter(function(d){ return d.itemName === fItem });
+        if (fRegion.length) data = data.filter(function(d){ return fRegion.indexOf(d.region) !== -1 || fRegion.indexOf((getHubInfo(d.hub || d.hubName) || {}).region) !== -1 });
+        if (fState.length) data = data.filter(function(d){ return fState.indexOf(d.state) !== -1 || fState.indexOf((getHubInfo(d.hub || d.hubName) || {}).state) !== -1 });
+        if (fDivision.length) data = data.filter(function(d){ return fDivision.indexOf(d.division) !== -1 || fDivision.indexOf((getHubInfo(d.hub || d.hubName) || {}).division) !== -1 });
+        if (fUser.length) data = data.filter(function(d){ return fUser.indexOf(d.userName) !== -1 || fUser.indexOf(d.createdBy) !== -1 });
+        if (fHub.length) data = data.filter(function(d){ return fHub.indexOf(d.hubName) !== -1 || fHub.indexOf(d.hub) !== -1 });
 
         var fb = document.getElementById("filterBadges");
         fb.innerHTML = "";
-        var keys = Object.keys(f);
+        var allFilters = {date:fDate,item:fItem,region:fRegion,state:fState,division:fDivision,user:fUser,hub:fHub};
+        var keys = Object.keys(allFilters);
         for (var i = 0; i < keys.length; i++) {
             var k = keys[i];
-            var v = f[k];
-            if (v) {
+            var v = allFilters[k];
+            if ((Array.isArray(v) && v.length) || (!Array.isArray(v) && v)) {
+                var label = Array.isArray(v) ? v.join(", ") : v;
                 var b = document.createElement("span");
                 b.className = "filter-badge active";
-                b.innerHTML = v + ' <i class="fa-solid fa-xmark"></i>';
+                b.innerHTML = label + ' <i class="fa-solid fa-xmark"></i>';
                 (function(kk) {
                     b.querySelector("i").addEventListener("click", function() {
-                        var selId = "filter" + kk.charAt(0).toUpperCase() + kk.slice(1);
-                        var s = document.getElementById(selId);
-                        if (s && !s.disabled) s.value = "";
+                        if (kk === "date") { document.getElementById("filterDate").value = ""; }
+                        else if (kk === "item") { document.getElementById("filterItem").value = ""; }
+                        else { msResetOne("ms" + kk.charAt(0).toUpperCase() + kk.slice(1)); }
                         applyFiltersAndRender(currentUser);
                     });
                 })(k);
@@ -541,7 +649,11 @@ function applyFiltersAndRender(user) {
     var map = new Map();
     for (var i = 0; i < data.length; i++) {
         var d = data[i];
-        var r = d.region || "-", s = d.state || "-", dv = d.division || "-", it = d.itemName || "Unknown";
+        var hInfo = getHubInfo(d.hub || d.hubName);
+        var r = d.region || (hInfo && hInfo.region) || "-";
+        var s = d.state || (hInfo && hInfo.state) || "-";
+        var dv = d.division || (hInfo && hInfo.division) || "-";
+        var it = d.itemName || "Unknown";
         var key = r + "|" + s + "|" + dv + "|" + it;
         var q = parseInt(d.quantity) || 0;
         var t = (d.type || "IN").toUpperCase();
