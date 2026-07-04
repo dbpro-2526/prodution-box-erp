@@ -394,11 +394,29 @@ function getScopedData(user) {
 }
 
 function populateFilterDropdowns(user) {
-    var regions = [...new Set(allHubs.map(function(h){ return h.region }).filter(Boolean))].sort();
-    var states = [...new Set(allHubs.map(function(h){ return h.state }).filter(Boolean))].sort();
-    var divisions = [...new Set(allHubs.map(function(h){ return h.division }).filter(Boolean))].sort();
-    var hubs = [...new Set(allHubs.map(function(h){ return h.name }).filter(Boolean))].sort();
-    var usernames = allUsers.map(function(u){ return u.fullName || u.id }).filter(Boolean);
+    var hubs, regions, states, divisions, usernames;
+    if (["Super Admin", "Admin"].indexOf(user.role) !== -1) {
+        regions = [...new Set(allHubs.map(function(h){ return h.region }).filter(Boolean))].sort();
+        states = [...new Set(allHubs.map(function(h){ return h.state }).filter(Boolean))].sort();
+        divisions = [...new Set(allHubs.map(function(h){ return h.division }).filter(Boolean))].sort();
+        hubs = [...new Set(allHubs.map(function(h){ return h.name }).filter(Boolean))].sort();
+        usernames = allUsers.map(function(u){ return u.fullName || u.id }).filter(Boolean);
+    } else {
+        var sh = allHubs;
+        if (user.region) sh = sh.filter(function(h){ return h.region === user.region });
+        if (user.state) sh = sh.filter(function(h){ return h.state === user.state });
+        if (user.division) sh = sh.filter(function(h){ return h.division === user.division });
+        if (user.hub) sh = sh.filter(function(h){ return h.name === user.hub || h.hubName === user.hub });
+        regions = [...new Set(sh.map(function(h){ return h.region }).filter(Boolean))].sort();
+        states = [...new Set(sh.map(function(h){ return h.state }).filter(Boolean))].sort();
+        divisions = [...new Set(sh.map(function(h){ return h.division }).filter(Boolean))].sort();
+        hubs = [...new Set(sh.map(function(h){ return h.name }).filter(Boolean))].sort();
+        var uf = allUsers;
+        if (user.region) uf = uf.filter(function(u){ return u.region === user.region });
+        if (user.state) uf = uf.filter(function(u){ return u.state === user.state });
+        if (user.division) uf = uf.filter(function(u){ return u.division === user.division });
+        usernames = uf.map(function(u){ return u.fullName || u.id }).filter(Boolean);
+    }
 
     function pop(id, items) {
         var s = document.getElementById(id);
