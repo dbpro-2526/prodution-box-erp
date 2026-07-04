@@ -2,320 +2,326 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Donation Box Inventory Erp</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Donation Box Inventory</title>
 <link rel="icon" href="dblogo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
 :root{--primary:#0F4C81;--accent:#2563EB;--bg:#f0f4f9;--sidebar-bg:#0F4C81;--text-dark:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--shadow:0 2px 12px rgba(0,0,0,0.06);--radius:14px;--radius-sm:10px;--transition:0.3s ease}
 body{background:var(--bg);color:var(--text-dark);display:flex;min-height:100vh;overflow-x:hidden}
-
-/* SIDEBAR */
-.sidebar{width:260px;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:1000;transition:transform var(--transition)}
-.sidebar-brand{padding:20px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.1)}
-.sidebar-brand img{width:38px;height:38px;border-radius:8px}
-.sidebar-brand h2{font-size:14px;font-weight:600;color:#fff;line-height:1.3}
-.sidebar-menu{padding:16px 12px;display:flex;flex-direction:column;gap:4px;flex-grow:1;overflow-y:auto}
-.sidebar-menu::-webkit-scrollbar{width:4px}
-.sidebar-menu::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:4px}
-.menu-item{display:flex;align-items:center;gap:12px;padding:11px 14px;color:rgba(255,255,255,0.7);text-decoration:none;border-radius:var(--radius-sm);font-weight:500;font-size:13px;transition:all var(--transition)}
-.menu-item i{width:18px;text-align:center;font-size:15px}
+.sidebar{width:240px;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:1000;transition:transform var(--transition)}
+.sidebar-brand{padding:18px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar-brand img{width:36px;height:36px;border-radius:8px}
+.sidebar-brand h2{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
+.sidebar-menu{padding:12px 10px;display:flex;flex-direction:column;gap:2px;flex-grow:1;overflow-y:auto}
+.menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;color:rgba(255,255,255,0.7);text-decoration:none;border-radius:var(--radius-sm);font-weight:500;font-size:13px;transition:all var(--transition);cursor:pointer}
+.menu-item i{width:18px;text-align:center;font-size:14px}
 .menu-item:hover{background:rgba(255,255,255,0.12);color:#fff}
 .menu-item.active{background:rgba(255,255,255,0.18);color:#fff;font-weight:600}
-.sidebar-footer{padding:16px 12px;border-top:1px solid rgba(255,255,255,0.1)}
-.btn-logout{width:100%;padding:11px;background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-sm);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;transition:var(--transition)}
+.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,0.1)}
+.btn-logout{width:100%;padding:10px;background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-sm);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px}
 .btn-logout:hover{background:rgba(239,68,68,0.35);color:#fff}
-
-/* OVERLAY + HAMBURGER */
+.hamburger{display:none;position:fixed;top:10px;left:10px;z-index:1001;width:38px;height:38px;border-radius:10px;background:var(--sidebar-bg);color:#fff;border:none;font-size:16px;cursor:pointer;align-items:center;justify-content:center}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;opacity:0;transition:opacity var(--transition)}
 .sidebar-overlay.show{opacity:1}
-.hamburger{display:none;position:fixed;top:14px;left:14px;z-index:1001;width:40px;height:40px;border-radius:10px;background:var(--sidebar-bg);color:#fff;border:none;font-size:18px;cursor:pointer;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,0.15)}
-
-/* MAIN */
-.main-content{margin-left:260px;width:calc(100% - 260px);padding:30px;min-height:100vh}
-
-/* HEADER */
-.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:12px}
-.header-left h1{font-size:22px;font-weight:700;color:var(--primary)}
-.header-left p{font-size:13px;color:var(--text-muted);margin-top:2px}
-.user-profile{display:flex;align-items:center;gap:10px;background:#fff;padding:7px 18px 7px 12px;border-radius:30px;border:1px solid var(--border);box-shadow:var(--shadow);white-space:nowrap}
-.user-profile .avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0}
-.user-profile .role-badge{font-size:11px;color:var(--text-muted);background:#f1f5f9;padding:2px 8px;border-radius:10px;font-weight:500}
-
-/* ACTION PANEL */
-.action-panel{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap}
-.action-panel button{padding:9px 18px;border-radius:var(--radius-sm);font-weight:500;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;border:none;transition:var(--transition)}
-.btn-primary-action{background:var(--accent);color:#fff}
-.btn-primary-action:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.3)}
-.btn-secondary-action{background:#fff;color:var(--text-dark);border:1px solid var(--border)}
-.btn-secondary-action:hover{background:#f8fafc;border-color:#cbd5e1;transform:translateY(-1px)}
-
-/* STATS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:28px}
-.stat-card{background:#fff;padding:20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;transition:transform 0.2s}
+.main-content{margin-left:240px;width:calc(100% - 240px);padding:20px 24px;min-height:100vh}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.top-bar-left h1{font-size:20px;font-weight:700;color:var(--primary)}
+.user-info{display:flex;align-items:center;gap:10px;background:#fff;padding:6px 16px 6px 10px;border-radius:30px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.user-info .avatar{width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.user-info .name{font-size:13px;font-weight:600}
+.user-info .desig{font-size:11px;color:var(--text-muted);background:#f1f5f9;padding:1px 8px;border-radius:8px}
+.filter-toggle{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px}
+.filter-toggle:hover{background:#1d4ed8}
+.filter-panel{position:fixed;top:0;right:-340px;width:320px;height:100vh;background:#fff;z-index:2000;box-shadow:-4px 0 24px rgba(0,0,0,0.12);transition:right var(--transition);display:flex;flex-direction:column}
+.filter-panel.open{right:0}
+.filter-panel-header{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.filter-panel-header h3{font-size:15px;font-weight:600}
+.filter-panel-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted);padding:4px}
+.filter-panel-body{padding:16px 18px;overflow-y:auto;flex-grow:1}
+.filter-group{margin-bottom:14px}
+.filter-group label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:3px}
+.filter-group input,.filter-group select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff}
+.filter-group input:focus,.filter-group select:focus{border-color:var(--accent)}
+.filter-group input:disabled,.filter-group select:disabled{background:#f1f5f9;cursor:not-allowed;opacity:0.7}
+.filter-group .lock-badge{font-size:10px;color:var(--text-muted);margin-top:2px;display:block}
+.filter-panel-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px}
+.filter-panel-footer button{flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none}
+.btn-filter-apply{background:var(--accent);color:#fff}
+.btn-filter-reset{background:#f1f5f9;color:var(--text-dark)}
+.filter-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1999}
+.filter-overlay.show{display:block}
+.filter-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filter-badge{background:#fff;border:1px solid var(--border);padding:4px 10px;border-radius:20px;font-size:11px;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow)}
+.filter-badge.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:#fff;padding:16px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between}
 .stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.08)}
-.stat-info h3{font-size:24px;font-weight:700;color:var(--primary)}
-.stat-info p{font-size:12px;color:var(--text-muted);margin-top:2px}
-.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.icon-blue{background:#dbeafe;color:#2563eb}
-.icon-green{background:#d1fae5;color:#059669}
-.icon-amber{background:#fef3c7;color:#d97706}
-.icon-emerald{background:#d1fae5;color:#059669}
-.icon-rose{background:#ffe4e6;color:#e11d48}
-
-/* SECTIONS */
-.dash-section{background:#fff;padding:24px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px}
-.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
-.section-header h2{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+.stat-info h3{font-size:22px;font-weight:700;color:var(--primary)}
+.stat-info p{font-size:11px;color:var(--text-muted);margin-top:1px}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.icon-blue{background:#dbeafe;color:#2563eb}.icon-green{background:#d1fae5;color:#059669}
+.icon-amber{background:#fef3c7;color:#d97706}.icon-rose{background:#ffe4e6;color:#e11d48}
+.icon-purple{background:#f3e8ff;color:#9333ea}
+.action-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.action-bar button{padding:8px 16px;border-radius:var(--radius-sm);font-weight:500;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border:none}
+.btn-action{background:var(--accent);color:#fff}
+.btn-action-secondary{background:#fff;color:var(--text-dark);border:1px solid var(--border)}
+.dash-section{background:#fff;padding:18px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:16px}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.section-header h2{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
 .section-header h2 i{color:var(--accent)}
-.btn-sm{padding:7px 16px;font-size:12px;border-radius:8px;cursor:pointer;border:none;font-weight:500;display:flex;align-items:center;gap:6px;transition:var(--transition)}
-.btn-sm-primary{background:var(--accent);color:#fff}
-.btn-sm-primary:hover{background:#1d4ed8}
-
-/* TABLE */
 .table-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--border)}
-.table-wrap::-webkit-scrollbar{height:5px}
-.table-wrap::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
-table{width:100%;border-collapse:collapse;min-width:600px}
-th{background:#f8fafc;padding:12px 14px;color:var(--text-muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.3px;border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th{background:#f8fafc;padding:10px 12px;color:var(--text-muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafcff}
-.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
-.badge-in{background:#d1fae5;color:#059669}
-.badge-out{background:#ffe4e6;color:#e11d48}
-.badge-demand{background:#fef3c7;color:#b45309}
-.badge-admin{background:#dbeafe;color:#2563eb}
-.badge-active{background:#d1fae5;color:#059669}
-.text-link{color:var(--accent);text-decoration:none;font-weight:500}
-.text-link:hover{text-decoration:underline}
-.action-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:15px;padding:4px 6px;border-radius:6px;transition:var(--transition)}
-.action-btn:hover{background:#f1f5f9;color:var(--accent)}
-.inline-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:none;transition:var(--transition)}
-.inline-btn-primary{background:var(--accent);color:#fff}
-.inline-btn-ghost{background:#f1f5f9;color:var(--text-dark)}
-
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:30px 20px;color:var(--text-muted)}
-.empty-state i{font-size:32px;margin-bottom:10px;opacity:0.4}
-.empty-state p{font-size:13px}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--primary);color:#fff;padding:14px 24px;border-radius:var(--radius-sm);box-shadow:0 6px 24px rgba(0,0,0,0.15);font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;z-index:2000;transform:translateY(80px);opacity:0;transition:var(--transition);max-width:360px}
+.remaining-positive{color:#059669;font-weight:600}
+.remaining-zero{color:var(--text-muted);font-weight:500}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty-state i{font-size:36px;margin-bottom:10px;opacity:0.3}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--primary);color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.15);font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;z-index:3000;transform:translateY(80px);opacity:0;transition:var(--transition);max-width:340px}
 .toast.show{transform:translateY(0);opacity:1}
-
-/* RESPONSIVE */
-@media(max-width:1024px){.main-content{padding:24px}}
+@media(max-width:1024px){.main-content{padding:16px 18px}}
 @media(max-width:768px){
-.sidebar{transform:translateX(-100%)}
-.sidebar.open{transform:translateX(0)}
-.hamburger{display:flex}
-.sidebar-overlay{display:block}
-.main-content{margin-left:0;width:100%;padding:70px 16px 20px}
-.header-top{flex-direction:column;align-items:flex-start}
-.stats-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.stat-card{padding:14px}
-.stat-info h3{font-size:20px}
-.dash-section{padding:16px}
-.section-header h2{font-size:14px}
-table{min-width:500px}
-.toast{left:16px;right:16px;bottom:16px;max-width:none}
-}
-@media(max-width:480px){
-.stats-grid{grid-template-columns:1fr 1fr;gap:8px}
-.action-panel{flex-direction:column}
-.action-panel button{width:100%;justify-content:center}
-.header-left h1{font-size:18px}
-}
+.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.hamburger{display:flex}.sidebar-overlay{display:block}
+.main-content{margin-left:0;width:100%;padding:60px 12px 16px}.top-bar{flex-direction:column}.filter-panel{width:100%;right:-100%}
+.stats-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.stat-card{padding:12px}.stat-info h3{font-size:18px}
+.dash-section{padding:12px}table{min-width:550px}.toast{left:12px;right:12px;bottom:12px;max-width:none}}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr 1fr;gap:6px}.action-bar{flex-direction:column}.action-bar button{width:100%}}
 </style>
 </head>
 <body>
-
 <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
 <div class="sidebar" id="sidebar">
-<div class="sidebar-brand">
-<img src="dblogo.png" alt="Logo">
-<h2>Donation Box</h2>
+<div class="sidebar-brand"><img src="dblogo.png" alt="Logo"><h2>Donation Box Inventory</h2></div>
+<div class="sidebar-menu" id="dynamicSidebarMenu"><div class="menu-item active"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+<div class="sidebar-footer"><button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></div>
 </div>
-<div class="sidebar-menu" id="dynamicSidebarMenu">
-<div class="menu-item active"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+<div class="filter-overlay" id="filterOverlay"></div>
+<div class="filter-panel" id="filterPanel">
+<div class="filter-panel-header">
+<h3><i class="fa-solid fa-sliders"></i> Filter Options</h3>
+<button class="filter-panel-close" id="filterClose"><i class="fa-solid fa-xmark"></i></button>
 </div>
-<div class="sidebar-footer">
-<button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout System</button>
+<div class="filter-panel-body">
+<div class="filter-group"><label>Date Range</label><input type="date" id="filterDate"></div>
+<div class="filter-group"><label>Item Name</label><select id="filterItem"><option value="">All Items</option></select><span class="lock-badge" id="lockItem"></span></div>
+<div class="filter-group"><label>Region</label><select id="filterRegion"><option value="">All Regions</option></select><span class="lock-badge" id="lockRegion"></span></div>
+<div class="filter-group"><label>State</label><select id="filterState"><option value="">All States</option></select><span class="lock-badge" id="lockState"></span></div>
+<div class="filter-group"><label>Division</label><select id="filterDivision"><option value="">All Divisions</option></select><span class="lock-badge" id="lockDivision"></span></div>
+<div class="filter-group"><label>User</label><select id="filterUser"><option value="">All Users</option></select><span class="lock-badge" id="lockUser"></span></div>
+<div class="filter-group"><label>Warehouse / Hub</label><select id="filterHub"><option value="">All Hubs</option></select><span class="lock-badge" id="lockHub"></span></div>
+</div>
+<div class="filter-panel-footer">
+<button class="btn-filter-reset" id="filterReset">Reset</button>
+<button class="btn-filter-apply" id="filterApply">Apply Filter</button>
 </div>
 </div>
 
 <div class="main-content">
-<div class="header-top">
-<div class="header-left">
-<h1 id="dashboardTitle">Loading Control Hub...</h1>
-<p id="dashboardSubtitle">Please wait while configurations sync...</p>
-</div>
-<div class="user-profile">
+<div class="top-bar">
+<div class="top-bar-left"><h1 id="dashboardTitle">Loading...</h1></div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+<div class="user-info">
 <div class="avatar" id="userAvatar">U</div>
-<span id="adminName">Loading...</span>
-<span class="role-badge" id="userRoleBadge">—</span>
+<span class="name" id="adminName">Loading...</span>
+<span class="desig" id="userRoleBadge">&mdash;</span>
+</div>
+<button class="filter-toggle" id="filterToggle"><i class="fa-solid fa-sliders"></i> Filters</button>
 </div>
 </div>
 
-<div class="action-panel" id="operatorActionPanel">
-<button class="btn-primary-action" id="btnActionDemand" style="display:none;"><i class="fa-solid fa-file-signature"></i> Create New Demand</button>
-<button class="btn-secondary-action" id="btnActionStockIn" style="display:none;"><i class="fa-solid fa-square-plus"></i> Log Stock IN</button>
-<button class="btn-secondary-action" id="btnActionStockOut" style="display:none;"><i class="fa-solid fa-square-minus"></i> Log Stock OUT</button>
+<p id="dashboardSubtitle" style="font-size:12px;color:var(--text-muted);margin-bottom:16px">Please wait while data syncs...</p>
+<div class="filter-badges" id="filterBadges"></div>
+
+<div class="action-bar" id="operatorActionPanel">
+<button class="btn-action" id="btnUserManage" style="display:none;"><i class="fa-solid fa-users-gear"></i> User Management</button>
+<button class="btn-action-secondary" id="btnWarehouse" style="display:none;"><i class="fa-solid fa-warehouse"></i> Warehouse</button>
+<button class="btn-action" id="btnStockIn" style="display:none;"><i class="fa-solid fa-square-plus"></i> Stock IN</button>
+<button class="btn-action-secondary" id="btnStockOut" style="display:none;"><i class="fa-solid fa-square-minus"></i> Stock OUT</button>
+<button class="btn-action" id="btnDemand" style="display:none;"><i class="fa-solid fa-file-signature"></i> Demand</button>
+<button class="btn-action-secondary" id="btnExportExcel" style="display:none;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
 </div>
 
 <div class="stats-grid">
-<div class="stat-card"><div class="stat-info"><h3 id="countUsers">0</h3><p>Total Scope Users</p></div><div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div></div>
-<div class="stat-card"><div class="stat-info"><h3 id="countHubs">0</h3><p>Monitored Hub Nodes</p></div><div class="stat-icon icon-green"><i class="fa-solid fa-warehouse"></i></div></div>
-<div class="stat-card"><div class="stat-info"><h3 id="countDemands">0</h3><p>Active Demands Pipeline</p></div><div class="stat-icon icon-amber"><i class="fa-solid fa-file-pull-request"></i></div></div>
-<div class="stat-card"><div class="stat-info"><h3 id="countStockIn">0</h3><p>Total Stock IN Ledger</p></div><div class="stat-icon icon-emerald"><i class="fa-solid fa-arrow-down-long"></i></div></div>
-<div class="stat-card"><div class="stat-info"><h3 id="countStockOut">0</h3><p>Total Stock OUT Ledger</p></div><div class="stat-icon icon-rose"><i class="fa-solid fa-arrow-up-long"></i></div></div>
+<div class="stat-card"><div class="stat-info"><h3 id="countPendingDemands">0</h3><p>Pending Demands</p></div><div class="stat-icon icon-amber"><i class="fa-solid fa-file-clock"></i></div></div>
+<div class="stat-card"><div class="stat-info"><h3 id="countTodayIn">0</h3><p>Today Stock IN</p></div><div class="stat-icon icon-green"><i class="fa-solid fa-arrow-down-long"></i></div></div>
+<div class="stat-card"><div class="stat-info"><h3 id="countTodayOut">0</h3><p>Today Stock OUT</p></div><div class="stat-icon icon-rose"><i class="fa-solid fa-arrow-up-long"></i></div></div>
+<div class="stat-card" id="cardTotalIn" style="display:none"><div class="stat-info"><h3 id="countTotalIn">0</h3><p>Total Stock IN</p></div><div class="stat-icon icon-blue"><i class="fa-solid fa-circle-down"></i></div></div>
+<div class="stat-card" id="cardTotalOut" style="display:none"><div class="stat-info"><h3 id="countTotalOut">0</h3><p>Total Stock OUT</p></div><div class="stat-icon icon-purple"><i class="fa-solid fa-circle-up"></i></div></div>
+<div class="stat-card" id="cardRemaining" style="display:none"><div class="stat-info"><h3 id="countRemaining">0</h3><p>Remaining Stock</p></div><div class="stat-icon icon-green"><i class="fa-solid fa-boxes-stacked"></i></div></div>
 </div>
 
 <div class="dash-section">
 <div class="section-header">
-<h2><i class="fa-solid fa-users"></i> System Administrative Overview</h2>
-<button class="btn-sm btn-sm-primary" id="configureEntityBtn" style="display:none;" onclick="window.location.href='users.html'"><i class="fa-solid fa-plus"></i> Configure New Entity</button>
+<h2><i class="fa-solid fa-table"></i> Complete Stock Ledger (A-Z)</h2>
+<span style="font-size:11px;color:var(--text-muted)" id="tableRowCount">0 entries</span>
 </div>
-<div class="table-wrap"><table><thead><tr><th>Name / Description</th><th>Role / Scope</th><th>Status</th><th>Hierarchy Zone Links</th><th>Action Controls</th></tr></thead><tbody id="overviewTableBody"><tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Syncing users scope registry...</p></div></td></tr></tbody></table></div>
+<div class="table-wrap">
+<table><thead><tr><th>Region</th><th>State</th><th>Division</th><th>Item Name</th><th>Stock IN</th><th>Stock OUT</th><th>Remaining</th></tr></thead>
+<tbody id="mainTableBody"><tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading data...</p></div></td></tr></tbody></table>
 </div>
-
-<div class="dash-section">
-<div class="section-header"><h2><i class="fa-solid fa-file-contract"></i> Active Material & Box Demands Ledger</h2></div>
-<div class="table-wrap"><table><thead><tr><th>Demand Ref ID</th><th>Requesting Entity / Zone</th><th>Required Items Summary</th><th>Quantity</th><th>Current Status</th></tr></thead><tbody id="demandLedgerTableBody"><tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Fetching scoped demand flows...</p></div></td></tr></tbody></table></div>
-</div>
-
-<div class="dash-section">
-<div class="section-header"><h2><i class="fa-solid fa-right-left"></i> Live Stock In / Out Ledger Logs</h2></div>
-<div class="table-wrap"><table><thead><tr><th>Item Details</th><th>Transaction Type</th><th>Quantity</th><th>Warehouse Hub</th><th>Date & Time</th></tr></thead><tbody id="stockLedgerTableBody"><tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Fetching scoped transactions...</p></div></td></tr></tbody></table></div>
 </div>
 </div>
 
-<div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastMsg">Action completed</span></div>
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastMsg">Done</span></div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import{getFirestore,collection,getDocs}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-const firebaseConfig={apiKey:"AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",authDomain:"prodution-box-erp.firebaseapp.com",projectId:"prodution-box-erp",storageBucket:"prodution-box-erp.firebasestorage.app",messagingSenderId:"426698063494",appId:"1:426698063494:web:880dd323f24bd4121ddb07",measurementId:"G-948852RZLB"};
+const firebaseConfig={apiKey:"AIzaSyBTqKYPDlYh76cH5N-H-hgQqfn9ZQctCIs",authDomain:"prodution-box-erp.firebaseapp.com",projectId:"prodution-box-erp",storageBucket:"prodution-box-erp.appspot.com",messagingSenderId:"240505136968",appId:"1:240505136968:web:78a954cd2a3af7e1b4bdb4"};
 const app=initializeApp(firebaseConfig);const db=getFirestore(app);
 
-function showToast(msg,icon){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.querySelector('i').className=icon||"fa-solid fa-check-circle";t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
-function getInitials(n){return n?n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2):'U'}
+function showToast(msg,icon){const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=msg;t.querySelector("i").className=icon||"fa-solid fa-check-circle";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500)}
+function getInitials(n){return n?n.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2):"U"}
 
-// MOBILE SIDEBAR
-document.getElementById('hamburgerBtn').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show')});
-document.getElementById('sidebarOverlay').addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show')});
+let allLedger=[],allHubs=[],allUsers=[],allDemands=[],allItems=[];
+let currentUser=null;let filterApplied=false;
 
-// INIT
-window.addEventListener('DOMContentLoaded',()=>{
-const user=JSON.parse(localStorage.getItem('userSession'));
+document.getElementById("hamburgerBtn").addEventListener("click",()=>{document.getElementById("sidebar").classList.toggle("open");document.getElementById("sidebarOverlay").classList.toggle("show")});
+document.getElementById("sidebarOverlay").addEventListener("click",()=>{document.getElementById("sidebar").classList.remove("open");document.getElementById("sidebarOverlay").classList.remove("show")});
+document.getElementById("filterToggle").addEventListener("click",()=>{document.getElementById("filterPanel").classList.add("open");document.getElementById("filterOverlay").classList.add("show")});
+document.getElementById("filterClose").addEventListener("click",closeFilter);
+document.getElementById("filterOverlay").addEventListener("click",closeFilter);
+function closeFilter(){document.getElementById("filterPanel").classList.remove("open");document.getElementById("filterOverlay").classList.remove("show")}
+
+window.addEventListener("DOMContentLoaded",async()=>{
+const user=JSON.parse(localStorage.getItem("userSession"));
 if(!user||!user.role){showToast("Session invalid! Redirecting...");setTimeout(()=>window.location.href="login.html",1200);return}
-document.getElementById('userAvatar').textContent=getInitials(user.fullName);
-document.getElementById('adminName').innerText=user.fullName||"User";
-document.getElementById('userRoleBadge').innerText=user.role||"—";
-setupUI(user);fetchScopedData(user)
+currentUser=user;
+document.getElementById("userAvatar").textContent=getInitials(user.fullName);
+document.getElementById("adminName").innerText=user.fullName||"User";
+document.getElementById("userRoleBadge").innerText=user.role||"-";
+setupUI(user);await loadAllData(user);
 });
 
 function setupUI(user){
-const menu=document.getElementById('dynamicSidebarMenu');
-const title=document.getElementById('dashboardTitle');
-const sub=document.getElementById('dashboardSubtitle');
-const confBtn=document.getElementById('configureEntityBtn');
-const bD=document.getElementById('btnActionDemand');
-const bI=document.getElementById('btnActionStockIn');
-const bO=document.getElementById('btnActionStockOut');
-
-// Same design for ALL users — only menus and data change
-const dash='<a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>';
-
+const menu=document.getElementById("dynamicSidebarMenu");
+const title=document.getElementById("dashboardTitle");
+const sub=document.getElementById("dashboardSubtitle");
+function mi(icon,label,href,a){return "<a"+(href?' href="'+href+'"':"")+' class="menu-item'+(a?" active":"")+'"><i class="'+icon+'"></i> '+label+"</a>"}
 if(user.role==="User"){
-title.innerText="User Personal Hub";sub.innerText="Welcome to your synchronized personal terminal dashboard.";
-menu.innerHTML='<a href="#" class="menu-item active"><i class="fa-solid fa-layer-group"></i> Pan Wxces</a>';
-// User sees everything but with scoped data (no hiding)
+title.innerText="User Personal Hub";sub.innerText="Welcome.";
+menu.innerHTML=mi("fa-solid fa-layer-group","Pan Wxces","#",true);
+document.getElementById("operatorActionPanel").style.display="none";return}
+let items=mi("fa-solid fa-chart-pie","Dashboard","#",true);
+if(["Super Admin","Admin","Regional Office","State Office","Warehouse Manager","Hub Manager","Inventory Loader"].includes(user.role)){
+items+=mi("fa-solid fa-users","User Management","users.html");
+items+=mi("fa-solid fa-warehouse","Warehouse","hubs.html");
+items+=mi("fa-solid fa-arrow-down-long","Stock IN","stock-in.html");
+items+=mi("fa-solid fa-arrow-up-long","Stock OUT","stock-out.html");
+items+=mi("fa-solid fa-file-signature","Demand","demand.html");
 }
-else if(["Super Admin","Admin"].includes(user.role)){
-title.innerText=user.role+" Global Console";sub.innerText="Full continuous read/write governance across all global nodes & logistics.";
-if(confBtn)confBtn.style.display="inline-flex";
-bD.style.display="inline-flex";bI.style.display="inline-flex";bO.style.display="inline-flex";
-menu.innerHTML=dash+'<a href="users.html" class="menu-item"><i class="fa-solid fa-users"></i> Global User Master</a><a href="hubs.html" class="menu-item"><i class="fa-solid fa-warehouse"></i> Strategic Node Master</a><a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Master SKU Catalogs</a><a href="#" class="menu-item"><i class="fa-solid fa-file-invoice-dollar"></i> Global Audit Trails</a>'
+if(["Super Admin","Admin"].includes(user.role)){
+title.innerText=user.role+" Global Console";sub.innerText="Full governance.";
+document.getElementById("btnUserManage").style.display="inline-flex";document.getElementById("btnWarehouse").style.display="inline-flex";
+document.getElementById("btnStockIn").style.display="inline-flex";document.getElementById("btnStockOut").style.display="inline-flex";document.getElementById("btnDemand").style.display="inline-flex";
 }
-else if(user.role==="Regional Manager"){
-title.innerText="Regional Supervisor Hub ("+(user.region||'Assigned Region')+")";sub.innerText="Holistic View-Only Monitoring across States and Divisions under Region: "+(user.region||'All');
-menu.innerHTML=dash+'<a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Regional Infrastructure</a><a href="#" class="menu-item"><i class="fa-solid fa-file-waveform"></i> Region Telemetry View</a>'
-}
+else if(user.role==="Regional Manager"){title.innerText="Regional Supervisor ("+(user.region||"Region")+")";sub.innerText="View-Only."}
 else if(user.role==="Regional Office"){
-title.innerText="Regional Operations Desk ("+(user.region||'Assigned Region')+")";sub.innerText="Authorized for user adjustments & execution pipeline entries under Region: "+(user.region||'All');
-bD.style.display="inline-flex";bI.style.display="inline-flex";bO.style.display="inline-flex";
-menu.innerHTML=dash+'<a href="#" class="menu-item"><i class="fa-solid fa-users-gear"></i> Regional Staff Mapping</a><a href="#" class="menu-item"><i class="fa-solid fa-right-left"></i> Region Tx Entries</a>'
+title.innerText="Regional Ops ("+(user.region||"Region")+")";sub.innerText="Entries.";
+document.getElementById("btnStockIn").style.display="inline-flex";document.getElementById("btnStockOut").style.display="inline-flex";document.getElementById("btnDemand").style.display="inline-flex";
 }
-else if(user.role==="State Manager"){
-title.innerText="State Inspector Command ("+(user.state||'Assigned State')+")";sub.innerText="Displaying telemetry grids across all divisions inside State: "+(user.state||'All');
-menu.innerHTML=dash+'<a href="#" class="menu-item"><i class="fa-solid fa-truck-ramp-box"></i> State Allocation Ledgers</a>'
-}
+else if(user.role==="State Manager"){title.innerText="State Inspector ("+(user.state||"State")+")";sub.innerText="View-Only."}
 else if(user.role==="State Office"){
-title.innerText="State Logistics Counter ("+(user.state||'Assigned State')+")";sub.innerText="Data execution pipelines enabled for State Territory: "+(user.state||'All');
-bD.style.display="inline-flex";bI.style.display="inline-flex";bO.style.display="inline-flex";
-menu.innerHTML=dash+'<a href="#" class="menu-item"><i class="fa-solid fa-right-left"></i> State Tx Inputs</a>'
+title.innerText="State Logistics ("+(user.state||"State")+")";sub.innerText="Entries.";
+document.getElementById("btnStockIn").style.display="inline-flex";document.getElementById("btnStockOut").style.display="inline-flex";document.getElementById("btnDemand").style.display="inline-flex";
 }
-else if(user.role==="Division Manager"){
-title.innerText="Division Command Matrix ("+(user.division||'Assigned Division')+")";sub.innerText="Monitoring streams linked directly to local division segment: "+(user.division||'All');
-bD.style.display="inline-flex";
-menu.innerHTML=dash+'<a href="#" class="menu-item"><i class="fa-solid fa-rectangle-list"></i> Division Taskbooks</a>'
-}
+else if(user.role==="Division Manager"){title.innerText="Division ("+(user.division||"Div")+")";sub.innerText="Local.";document.getElementById("btnDemand").style.display="inline-flex"}
 else if(["Warehouse Manager","Hub Manager","Inventory Loader"].includes(user.role)){
-title.innerText=user.role+" Vault Console";sub.innerText="Facility Link Node: "+(user.hub||'Local Node Station');
-bD.style.display="inline-flex";bI.style.display="inline-flex";bO.style.display="inline-flex";
-menu.innerHTML=dash+'<a href="#" class="menu-item"><i class="fa-solid fa-boxes-packing"></i> Local Hub Inventory</a>'
+title.innerText=user.role+" ("+(user.hub||"Hub")+")";sub.innerText="Facility.";
+document.getElementById("btnStockIn").style.display="inline-flex";document.getElementById("btnStockOut").style.display="inline-flex";document.getElementById("btnDemand").style.display="inline-flex";
 }
+if(!["User","Regional Manager","State Manager","Division Manager"].includes(user.role)){
+document.getElementById("btnExportExcel").style.display="inline-flex";
+}
+menu.innerHTML=items;
 }
 
-// SCOPED DATA FETCH
-async function fetchScopedData(user){
+document.getElementById("btnStockIn").addEventListener("click",()=>{if(currentUser)window.location.href="stock-in.html"});
+document.getElementById("btnStockOut").addEventListener("click",()=>{if(currentUser)window.location.href="stock-out.html"});
+document.getElementById("btnDemand").addEventListener("click",()=>{if(currentUser)window.location.href="demand.html"});
+
+async function loadAllData(user){
 try{
 const[uS,hS,lS,dS]=await Promise.all([getDocs(collection(db,"users")),getDocs(collection(db,"hubs")),getDocs(collection(db,"stock_ledger")),getDocs(collection(db,"demands"))]);
-const allU=[];uS.forEach(d=>allU.push({id:d.id,...d.data()}));
-const allH=[];hS.forEach(d=>allH.push({id:d.id,...d.data()}));
-const allL=[];lS.forEach(d=>allL.push({id:d.id,...d.data()}));
-const allD=[];dS.forEach(d=>allD.push({id:d.id,...d.data()}));
-let fU=[],fL=[],fD=[],hN=[];
-if(["Super Admin","Admin"].includes(user.role)){fU=allU;fL=allL;fD=allD;hN=allH.map(h=>h.name)}
-else if(["Regional Manager","Regional Office"].includes(user.role)){const rh=allH.filter(h=>h.region===user.region);hN=rh.map(h=>h.name);fU=allU.filter(u=>u.region===user.region);fL=allL.filter(l=>hN.includes(l.hubName));fD=allD.filter(d=>d.region===user.region)}
-else if(["State Manager","State Office"].includes(user.role)){const sh=allH.filter(h=>h.state===user.state);hN=sh.map(h=>h.name);fU=allU.filter(u=>u.state===user.state);fL=allL.filter(l=>hN.includes(l.hubName));fD=allD.filter(d=>d.state===user.state)}
-else if(user.role==="Division Manager"){const dh=allH.filter(h=>h.division===user.division);hN=dh.map(h=>h.name);fU=allU.filter(u=>u.division===user.division);fL=allL.filter(l=>hN.includes(l.hubName));fD=allD.filter(d=>d.division===user.division)}
-else if(user.role==="User"){hN=[];fU=[];fL=[];fD=[]}
-else{hN=[user.hub||""];fU=[];fL=allL.filter(l=>l.hubName===user.hub);fD=allD.filter(d=>d.hubName===user.hub)}
-const $=id=>document.getElementById(id);
-if(countUsers)countUsers.innerText=fU.length;
-countHubs.innerText=hN.length;
-countDemands.innerText=fD.length;
-let sin=0,sout=0;
-const lB=stockLedgerTableBody;lB.innerHTML="";
-if(!fL.length){lB.innerHTML='<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-database"></i><p>No transactions found in your scope.</p></div></td></tr>'}
-else{fL.forEach(r=>{const q=parseInt(r.quantity)||0;const t=(r.type||"IN").toUpperCase();if(t==="IN")sin+=q;else sout+=q;lB.innerHTML+='<tr><td style="font-weight:500;">'+(r.itemName||"Unnamed Asset SKU")+'</td><td><span class="badge '+(t==='IN'?'badge-in':'badge-out')+'">'+t+'</span></td><td style="font-weight:600;">'+q.toLocaleString()+' Pcs</td><td>'+(r.hubName||"Local Node Warehouse")+'</td><td style="color:var(--text-muted);font-size:13px;">'+(r.date||"N/A")+'</td></tr>'})}
-countStockIn.innerText=sin.toLocaleString();countStockOut.innerText=sout.toLocaleString();
-const dB=demandLedgerTableBody;dB.innerHTML="";
-if(!fD.length){dB.innerHTML='<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-file-contract"></i><p>No pipeline demand allocations configured inside this scope.</p></div></td></tr>'}
-else{fD.forEach(d=>{dB.innerHTML+='<tr><td style="font-weight:600;color:var(--primary)">'+(d.id||"REF-ID")+'</td><td>'+(d.requestedBy||"Field Hub Node")+" ("+(d.division||d.state||"Global Division")+')</td><td style="font-weight:500;">'+(d.itemName||"Donation Box Serialized Asset")+'</td><td style="font-weight:600;">'+parseInt(d.quantity||0).toLocaleString()+" Pcs</td><td><span class=\"badge badge-demand\">"+(d.status||"Pending Allocation")+"</span></td></tr>"})}
-const uB=overviewTableBody;
-if(uB){uB.innerHTML="";
-if(!fU.length){uB.innerHTML='<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-users"></i><p>No structural staff registry reports loaded within this network profile.</p></div></td></tr>'}
-else{fU.forEach(u=>{let acts='<span style="color:var(--text-muted);font-size:12px;">---</span>';if(["Super Admin","Admin"].includes(user.role)){acts='<button class="action-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>'}else if(user.role==="Regional Office"){acts='<button class="inline-btn inline-btn-primary" onclick="alert(\'Password reset for '+u.id+'\')"><i class="fa-solid fa-key"></i> Reset</button><button class="inline-btn inline-btn-ghost" onclick="alert(\'Zone mapping for '+u.id+'\')"><i class="fa-solid fa-map-pin"></i> Map</button>'};uB.innerHTML+='<tr><td><a href="#" class="text-link">'+(u.fullName||"Anonymous Profile")+'</a></td><td><span class="badge badge-admin">'+(u.role||"Scoped Node")+'</span></td><td><span style="color:#16a34a;font-weight:600;">● Synchronized</span></td><td>'+(u.region||u.state||u.division||"Global Network Core")+'</td><td>'+acts+'</td></tr>'})}}
-}catch(e){console.error("Data fetch error:",e);showToast("Failed to load data.","fa-solid fa-triangle-exclamation")}
+allUsers=[];uS.forEach(d=>allUsers.push({id:d.id,...d.data()}));
+allHubs=[];hS.forEach(d=>allHubs.push({id:d.id,...d.data()}));
+allLedger=[];lS.forEach(d=>allLedger.push({id:d.id,...d.data()}));
+allDemands=[];dS.forEach(d=>allDemands.push({id:d.id,...d.data()}));
+const itemSet=new Set();allLedger.forEach(l=>{if(l.itemName)itemSet.add(l.itemName)});allDemands.forEach(d=>{if(d.itemName)itemSet.add(d.itemName)});
+allItems=Array.from(itemSet).sort();
+populateFilterDropdowns(user);
+applyFiltersAndRender(user);
+}catch(e){console.error(e);showToast("Data error","fa-solid fa-triangle-exclamation")}
 }
 
-// LOGOUT
-document.getElementById('logoutBtn').addEventListener('click',()=>{localStorage.removeItem('userSession');showToast("Logging out...");setTimeout(()=>window.location.href="login.html",800)});
+function getScopedData(user){
+let fU=[],fL=[],fD=[],hN=[];
+if(["Super Admin","Admin"].includes(user.role)){fU=allUsers;fL=allLedger;fD=allDemands;hN=allHubs.map(h=>h.name)}
+else if(["Regional Manager","Regional Office"].includes(user.role)){const rh=allHubs.filter(h=>h.region===user.region);hN=rh.map(h=>h.name);fU=allUsers.filter(u=>u.region===user.region);fL=allLedger.filter(l=>hN.includes(l.hubName));fD=allDemands.filter(d=>d.region===user.region)}
+else if(["State Manager","State Office"].includes(user.role)){const sh=allHubs.filter(h=>h.state===user.state);hN=sh.map(h=>h.name);fU=allUsers.filter(u=>u.state===user.state);fL=allLedger.filter(l=>hN.includes(l.hubName));fD=allDemands.filter(d=>d.state===user.state)}
+else if(user.role==="Division Manager"){const dh=allHubs.filter(h=>h.division===user.division);hN=dh.map(h=>h.name);fU=allUsers.filter(u=>u.division===user.division);fL=allLedger.filter(l=>hN.includes(l.hubName));fD=allDemands.filter(d=>d.division===user.division)}
+else if(user.role==="User"){fU=[];fL=[];fD=[];hN=[]}
+else{hN=[user.hub||""];fU=[];fL=allLedger.filter(l=>l.hubName===user.hub);fD=allDemands.filter(d=>d.hubName===user.hub)}
+return{users:fU,ledger:fL,demands:fD,hubs:hN}
+}
 
-// ACTION BUTTONS
-document.getElementById('btnActionDemand').addEventListener('click',()=>showToast("New Demand form coming soon","fa-solid fa-file-signature"));
-document.getElementById('btnActionStockIn').addEventListener('click',()=>showToast("Stock IN form coming soon","fa-solid fa-square-plus"));
-document.getElementById('btnActionStockOut').addEventListener('click',()=>showToast("Stock OUT form coming soon","fa-solid fa-square-minus"));
+function populateFilterDropdowns(user){
+const regions=[...new Set(allHubs.map(h=>h.region).filter(Boolean))].sort();
+const states=[...new Set(allHubs.map(h=>h.state).filter(Boolean))].sort();
+const divisions=[...new Set(allHubs.map(h=>h.division).filter(Boolean))].sort();
+const hubs=[...new Set(allHubs.map(h=>h.name).filter(Boolean))].sort();
+const usernames=allUsers.map(u=>u.fullName||u.id).filter(Boolean);
+function pop(id,items){const s=document.getElementById(id);s.innerHTML='<option value="">All</option>';items.forEach(i=>{const o=document.createElement("option");o.value=i;o.textContent=i;s.appendChild(o)})}
+pop("filterItem",allItems);pop("filterRegion",regions);pop("filterState",states);pop("filterDivision",divisions);pop("filterUser",usernames);pop("filterHub",hubs);
+function lock(id,bid,val,label){const s=document.getElementById(id);const b=document.getElementById(bid);if(val){s.value=val;s.disabled=true;b.textContent="Locked: "+label+" = "+val}else{b.textContent=""}}
+lock("filterRegion","lockRegion",user.region,"Region");lock("filterState","lockState",user.state,"State");lock("filterDivision","lockDivision",user.division,"Division");lock("filterHub","lockHub",user.hub,"Hub");
+}
+
+document.getElementById("filterApply").addEventListener("click",()=>{filterApplied=true;applyFiltersAndRender(currentUser);closeFilter();showToast("Filter applied")});
+document.getElementById("filterReset").addEventListener("click",()=>{document.querySelectorAll("#filterPanel select").forEach(s=>{if(!s.disabled)s.value=""});document.getElementById("filterDate").value="";filterApplied=false;applyFiltersAndRender(currentUser);closeFilter();showToast("Filter reset")});
+
+function applyFiltersAndRender(user){
+const scoped=getScopedData(user);let data=scoped.ledger;let demands=scoped.demands;
+const f={date:document.getElementById("filterDate").value,item:document.getElementById("filterItem").value,region:document.getElementById("filterRegion").value,state:document.getElementById("filterState").value,division:document.getElementById("filterDivision").value,user:document.getElementById("filterUser").value,hub:document.getElementById("filterHub").value};
+if(filterApplied){
+if(f.date)data=data.filter(d=>d.date&&d.date===f.date);if(f.item)data=data.filter(d=>d.itemName===f.item);if(f.region)data=data.filter(d=>d.region===f.region);if(f.state)data=data.filter(d=>d.state===f.state);if(f.division)data=data.filter(d=>d.division===f.division);if(f.user)data=data.filter(d=>d.userName===f.user||d.createdBy===f.user);if(f.hub)data=data.filter(d=>d.hubName===f.hub);
+const fb=document.getElementById("filterBadges");fb.innerHTML="";Object.entries(f).forEach(([k,v])=>{if(v){const b=document.createElement("span");b.className="filter-badge active";b.innerHTML=v+' <i class="fa-solid fa-xmark"></i>';b.querySelector("i").addEventListener("click",()=>{const selId="filter"+k.charAt(0).toUpperCase()+k.slice(1);const s=document.getElementById(selId);if(s&&!s.disabled)s.value="";applyFiltersAndRender(currentUser)});fb.appendChild(b)}})
+}else{document.getElementById("filterBadges").innerHTML=""}
+const today=new Date().toISOString().split("T")[0];
+const td=data.filter(d=>d.date===today);
+const pd=demands.filter(d=>!d.status||d.status==="Pending Allocation"||d.status==="Pending");
+const ti=td.filter(d=>(d.type||"IN").toUpperCase()==="IN").reduce((s,d)=>s+(parseInt(d.quantity)||0),0);
+const to=td.filter(d=>(d.type||"IN").toUpperCase()==="OUT").reduce((s,d)=>s+(parseInt(d.quantity)||0),0);
+const totIn=data.filter(d=>(d.type||"IN").toUpperCase()==="IN").reduce((s,d)=>s+(parseInt(d.quantity)||0),0);
+const totOut=data.filter(d=>(d.type||"IN").toUpperCase()==="OUT").reduce((s,d)=>s+(parseInt(d.quantity)||0),0);
+const rem=totIn-totOut;
+document.getElementById("countPendingDemands").innerText=pd.length;
+document.getElementById("countTodayIn").innerText=ti.toLocaleString();
+document.getElementById("countTodayOut").innerText=to.toLocaleString();
+if(filterApplied){
+document.getElementById("cardTotalIn").style.display="flex";document.getElementById("countTotalIn").innerText=totIn.toLocaleString();
+document.getElementById("cardTotalOut").style.display="flex";document.getElementById("countTotalOut").innerText=totOut.toLocaleString();
+document.getElementById("cardRemaining").style.display="flex";document.getElementById("countRemaining").innerText=Math.max(0,rem).toLocaleString()
+}else{document.getElementById("cardTotalIn").style.display="none";document.getElementById("cardTotalOut").style.display="none";document.getElementById("cardRemaining").style.display="none"}
+const map=new Map();
+data.forEach(d=>{const r=d.region||"-";const s=d.state||"-";const dv=d.division||"-";const it=d.itemName||"Unknown";const key=r+"|"+s+"|"+dv+"|"+it;const q=parseInt(d.quantity)||0;const t=(d.type||"IN").toUpperCase();if(!map.has(key))map.set(key,{region:r,state:s,division:dv,item:it,inQty:0,outQty:0});const e=map.get(key);if(t==="IN")e.inQty+=q;else e.outQty+=q});
+const agg=Array.from(map.values()).sort((a,b)=>a.item.localeCompare(b.item));
+const tb=document.getElementById("mainTableBody");tb.innerHTML="";
+if(!agg.length){tb.innerHTML='<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-database"></i><p>No data found.</p></div></td></tr>'}
+else{agg.forEach(r=>{const rm=r.inQty-r.outQty;tb.innerHTML+="<tr><td>"+r.region+"</td><td>"+r.state+"</td><td>"+r.division+'</td><td><span class="text-link">'+r.item+'</span></td><td style="font-weight:600;color:#059669">'+r.inQty.toLocaleString()+'</td><td style="font-weight:600;color:#e11d48">'+r.outQty.toLocaleString()+"</td><td class=\""+(rm>0?"remaining-positive":"remaining-zero")+'">'+rm.toLocaleString()+"</td></tr>"})}
+document.getElementById("tableRowCount").innerText=agg.length+" entries";
+}
+
+document.getElementById("logoutBtn").addEventListener("click",()=>{localStorage.removeItem("userSession");showToast("Logging out...");setTimeout(()=>window.location.href="login.html",800)});
 </script>
 </body>
 </html>
