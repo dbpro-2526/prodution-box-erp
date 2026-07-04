@@ -95,6 +95,9 @@ tr:hover td{background:#fafcff}
 .dash-section{padding:12px}table{min-width:550px}.toast{left:12px;right:12px;bottom:12px;max-width:none}}
 @media(max-width:480px){.stats-grid{grid-template-columns:1fr 1fr;gap:6px}.action-bar{flex-direction:column}.action-bar button{width:100%}}
 </style>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
@@ -279,26 +282,29 @@ function setupUI(user) {
     if (["Super Admin", "Admin"].indexOf(user.role) !== -1) {
         document.getElementById("btnUserManage").style.display = "inline-flex";
         document.getElementById("btnWarehouse").style.display = "inline-flex";
-        document.getElementById("btnStockIn").style.display = "inline-flex";
-        document.getElementById("btnStockOut").style.display = "inline-flex";
-        document.getElementById("btnDemand").style.display = "inline-flex";
-    } else if (["Regional Office"].indexOf(user.role) !== -1) {
-        document.getElementById("btnStockIn").style.display = "inline-flex";
-        document.getElementById("btnStockOut").style.display = "inline-flex";
-        document.getElementById("btnDemand").style.display = "inline-flex";
-    } else if (["State Office"].indexOf(user.role) !== -1) {
-        document.getElementById("btnStockIn").style.display = "inline-flex";
-        document.getElementById("btnStockOut").style.display = "inline-flex";
-        document.getElementById("btnDemand").style.display = "inline-flex";
-    } else if (["Division Manager"].indexOf(user.role) !== -1) {
-        document.getElementById("btnStockIn").style.display = "inline-flex";
-        document.getElementById("btnStockOut").style.display = "inline-flex";
-        document.getElementById("btnDemand").style.display = "inline-flex";
-    } else if (["Warehouse Manager", "Hub Manager", "Inventory Loader"].indexOf(user.role) !== -1) {
-        document.getElementById("btnStockIn").style.display = "inline-flex";
-        document.getElementById("btnStockOut").style.display = "inline-flex";
-        document.getElementById("btnDemand").style.display = "inline-flex";
-    }
+    document.getElementById("btnStockIn").addEventListener("click", function () {
+    if (currentUser) window.location.href = "stock-in.html";
+});
+
+document.getElementById("btnStockOut").addEventListener("click", function () {
+    if (currentUser) window.location.href = "stock-out.html";
+});
+
+document.getElementById("btnDemand").addEventListener("click", function () {
+    if (currentUser) window.location.href = "demand.html";
+});
+
+document.getElementById("btnUserManage").addEventListener("click", function () {
+    if (currentUser) window.location.href = "users.html";
+});
+
+document.getElementById("btnWarehouse").addEventListener("click", function () {
+    if (currentUser) window.location.href = "hubs.html";
+});
+
+document.getElementById("btnExportExcel").addEventListener("click", function () {
+    exportToExcel();
+});
 
     if (["Super Admin", "Admin", "Regional Office", "State Office", "Warehouse Manager", "Hub Manager", "Inventory Loader"].indexOf(user.role) !== -1) {
         document.getElementById("btnExportExcel").style.display = "inline-flex";
@@ -309,7 +315,21 @@ function setupUI(user) {
 
 document.getElementById("btnStockIn").addEventListener("click", function(){ if(currentUser) window.location.href = "stock-in.html" });
 document.getElementById("btnStockOut").addEventListener("click", function(){ if(currentUser) window.location.href = "stock-out.html" });
-document.getElementById("btnDemand").addEventListener("click", function(){ if(currentUser) window.location.href = "demand.html" });
+document.getElementById("btnDemand").addEventListenerdocument.getElementById("btnExportExcel").addEventListener("click", function () {
+    exportToExcel();
+});
+    ("click", function(){ if(currentUser) window.location.href = "demand.html" });
+    document.getElementById("btnUserManage").addEventListener("click", function () {
+    if(currentUser) window.location.href = "users.html";
+});
+
+document.getElementById("btnWarehouse").addEventListener("click", function () {
+    if(currentUser) window.location.href = "hubs.html";
+});
+
+document.getElementById("btnExportExcel").addEventListener("click", function () {
+    exportToExcel();
+});
 
 async function loadAllData(user) {
     try {
@@ -522,7 +542,51 @@ function applyFiltersAndRender(user) {
     }
     document.getElementById("tableRowCount").innerText = agg.length + " entries";
 }
+function exportToExcel() {
+    var table = document.getElementById("mainTableBody");
 
+    if (!table || table.rows.length === 0) {
+        showToast("No data available to export");
+        return;
+    }
+
+    var data = [];
+
+    data.push([
+        "Region",
+        "State",
+        "Division",
+        "Item Name",
+        "Stock IN",
+        "Stock OUT",
+        "Remaining"
+    ]);
+
+    for (var i = 0; i < table.rows.length; i++) {
+        var cells = table.rows[i].cells;
+
+        if (cells.length < 7) continue;
+
+        data.push([
+            cells[0].innerText,
+            cells[1].innerText,
+            cells[2].innerText,
+            cells[3].innerText,
+            cells[4].innerText,
+            cells[5].innerText,
+            cells[6].innerText
+        ]);
+    }
+
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.aoa_to_sheet(data);
+
+    XLSX.utils.book_append_sheet(wb, ws, "Stock Summary");
+
+    XLSX.writeFile(wb, "Donation_Box_Stock_Report.xlsx");
+
+    showToast("Excel Export Successful");
+}
 function esc(s) {
     if (!s) return "-";
     return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
