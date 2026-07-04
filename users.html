@@ -1,918 +1,568 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management - Donation Box ERP</title>
-    
-    <!-- Favicon & Fonts -->
-    <link rel="icon" href="dblogo.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        :root {
-            --primary-color: #0F4C81;
-            --accent-color: #2563EB;
-            --bg-light: #f4f7fe;
-            --sidebar-width: 260px;
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --success-color: #16a34a;
-            --danger-color: #ef4444;
-            --warning-color: #d97706;
-        }
-
-        body {
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* --- Sidebar Style --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: #ffffff;
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            z-index: 100;
-        }
-
-        .sidebar-brand {
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .sidebar-brand img { width: 40px; height: 40px; border-radius: 8px; }
-        .sidebar-brand h2 { font-size: 18px; font-weight: 700; color: var(--primary-color); }
-
-        .sidebar-menu {
-            padding: 20px 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex-grow: 1;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 15px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background: #eff6ff;
-            color: var(--accent-color);
-        }
-
-        .sidebar-footer { padding: 20px 15px; border-top: 1px solid var(--border-color); }
-        .btn-logout {
-            width: 100%;
-            padding: 12px;
-            background: #fee2e2;
-            color: #ef4444;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background 0.2s;
-        }
-        .btn-logout:hover { background: #fca5a5; }
-
-        /* --- Main Content Area --- */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            width: calc(100% - var(--sidebar-width));
-            padding: 40px;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #fff;
-            padding: 8px 16px;
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-        }
-
-        /* --- Grid Setup --- */
-        .manager-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-        }
-
-        .dashboard-section {
-            background: #fff;
-            padding: 30px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* --- Form Config --- */
-        .user-form {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        @media (max-width: 900px) { .user-form { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .user-form { grid-template-columns: 1fr; } }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .form-group.full-width { grid-column: 1 / -1; }
-
-        label { font-size: 13px; font-weight: 600; color: var(--text-dark); }
-        input, select {
-            height: 44px;
-            padding: 0 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            background: #f8fafc;
-            transition: border 0.2s;
-        }
-        input:focus, select:focus { border-color: var(--accent-color); background: #fff; }
-
-        /* Multiple Selection Dropdown Styling */
-        select[multiple] {
-            height: 100px;
-            padding: 8px 14px;
-        }
-
-        .photo-upload-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: #f8fafc;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px dashed var(--border-color);
-        }
-
-        .preview-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            object-fit: cover;
-        }
-
-        .action-bar { display: flex; gap: 12px; margin-top: 10px; }
-        .btn-action {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: opacity 0.2s;
-        }
-        .btn-action:hover { opacity: 0.9; }
-        .btn-save { background: var(--accent-color); color: white; }
-        .btn-clear { background: #e2e8f0; color: var(--text-dark); }
-
-        /* --- Search & Controls --- */
-        .controls-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 15px;
-        }
-        .search-box { position: relative; flex-grow: 1; max-width: 400px; }
-        .search-box input { width: 100%; padding-left: 40px; }
-        .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-
-        .config-box {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #f1f5f9;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        /* --- Table Styling --- */
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f8fafc; padding: 14px 16px; color: var(--text-muted); font-weight: 600; font-size: 13px; border-bottom: 2px solid var(--border-color); }
-        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); font-size: 14px; vertical-align: middle; }
-        
-        .user-meta { display: flex; align-items: center; gap: 12px; }
-        .user-meta img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
-
-        .status-toggle {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            border: none;
-        }
-        .status-active { background: #dcfce7; color: var(--success-color); }
-        .status-inactive { background: #fee2e2; color: var(--danger-color); }
-
-        .role-badge {
-            background: #eff6ff;
-            color: var(--accent-color);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .location-info {
-            font-size: 11px;
-            color: var(--text-muted);
-            display: block;
-            margin-top: 2px;
-        }
-
-        .operations-btns { display: flex; gap: 10px; }
-        .op-btn { background: none; border: none; cursor: pointer; font-size: 15px; transition: color 0.2s; }
-        .op-edit { color: var(--accent-color); }
-        .op-delete { color: var(--danger-color); }
-        .op-reset { color: var(--warning-color); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>User Management - Donation Box Inventory</title>
+<link rel="icon" href="dblogo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
+:root{--primary:#0F4C81;--accent:#2563EB;--bg:#f0f4f9;--sidebar-bg:#0F4C81;--text-dark:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--shadow:0 2px 12px rgba(0,0,0,0.06);--radius:14px;--radius-sm:10px;--transition:0.3s ease}
+body{background:var(--bg);color:var(--text-dark);display:flex;min-height:100vh;overflow-x:hidden}
+.sidebar{width:240px;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:1000;transition:transform var(--transition)}
+.sidebar-brand{padding:18px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar-brand img{width:36px;height:36px;border-radius:8px}
+.sidebar-brand h2{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
+.sidebar-menu{padding:12px 10px;display:flex;flex-direction:column;gap:2px;flex-grow:1;overflow-y:auto}
+.menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;color:rgba(255,255,255,0.7);text-decoration:none;border-radius:var(--radius-sm);font-weight:500;font-size:13px;transition:all var(--transition);cursor:pointer}
+.menu-item i{width:18px;text-align:center;font-size:14px}
+.menu-item:hover{background:rgba(255,255,255,0.12);color:#fff}
+.menu-item.active{background:rgba(255,255,255,0.18);color:#fff;font-weight:600}
+.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,0.1)}
+.btn-logout{width:100%;padding:10px;background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-sm);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px}
+.btn-logout:hover{background:rgba(239,68,68,0.35);color:#fff}
+.hamburger{display:none;position:fixed;top:10px;left:10px;z-index:1001;width:38px;height:38px;border-radius:10px;background:var(--sidebar-bg);color:#fff;border:none;font-size:16px;cursor:pointer;align-items:center;justify-content:center}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;opacity:0;transition:opacity var(--transition)}
+.sidebar-overlay.show{opacity:1}
+.main-content{margin-left:240px;width:calc(100% - 240px);padding:20px 24px;min-height:100vh}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.top-bar-left h1{font-size:20px;font-weight:700;color:var(--primary)}
+.user-info{display:flex;align-items:center;gap:10px;background:#fff;padding:6px 16px 6px 10px;border-radius:30px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.user-info .avatar{width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.user-info .name{font-size:13px;font-weight:600}
+.user-info .desig{font-size:11px;color:var(--text-muted);background:#f1f5f9;padding:1px 8px;border-radius:8px}
+.dash-section{background:#fff;padding:18px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:16px}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.section-header h2{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.section-header h2 i{color:var(--accent)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{margin-bottom:2px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:3px}
+.form-group .required{color:#ef4444}
+.form-group input,.form-group select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff;transition:border-color var(--transition)}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
+.form-group input:disabled,.form-group select:disabled{background:#f1f5f9;cursor:not-allowed;opacity:0.7}
+.password-wrapper{display:flex;align-items:center;position:relative}
+.password-wrapper input{padding-right:36px}
+.password-wrapper .pwd-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:4px}
+.password-wrapper .pwd-toggle:hover{color:var(--text-dark)}
+.form-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.form-actions button{padding:9px 20px;border-radius:var(--radius-sm);font-weight:500;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border:none}
+.btn-action{background:var(--accent);color:#fff}
+.btn-action:hover{background:#1d4ed8}
+.btn-action-secondary{background:#fff;color:var(--text-dark);border:1px solid var(--border)}
+.btn-action-secondary:hover{background:#f8fafc}
+.btn-danger{background:#ef4444;color:#fff}
+.btn-danger:hover{background:#dc2626}
+.table-toolbar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.table-toolbar .search-wrap{flex:1;min-width:160px;position:relative}
+.table-toolbar .search-wrap input{width:100%;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff}
+.table-toolbar .search-wrap input:focus{border-color:var(--accent)}
+.table-toolbar .search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px}
+.table-toolbar select{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff;min-width:130px}
+.table-toolbar select:focus{border-color:var(--accent)}
+.table-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;min-width:800px}
+th{background:#f8fafc;padding:10px 12px;color:var(--text-muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafcff}
+.status-badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.status-active{background:#d1fae5;color:#059669}
+.status-inactive{background:#fee2e2;color:#dc2626}
+.action-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:4px}
+.action-btn.edit{background:#dbeafe;color:#2563eb}
+.action-btn.edit:hover{background:#bfdbfe}
+.action-btn.delete{background:#fee2e2;color:#dc2626}
+.action-btn.delete:hover{background:#fecaca}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty-state i{font-size:36px;margin-bottom:10px;opacity:0.3}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--primary);color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.15);font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;z-index:3000;transform:translateY(80px);opacity:0;transition:var(--transition);max-width:340px}
+.toast.show{transform:translateY(0);opacity:1}
+.form-grid.full-width .form-group{grid-column:1/-1}
+@media(max-width:1024px){.main-content{padding:16px 18px}}
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.hamburger{display:flex}.sidebar-overlay{display:block}
+.main-content{margin-left:0;width:100%;padding:60px 12px 16px}.top-bar{flex-direction:column}.top-bar-left h1{font-size:17px}
+.form-grid{grid-template-columns:1fr}.dash-section{padding:12px}table{min-width:600px}.toast{left:12px;right:12px;bottom:12px;max-width:none}}
+@media(max-width:480px){.table-toolbar{flex-direction:column}.table-toolbar .search-wrap{min-width:100%}.table-toolbar select{width:100%}.form-actions{flex-direction:column}.form-actions button{width:100%}}
+</style>
 </head>
 <body>
-
-    <!-- Sidebar Menu Navigation -->
-    <div class="sidebar">
-        <div class="sidebar-brand">
-            <img src="dblogo.png" alt="Logo">
-            <h2>Donation Box</h2>
-        </div>
-        <div class="sidebar-menu">
-            <a href="dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-            <a href="users.html" class="menu-item active"><i class="fa-solid fa-users"></i> All Users Setup</a>
-            <a href="hubs.html" class="menu-item"><i class="fa-solid fa-warehouse"></i> Warehouse/Hubs</a>
-            <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Inventory Items</a>
-            <a href="#" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> Pending Approvals</a>
-        </div>
-        <div class="sidebar-footer">
-            <button class="btn-logout" id="logoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout System
-            </button>
-        </div>
-    </div>
-
-    <!-- Main Workspace Content -->
-    <div class="main-content">
-        <!-- Header Section -->
-        <div class="header-top">
-            <div>
-                <h1 style="font-size: 24px; font-weight: 700;">All Users Setup</h1>
-                <p style="color: var(--text-muted); font-size: 14px;">Manage administrative staff, regional roles, and structural hierarchies.</p>
-            </div>
-            <div class="user-profile">
-                <i class="fa-solid fa-circle-user" style="font-size: 20px; color: var(--primary-color);"></i>
-                <span id="adminName" style="font-weight: 600; font-size: 14px;">Loading...</span>
-            </div>
-        </div>
-
-        <div class="manager-grid">
-            <!-- User Control Form Section -->
-            <div class="dashboard-section" id="formContainerSection">
-                <div class="section-title" id="formStateHeader">
-                    <i class="fa-solid fa-user-plus"></i> Add New System User
-                </div>
-                
-                <form id="userControlForm" class="user-form">
-                    <input type="hidden" id="editUserId">
-
-                    <div class="form-group">
-                        <label>Employee Code (Manual Input)</label>
-                        <input type="text" id="empCode" placeholder="e.g. EMP1001, DBE-01" required style="font-weight:600; color:var(--primary-color);">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="fullName" placeholder="Enter full identity name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Mobile Number</label>
-                        <input type="tel" id="userMobile" placeholder="Enter 10-digit mobile number" required>
-                    </div>
-
-                    <div class="form-group" id="passInputContainer">
-                        <label>System Password</label>
-                        <input type="password" id="userPassword" placeholder="Set secure password" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Role Selection</label>
-                        <select id="userRole" required>
-                            <option value="">-- Choose Assigned Role --</option>
-                            <option value="Super Admin">Super Admin</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Regional Manager">Regional Manager</option>
-                            <option value="Regional Office">Regional Office</option>
-                            <option value="State Manager">State Manager</option>
-                            <option value="State Office">State Office</option>
-                            <option value="Division Manager">Division Manager</option>
-                            <option value="Warehouse Manager">Warehouse Manager</option>
-                            <option value="Employee">Employee</option>
-                            <option value="Viewer">Viewer</option>
-                        </select>
-                    </div>
-
-                    <!-- Hierarchy Assignment Scope Fields (Updated to support Multi-select) -->
-                    <div class="form-group">
-                        <label>Assign Region (Ctrl+Click to Select Multiple)</label>
-                        <select id="userRegion" multiple required>
-                            <option value="ALL">ALL (Full Access)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Assign State (Ctrl+Click to Select Multiple)</label>
-                        <select id="userState" multiple required>
-                            <option value="ALL">ALL (Full Access)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Assign Division (Ctrl+Click to Select Multiple)</label>
-                        <select id="userDivision" multiple required>
-                            <option value="ALL">ALL (Full Access)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Assign Warehouse / Hub Location</label>
-                        <select id="userWarehouse" multiple required>
-                            <option value="ALL">ALL (Full Access)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Account Status</label>
-                        <select id="userStatus">
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label>Profile Image File</label>
-                        <div class="photo-upload-wrapper">
-                            <div class="preview-avatar" id="avatarBox">
-                                <i class="fa-solid fa-camera"></i>
-                            </div>
-                            <input type="file" id="photoUpload" accept="image/*" style="border:none; background:none; height:auto; padding:0;">
-                            <input type="hidden" id="photoDataUrl">
-                        </div>
-                    </div>
-
-                    <div class="form-group full-width action-bar">
-                        <button type="submit" class="btn-action btn-save" id="submitBtn">
-                            <i class="fa-solid fa-floppy-disk"></i> Save Entry Record
-                        </button>
-                        <button type="button" class="btn-action btn-clear" id="resetFormBtn">
-                            Clear Fields
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Registry Table Section -->
-            <div class="dashboard-section">
-                <div class="controls-row">
-                    <div class="section-title" style="margin-bottom:0;">
-                        <i class="fa-solid fa-address-book"></i> Filtered Scope Staff Registry List
-                    </div>
-                    
-                    <div class="config-box" id="globalPermissionControl" style="display:none;">
-                        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-                            <input type="checkbox" id="allowManagerEdits" checked> Allow Staff to Edit Profiles
-                        </label>
-                    </div>
-
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="searchUserField" placeholder="Search by name, code, or phone...">
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Emp Code</th>
-                                <th>User Profile Details</th>
-                                <th>Contact / Mobile</th>
-                                <th>Role Tier Scope</th>
-                                <th>Status Control</th>
-                                <th>System Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="userRegistryTableBody">
-                            <tr>
-                                <td colspan="6" style="text-align:center; color:var(--text-muted); padding:30px;">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Synchronization with database ongoing...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase SDK Operations Layer -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
-            authDomain: "prodution-box-erp.firebaseapp.com",
-            projectId: "prodution-box-erp",
-            storageBucket: "prodution-box-erp.firebasestorage.app",
-            messagingSenderId: "426698063494",
-            appId: "1:426698063494:web:880dd323f24bd4121ddb07",
-            measurementId: "G-948852RZLB"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        let localUsersCache = [];
-        let currentUserSession = null;
-        let globalManagerEditPermission = true;
-
-        // --- Helper: Get Multiple Select Values as Array ---
-        function getSelectValues(selectElement) {
-            return Array.from(selectElement.selectedOptions).map(option => option.value);
-        }
-
-        // --- Helper: Set Multiple Select Values From Array ---
-        function setSelectValues(selectElement, valuesArray) {
-            if(!valuesArray) return;
-            const arr = Array.isArray(valuesArray) ? valuesArray : [valuesArray];
-            Array.from(selectElement.options).forEach(option => {
-                option.selected = arr.includes(option.value);
-            });
-        }
-
-        document.getElementById('photoUpload').addEventListener('change', function(e) {
-            const targetFile = e.target.files[0];
-            if (targetFile) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById('photoDataUrl').value = event.target.result;
-                    document.getElementById('avatarBox').innerHTML = `<img src="${event.target.result}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-                };
-                reader.readAsDataURL(targetFile);
-            }
-        });
-
-        // Guard Routing Security Setup
-        window.addEventListener('DOMContentLoaded', async () => {
-            currentUserSession = JSON.parse(localStorage.getItem('userSession')) || JSON.parse(localStorage.getItem('activeUser'));
-            
-            if (!currentUserSession) {
-                alert("Unauthorized Entry! Redirecting to login space.");
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            localStorage.setItem('userSession', JSON.stringify(currentUserSession));
-            document.getElementById('adminName').innerText = currentUserSession.fullName || "System User";
-            
-            const currentRole = currentUserSession.role;
-            const isMasterAdmin = (currentRole === "Super Admin" || currentRole === "Admin");
-
-            if (isMasterAdmin) {
-                document.getElementById('globalPermissionControl').style.display = 'flex';
-            }
-
-            try {
-                const configRef = doc(db, "settings", "globalConfig");
-                const configSnap = await getDoc(configRef);
-                if (configSnap.exists()) {
-                    globalManagerEditPermission = configSnap.data().allowManagerEdits;
-                    document.getElementById('allowManagerEdits').checked = globalManagerEditPermission;
-                }
-            } catch(e) { console.log("Config mapping error:", e); }
-
-            // Live Master Data Chains Initiation
-            initMasterDataDropdowns();
-            syncUsersCollectionEngine();
-        });
-
-        // --- Live Cascading & Filtering Dropdown Implementation ---
-        function initMasterDataDropdowns() {
-            // 1. Fetch Regions Live
-            onSnapshot(collection(db, "regions"), (snap) => {
-                const regSelect = document.getElementById('userRegion');
-                regSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-                snap.forEach(d => regSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
-            });
-
-            // 2. Filter States on Region Change
-            document.getElementById('userRegion').onchange = async (e) => {
-                const selectedRegions = getSelectValues(e.target);
-                const stateSelect = document.getElementById('userState');
-                stateSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-
-                if (selectedRegions.includes('ALL') || selectedRegions.length === 0) {
-                    // Fetch all states if ALL is chosen
-                    const snap = await getDocs(collection(db, "states"));
-                    snap.forEach(d => stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
-                } else {
-                    // Fetch states matching selected regions
-                    for(const r of selectedRegions) {
-                        const q = query(collection(db, "states"), where("region", "==", r));
-                        const snap = await getDocs(q);
-                        snap.forEach(d => {
-                            if(!Array.from(stateSelect.options).some(o => o.value === d.data().name)) {
-                                stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`;
-                            }
-                        });
-                    }
-                }
-                document.getElementById('userDivision').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-                document.getElementById('userWarehouse').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-            };
-
-            // 3. Filter Divisions on State Change
-            document.getElementById('userState').onchange = async (e) => {
-                const selectedStates = getSelectValues(e.target);
-                const divSelect = document.getElementById('userDivision');
-                divSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-
-                if(selectedStates.includes('ALL') || selectedStates.length === 0) {
-                    const snap = await getDocs(collection(db, "divisions"));
-                    snap.forEach(d => divSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
-                } else {
-                    for(const s of selectedStates) {
-                        const q = query(collection(db, "divisions"), where("state", "==", s));
-                        const snap = await getDocs(q);
-                        snap.forEach(d => {
-                            if(!Array.from(divSelect.options).some(o => o.value === d.data().name)) {
-                                divSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`;
-                            }
-                        });
-                    }
-                }
-                document.getElementById('userWarehouse').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-            };
-
-            // 4. Filter Warehouses on Division Change
-            document.getElementById('userDivision').onchange = async (e) => {
-                const selectedDivs = getSelectValues(e.target);
-                const whSelect = document.getElementById('userWarehouse');
-                whSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-
-                if(selectedDivs.includes('ALL') || selectedDivs.length === 0) {
-                    const snap = await getDocs(collection(db, "hubs"));
-                    snap.forEach(d => {
-                        const name = d.data().name || d.data().hubName;
-                        whSelect.innerHTML += `<option value="${name}">${name}</option>`;
-                    });
-                } else {
-                    for(const div of selectedDivs) {
-                        const q = query(collection(db, "hubs"), where("division", "==", div));
-                        const snap = await getDocs(q);
-                        snap.forEach(d => {
-                            const name = d.data().name || d.data().hubName;
-                            if(!Array.from(whSelect.options).some(o => o.value === name)) {
-                                whSelect.innerHTML += `<option value="${name}">${name}</option>`;
-                            }
-                        });
-                    }
-                }
-            };
-        }
-
-        document.getElementById('allowManagerEdits').addEventListener('change', async function(e) {
-            globalManagerEditPermission = e.target.checked;
-            await setDoc(doc(db, "settings", "globalConfig"), { allowManagerEdits: globalManagerEditPermission }, { merge: true });
-            renderUserInterfaceRegistry(localUsersCache);
-        });
-
-        async function syncUsersCollectionEngine() {
-            try {
-                const snap = await getDocs(collection(db, "users"));
-                localUsersCache = [];
-                snap.forEach(docItem => {
-                    localUsersCache.push({ id: docItem.id, ...docItem.data() });
-                });
-                renderUserInterfaceRegistry(localUsersCache);
-            } catch (err) {
-                console.error("Database connection sync error: ", err);
-            }
-        }
-
-        function filterUsersByRoleHierarchy(dataSet) {
-            if (!currentUserSession) return [];
-            const role = currentUserSession.role;
-            if (role === "Super Admin" || role === "Admin") return dataSet;
-
-            return dataSet.filter(user => {
-                if (user.role === "Super Admin" || user.role === "Admin") return false;
-                // Basic structural boundary validations for arrays/strings
-                const uReg = Array.isArray(user.region) ? user.region : [user.region];
-                const cReg = currentUserSession.region;
-
-                if (role === "Regional Manager") {
-                    return cReg === "ALL" || uReg.includes(cReg);
-                }
-                return user.employeeCode === currentUserSession.employeeCode;
-            });
-        }
-
-        function renderUserInterfaceRegistry(dataSet) {
-            const registryBody = document.getElementById('userRegistryTableBody');
-            const filteredSet = filterUsersByRoleHierarchy(dataSet);
-
-            if (filteredSet.length === 0) {
-                registryBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No records authorized or scope matches found.</td></tr>`;
-                return;
-            }
-
-            const currentRole = currentUserSession ? currentUserSession.role : 'Viewer';
-            const isMasterAdmin = (currentRole === "Super Admin" || currentRole === "Admin");
-            const canModifyData = isMasterAdmin || globalManagerEditPermission;
-
-            registryBody.innerHTML = "";
-            filteredSet.forEach(user => {
-                const placeholderAvatar = `<div class="preview-avatar" style="width:36px; height:36px;"><i class="fa-solid fa-user"></i></div>`;
-                const avatarRender = user.photo ? `<img src="${user.photo}" alt="Avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : placeholderAvatar;
-                const activeLabelClass = user.status === 'Active' ? 'status-active' : 'status-inactive';
-
-                // Parsing arrays smoothly for table render
-                const dispReg = Array.isArray(user.region) ? user.region.join(', ') : user.region;
-                const dispState = Array.isArray(user.state) ? user.state.join(', ') : user.state;
-                const dispDiv = Array.isArray(user.division) ? user.division.join(', ') : user.division;
-
-                const scopeString = `<span class="location-info"><i class="fa-solid fa-sitemap"></i> R: ${dispReg} | S: ${dispState} | D: ${dispDiv}</span>`;
-
-                const statusButtonHTML = isMasterAdmin 
-                    ? `<button class="status-toggle ${activeLabelClass}" data-id="${user.id}" data-current="${user.status}">● ${user.status}</button>`
-                    : `<span class="status-toggle ${activeLabelClass}">● ${user.status}</span>`;
-
-                const actionsHTML = canModifyData 
-                    ? `<div class="operations-btns">
-                        <button class="op-btn op-edit" data-id="${user.id}" title="Edit User Identity"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button class="op-btn op-reset" data-id="${user.id}" title="Reset Entry Password"><i class="fa-solid fa-key"></i></button>
-                        ${isMasterAdmin ? `<button class="op-btn op-delete" data-id="${user.id}" title="Delete User Record Permanently"><i class="fa-solid fa-trash-can"></i></button>` : ''}
-                       </div>`
-                    : `<span style="color:var(--text-muted); font-size:12px;"><i class="fa-solid fa-lock"></i> Locked</span>`;
-
-                const tableRow = document.createElement('tr');
-                tableRow.innerHTML = `
-                    <td style="font-weight:600; color:var(--primary-color);">${user.employeeCode || 'N/A'}</td>
-                    <td>
-                        <div class="user-meta">
-                            ${avatarRender}
-                            <strong>${user.fullName || user.name || 'N/A'}</strong>
-                        </div>
-                    </td>
-                    <td>${user.mobile || 'N/A'}</td>
-                    <td><span class="role-badge">${user.role}</span>${scopeString}</td>
-                    <td>${statusButtonHTML}</td>
-                    <td>${actionsHTML}</td>
-                `;
-                registryBody.appendChild(tableRow);
-            });
-
-            bindInteractiveFunctionalTriggers();
-        }
-
-        // Live filtration tracking
-        document.getElementById('searchUserField').addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase().trim();
-            const filteredSet = localUsersCache.filter(user => 
-                (user.fullName && user.fullName.toLowerCase().includes(query)) ||
-                (user.employeeCode && user.employeeCode.toLowerCase().includes(query)) ||
-                (user.role && user.role.toLowerCase().includes(query)) ||
-                (user.mobile && user.mobile.includes(query))
-            );
-            renderUserInterfaceRegistry(filteredSet);
-        });
-
-        function bindInteractiveFunctionalTriggers() {
-            document.querySelectorAll('.status-toggle').forEach(btn => {
-                if(btn.tagName === 'BUTTON') {
-                    btn.onclick = async () => {
-                        const targetId = btn.getAttribute('data-id');
-                        const nextState = btn.getAttribute('data-current') === 'Active' ? 'Inactive' : 'Active';
-                        await updateDoc(doc(db, "users", targetId), { status: nextState });
-                        syncUsersCollectionEngine();
-                    };
-                }
-            });
-
-            document.querySelectorAll('.op-edit').forEach(btn => {
-                btn.onclick = async () => {
-                    const targetId = btn.getAttribute('data-id');
-                    const entry = localUsersCache.find(u => u.id === targetId);
-                    if (entry) {
-                        document.getElementById('editUserId').value = entry.id;
-                        document.getElementById('empCode').value = entry.employeeCode || "";
-                        document.getElementById('fullName').value = entry.fullName || entry.name || "";
-                        document.getElementById('userMobile').value = entry.mobile || "";
-                        document.getElementById('userRole').value = entry.role || "";
-                        document.getElementById('userStatus').value = entry.status || "Active";
-                        
-                        // Dynamically re-trigger option listing cascades for correct assignment values mapping
-                        const stateSelect = document.getElementById('userState');
-                        const divSelect = document.getElementById('userDivision');
-                        const whSelect = document.getElementById('userWarehouse');
-
-                        const allStates = await getDocs(collection(db, "states"));
-                        stateSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-                        allStates.forEach(d => stateSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
-
-                        const allDivs = await getDocs(collection(db, "divisions"));
-                        divSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-                        allDivs.forEach(d => divSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
-
-                        const allWhs = await getDocs(collection(db, "hubs"));
-                        whSelect.innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-                        allWhs.forEach(d => {
-                            const name = d.data().name || d.data().hubName;
-                            whSelect.innerHTML += `<option value="${name}">${name}</option>`;
-                        });
-
-                        // Populate selections back
-                        setSelectValues(document.getElementById('userRegion'), entry.region);
-                        setSelectValues(stateSelect, entry.state);
-                        setSelectValues(divSelect, entry.division);
-                        setSelectValues(whSelect, entry.warehouse);
-                        
-                        document.getElementById('userPassword').removeAttribute('required');
-                        document.getElementById('passInputContainer').style.display = 'none';
-                        
-                        const currentPhoto = entry.photo || entry.avatarUrl;
-                        if(currentPhoto) {
-                            document.getElementById('photoDataUrl').value = currentPhoto;
-                            document.getElementById('avatarBox').innerHTML = `<img src="${currentPhoto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-                        }
-
-                        document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-pen"></i> Modify Identity Scope: ${entry.employeeCode}`;
-                        document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Update Registry Record`;
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                };
-            });
-
-            document.querySelectorAll('.op-reset').forEach(btn => {
-                btn.onclick = async () => {
-                    const targetId = btn.getAttribute('data-id');
-                    const entry = localUsersCache.find(u => u.id === targetId);
-                    const promptPass = prompt(`Set new secure credentials password for ${entry.fullName || entry.name}:`);
-                    if (promptPass && promptPass.trim().length >= 4) {
-                        await updateDoc(doc(db, "users", targetId), { password: promptPass.trim() });
-                        alert("Password synchronized on registry server.");
-                    } else if (promptPass) {
-                        alert("Validation Error: Minimum length requirement is 4 characters.");
-                    }
-                };
-            });
-
-            document.querySelectorAll('.op-delete').forEach(btn => {
-                btn.onclick = async () => {
-                    const targetId = btn.getAttribute('data-id');
-                    if (confirm("Erase this entity profile entirely from Donation Box database log?")) {
-                        await deleteDoc(doc(db, "users", targetId));
-                        syncUsersCollectionEngine();
-                    }
-                };
-            });
-        }
-
-        document.getElementById('userControlForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const editId = document.getElementById('editUserId').value;
-            
-            const packetPayload = {
-                employeeCode: document.getElementById('empCode').value.trim(),
-                fullName: document.getElementById('fullName').value.trim(),
-                name: document.getElementById('fullName').value.trim(), 
-                mobile: document.getElementById('userMobile').value.trim(),
-                role: document.getElementById('userRole').value,
-                status: document.getElementById('userStatus').value,
-                // Collecting multiple values as arrays smoothly
-                region: getSelectValues(document.getElementById('userRegion')),
-                state: getSelectValues(document.getElementById('userState')),
-                division: getSelectValues(document.getElementById('userDivision')),
-                warehouse: getSelectValues(document.getElementById('userWarehouse')),
-                photo: document.getElementById('photoDataUrl').value || "",
-                email: "", 
-                department: "",
-                designation: ""
-            };
-
-            if(!editId) {
-                const codeDuplicate = localUsersCache.some(u => u.employeeCode.toLowerCase() === packetPayload.employeeCode.toLowerCase());
-                if(codeDuplicate) {
-                    alert("Operation Denied: This Employee Code already exists in database registry.");
-                    return;
-                }
-                packetPayload.password = document.getElementById('userPassword').value;
-                await addDoc(collection(db, "users"), packetPayload);
-                alert("New tier-structured profile saved successfully.");
-            } else {
-                await updateDoc(doc(db, "users", editId), packetPayload);
-                alert("User scope metadata tracking records updated.");
-            }
-
-            triggerClearFormInterfaceAction();
-            syncUsersCollectionEngine();
-        };
-
-        function triggerClearFormInterfaceAction() {
-            document.getElementById('userControlForm').reset();
-            document.getElementById('editUserId').value = "";
-            document.getElementById('photoDataUrl').value = "";
-            document.getElementById('avatarBox').innerHTML = `<i class="fa-solid fa-camera"></i>`;
-            document.getElementById('passInputContainer').style.display = 'flex';
-            document.getElementById('userPassword').setAttribute('required', 'required');
-            
-            document.getElementById('formStateHeader').innerHTML = `<i class="fa-solid fa-user-plus"></i> Add New System User`;
-            document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Entry Record`;
-            
-            // Re-initialize lists to clear multi-selections correctly
-            document.getElementById('userState').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-            document.getElementById('userDivision').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-            document.getElementById('userWarehouse').innerHTML = '<option value="ALL">ALL (Full Access)</option>';
-        }
-
-        document.getElementById('resetFormBtn').onclick = triggerClearFormInterfaceAction;
-
-        document.getElementById('logoutBtn').onclick = () => {
-            localStorage.removeItem('userSession');
-            localStorage.removeItem('activeUser');
-            localStorage.removeItem('loginStatus');
-            window.location.href = 'login.html';
-        };
-    </script>
+<button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="sidebar" id="sidebar">
+<div class="sidebar-brand"><img src="dblogo.png" alt="Logo"><h2>Donation Box Inventory</h2></div>
+<div class="sidebar-menu" id="dynamicSidebarMenu"><div class="menu-item active"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+<div class="sidebar-footer"><button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></div>
+</div>
+
+<div class="main-content">
+<div class="top-bar">
+<div class="top-bar-left"><h1>User Management</h1></div>
+<div class="user-info">
+<div class="avatar" id="userAvatar">U</div>
+<span class="name" id="adminName">Loading...</span>
+<span class="desig" id="userRoleBadge">&mdash;</span>
+</div>
+</div>
+
+<div class="dash-section">
+<div class="section-header">
+<h2><i class="fa-solid fa-user-plus"></i> <span id="formTitle">Add New User</span></h2>
+</div>
+<form id="userForm" autocomplete="off">
+<div class="form-grid">
+<div class="form-group">
+<label>Full Name <span class="required">*</span></label>
+<input type="text" id="userName" required placeholder="Enter full name">
+</div>
+<div class="form-group">
+<label>Email <span class="required">*</span></label>
+<input type="email" id="userEmail" required placeholder="Enter email address">
+</div>
+<div class="form-group">
+<label>Employee Code <span class="required">*</span></label>
+<input type="text" id="userEmpCode" required placeholder="Enter employee code">
+</div>
+<div class="form-group">
+<label>Role <span class="required">*</span></label>
+<select id="userRole" required>
+<option value="">Select Role</option>
+<option value="Super Admin">Super Admin</option>
+<option value="Admin">Admin</option>
+<option value="Regional Manager">Regional Manager</option>
+<option value="Regional Office">Regional Office</option>
+<option value="State Manager">State Manager</option>
+<option value="State Office">State Office</option>
+<option value="Division Manager">Division Manager</option>
+<option value="Warehouse Manager">Warehouse Manager</option>
+<option value="Inventory Loader">Inventory Loader</option>
+<option value="User">User</option>
+</select>
+</div>
+<div class="form-group">
+<label>Region</label>
+<select id="userRegion"><option value="">Select Region</option></select>
+</div>
+<div class="form-group">
+<label>State</label>
+<select id="userState" disabled><option value="">Select State</option></select>
+</div>
+<div class="form-group">
+<label>Division</label>
+<select id="userDivision" disabled><option value="">Select Division</option></select>
+</div>
+<div class="form-group">
+<label>Hub</label>
+<select id="userHub"><option value="">Select Hub</option></select>
+</div>
+<div class="form-group">
+<label>Password <span class="required" id="pwdRequired">*</span></label>
+<div class="password-wrapper">
+<input type="password" id="userPassword" placeholder="Enter password">
+<button type="button" class="pwd-toggle" id="pwdToggle"><i class="fa-regular fa-eye"></i></button>
+</div>
+</div>
+<div class="form-group">
+<label>Status</label>
+<select id="userStatus">
+<option value="Active">Active</option>
+<option value="Inactive">Inactive</option>
+</select>
+</div>
+</div>
+<div class="form-actions">
+<button type="submit" class="btn-action" id="submitBtn"><i class="fa-solid fa-floppy-disk"></i> Save User</button>
+<button type="button" class="btn-action-secondary" id="cancelBtn" style="display:none"><i class="fa-solid fa-xmark"></i> Cancel</button>
+</div>
+</form>
+</div>
+
+<div class="dash-section">
+<div class="section-header">
+<h2><i class="fa-solid fa-users"></i> Users List</h2>
+<span style="font-size:11px;color:var(--text-muted)" id="userCount">0 users</span>
+</div>
+<div class="table-toolbar">
+<div class="search-wrap">
+<i class="fa-solid fa-search"></i>
+<input type="text" id="searchUser" placeholder="Search by name or email...">
+</div>
+<select id="filterRole">
+<option value="">All Roles</option>
+<option value="Super Admin">Super Admin</option>
+<option value="Admin">Admin</option>
+<option value="Regional Manager">Regional Manager</option>
+<option value="Regional Office">Regional Office</option>
+<option value="State Manager">State Manager</option>
+<option value="State Office">State Office</option>
+<option value="Division Manager">Division Manager</option>
+<option value="Warehouse Manager">Warehouse Manager</option>
+<option value="Inventory Loader">Inventory Loader</option>
+<option value="User">User</option>
+</select>
+</div>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>S.No</th><th>Name</th><th>Email</th><th>Emp Code</th><th>Role</th><th>Region</th><th>State</th><th>Division</th><th>Hub</th><th>Status</th><th>Actions</th></tr>
+</thead>
+<tbody id="usersTableBody"><tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading users...</p></div></td></tr></tbody>
+</table>
+</div>
+</div>
+
+<div style="text-align:center;padding:16px 0;font-size:11px;color:var(--text-muted)">Donation Box Inventory | &copy; 2026</div>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastMsg">Done</span></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+apiKey: "AIzaSyBTqKYPDlYh76cH5N-H-hgQqfn9ZQctCIs",
+authDomain: "prodution-box-erp.firebaseapp.com",
+projectId: "prodution-box-erp",
+storageBucket: "prodution-box-erp.appspot.com",
+messagingSenderId: "240505136968",
+appId: "1:240505136968:web:78a954cd2a3af7e1b4bdb4"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let allRegions = [], allStates = [], allDivisions = [], allHubs = [], allUsers = [];
+let currentUser = null, editingUserId = null;
+
+function showToast(msg, icon) {
+const t = document.getElementById('toast');
+document.getElementById('toastMsg').textContent = msg;
+t.querySelector('i').className = icon || 'fa-solid fa-check-circle';
+t.classList.add('show');
+setTimeout(function(){ t.classList.remove('show') }, 2500);
+}
+
+function getInitials(n) {
+return n ? n.split(' ').map(function(w){ return w[0] }).join('').toUpperCase().slice(0,2) : 'U';
+}
+
+document.getElementById('hamburgerBtn').addEventListener('click', function(){
+document.getElementById('sidebar').classList.toggle('open');
+document.getElementById('sidebarOverlay').classList.toggle('show');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', function(){
+document.getElementById('sidebar').classList.remove('open');
+document.getElementById('sidebarOverlay').classList.remove('show');
+});
+
+function mi(icon, label, href, active) {
+return '<a' + (href ? ' href="' + href + '"' : '') + ' class="menu-item' + (active ? ' active' : '') + '"><i class="' + icon + '"></i> ' + label + '</a>';
+}
+
+function setupSidebar(user) {
+var menu = document.getElementById('dynamicSidebarMenu');
+var items = mi('fa-solid fa-chart-pie', 'Dashboard', 'dashboard.html');
+if (user.role === 'Super Admin') {
+items += mi('fa-solid fa-users-gear', 'User Management', 'users.html', true);
+}
+if (['Super Admin','Admin','Regional Manager','Regional Office','State Manager','State Office'].includes(user.role)) {
+items += mi('fa-solid fa-warehouse', 'Warehouse', 'hubs.html');
+}
+items += mi('fa-solid fa-arrow-down-long', 'Stock IN', 'stock-in.html');
+items += mi('fa-solid fa-arrow-up-long', 'Stock OUT', 'stock-out.html');
+items += mi('fa-solid fa-file-signature', 'Demand', 'demand.html');
+menu.innerHTML = items;
+}
+
+document.getElementById('logoutBtn').addEventListener('click', function(){
+localStorage.removeItem('userSession');
+showToast('Logging out...');
+setTimeout(function(){ window.location.href = 'login.html' }, 800);
+});
+
+document.getElementById('pwdToggle').addEventListener('click', function(){
+var inp = document.getElementById('userPassword');
+var icon = this.querySelector('i');
+if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-regular fa-eye-slash'; }
+else { inp.type = 'password'; icon.className = 'fa-regular fa-eye'; }
+});
+
+document.getElementById('userRegion').addEventListener('change', function(){
+var region = this.value;
+var stateSel = document.getElementById('userState');
+var divSel = document.getElementById('userDivision');
+stateSel.innerHTML = '<option value="">Select State</option>';
+stateSel.disabled = !region;
+divSel.innerHTML = '<option value="">Select Division</option>';
+divSel.disabled = true;
+if (region) {
+allStates.filter(function(s){ return s.region === region }).forEach(function(s){
+var o = document.createElement('option'); o.value = s.name; o.textContent = s.name; stateSel.appendChild(o);
+});
+}
+});
+
+document.getElementById('userState').addEventListener('change', function(){
+var state = this.value;
+var divSel = document.getElementById('userDivision');
+divSel.innerHTML = '<option value="">Select Division</option>';
+divSel.disabled = !state;
+if (state) {
+allDivisions.filter(function(d){ return d.state === state }).forEach(function(d){
+var o = document.createElement('option'); o.value = d.name; o.textContent = d.name; divSel.appendChild(o);
+});
+}
+});
+
+document.getElementById('cancelBtn').addEventListener('click', resetForm);
+
+document.getElementById('userForm').addEventListener('submit', function(e){
+e.preventDefault();
+var btn = document.getElementById('submitBtn');
+btn.disabled = true;
+btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+if (editingUserId) { updateUser(); }
+else { addUser(); }
+});
+
+function resetForm() {
+document.getElementById('userForm').reset();
+document.getElementById('userState').disabled = true;
+document.getElementById('userDivision').disabled = true;
+document.getElementById('userState').innerHTML = '<option value="">Select State</option>';
+document.getElementById('userDivision').innerHTML = '<option value="">Select Division</option>';
+document.getElementById('pwdRequired').style.display = 'inline';
+document.getElementById('userPassword').required = true;
+document.getElementById('formTitle').textContent = 'Add New User';
+document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save User';
+document.getElementById('cancelBtn').style.display = 'none';
+editingUserId = null;
+}
+
+function populateRegionSelect(selected) {
+var sel = document.getElementById('userRegion');
+sel.innerHTML = '<option value="">Select Region</option>';
+allRegions.forEach(function(r){
+var o = document.createElement('option'); o.value = r.name; o.textContent = r.name;
+if (r.name === selected) o.selected = true;
+sel.appendChild(o);
+});
+}
+
+function populateHubSelect(selected) {
+var sel = document.getElementById('userHub');
+sel.innerHTML = '<option value="">Select Hub</option>';
+allHubs.forEach(function(h){
+var o = document.createElement('option'); o.value = h.name; o.textContent = h.name;
+if (h.name === selected) o.selected = true;
+sel.appendChild(o);
+});
+}
+
+async function addUser() {
+try {
+var email = document.getElementById('userEmail').value.trim().toLowerCase();
+var exists = allUsers.some(function(u){ return u.email && u.email.toLowerCase() === email });
+if (exists) { showToast('Email already exists!', 'fa-solid fa-triangle-exclamation'); resetBtn(); return; }
+var data = {
+fullName: document.getElementById('userName').value.trim(),
+email: email,
+employeeCode: document.getElementById('userEmpCode').value.trim(),
+role: document.getElementById('userRole').value,
+region: document.getElementById('userRegion').value || '',
+state: document.getElementById('userState').value || '',
+division: document.getElementById('userDivision').value || '',
+hub: document.getElementById('userHub').value || '',
+password: document.getElementById('userPassword').value,
+status: document.getElementById('userStatus').value,
+createdAt: new Date().toISOString(),
+createdBy: currentUser.fullName || currentUser.email || ''
+};
+await db.collection('users').add(data);
+showToast('User added successfully!');
+resetForm();
+await loadUsers();
+} catch(e) { console.error(e); showToast('Error adding user', 'fa-solid fa-triangle-exclamation'); }
+resetBtn();
+}
+
+async function updateUser() {
+try {
+var data = {
+fullName: document.getElementById('userName').value.trim(),
+email: document.getElementById('userEmail').value.trim().toLowerCase(),
+employeeCode: document.getElementById('userEmpCode').value.trim(),
+role: document.getElementById('userRole').value,
+region: document.getElementById('userRegion').value || '',
+state: document.getElementById('userState').value || '',
+division: document.getElementById('userDivision').value || '',
+hub: document.getElementById('userHub').value || '',
+status: document.getElementById('userStatus').value,
+updatedAt: new Date().toISOString(),
+updatedBy: currentUser.fullName || currentUser.email || ''
+};
+var pwd = document.getElementById('userPassword').value;
+if (pwd) data.password = pwd;
+await db.collection('users').doc(editingUserId).update(data);
+showToast('User updated successfully!');
+resetForm();
+await loadUsers();
+} catch(e) { console.error(e); showToast('Error updating user', 'fa-solid fa-triangle-exclamation'); }
+resetBtn();
+}
+
+function resetBtn() {
+var btn = document.getElementById('submitBtn');
+btn.disabled = false;
+btn.innerHTML = editingUserId ? '<i class="fa-solid fa-floppy-disk"></i> Update User' : '<i class="fa-solid fa-floppy-disk"></i> Save User';
+}
+
+async function deleteUser(id, name) {
+if (!confirm('Are you sure you want to delete user "' + name + '"? This action cannot be undone.')) return;
+try {
+await db.collection('users').doc(id).delete();
+showToast('User deleted successfully!');
+await loadUsers();
+} catch(e) { console.error(e); showToast('Error deleting user', 'fa-solid fa-triangle-exclamation'); }
+}
+
+function editUser(id) {
+var u = allUsers.find(function(x){ return x.id === id });
+if (!u) return;
+editingUserId = id;
+document.getElementById('formTitle').textContent = 'Edit User';
+document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update User';
+document.getElementById('cancelBtn').style.display = 'inline-flex';
+document.getElementById('pwdRequired').style.display = 'none';
+document.getElementById('userPassword').required = false;
+document.getElementById('userName').value = u.fullName || '';
+document.getElementById('userEmail').value = u.email || '';
+document.getElementById('userEmpCode').value = u.employeeCode || '';
+document.getElementById('userRole').value = u.role || '';
+document.getElementById('userStatus').value = u.status || 'Active';
+document.getElementById('userPassword').value = '';
+populateRegionSelect(u.region || '');
+populateHubSelect(u.hub || '');
+var region = u.region || '';
+var stateSel = document.getElementById('userState');
+stateSel.innerHTML = '<option value="">Select State</option>';
+stateSel.disabled = !region;
+if (region) {
+allStates.filter(function(s){ return s.region === region }).forEach(function(s){
+var o = document.createElement('option'); o.value = s.name; o.textContent = s.name;
+if (s.name === u.state) o.selected = true;
+stateSel.appendChild(o);
+});
+}
+var state = u.state || '';
+var divSel = document.getElementById('userDivision');
+divSel.innerHTML = '<option value="">Select Division</option>';
+divSel.disabled = !state;
+if (state) {
+allDivisions.filter(function(d){ return d.state === state }).forEach(function(d){
+var o = document.createElement('option'); o.value = d.name; o.textContent = d.name;
+if (d.name === u.division) o.selected = true;
+divSel.appendChild(o);
+});
+}
+document.getElementById('userForm').scrollIntoView({behavior:'smooth'});
+}
+
+function renderTable(users) {
+var tb = document.getElementById('usersTableBody');
+var searchVal = document.getElementById('searchUser').value.trim().toLowerCase();
+var roleFilter = document.getElementById('filterRole').value;
+var filtered = users.filter(function(u){
+if (roleFilter && u.role !== roleFilter) return false;
+if (searchVal) {
+var name = (u.fullName || '').toLowerCase();
+var email = (u.email || '').toLowerCase();
+if (name.indexOf(searchVal) === -1 && email.indexOf(searchVal) === -1) return false;
+}
+return true;
+});
+document.getElementById('userCount').textContent = filtered.length + ' users';
+tb.innerHTML = '';
+if (!filtered.length) {
+tb.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>No users found.</p></div></td></tr>';
+return;
+}
+filtered.forEach(function(u, i){
+var statusClass = (u.status === 'Active') ? 'status-active' : 'status-inactive';
+tb.innerHTML += '<tr><td>' + (i + 1) + '</td><td><strong>' + escapeHtml(u.fullName || '-') + '</strong></td><td>' + escapeHtml(u.email || '-') + '</td><td>' + escapeHtml(u.employeeCode || '-') + '</td><td>' + escapeHtml(u.role || '-') + '</td><td>' + escapeHtml(u.region || '-') + '</td><td>' + escapeHtml(u.state || '-') + '</td><td>' + escapeHtml(u.division || '-') + '</td><td>' + escapeHtml(u.hub || '-') + '</td><td><span class="status-badge ' + statusClass + '">' + escapeHtml(u.status || 'Active') + '</span></td><td><button class="action-btn edit" onclick="editUser(\'' + u.id + '\')"><i class="fa-solid fa-pen-to-square"></i> Edit</button> <button class="action-btn delete" onclick="deleteUser(\'' + u.id + '\',\'' + escapeJsStr(u.fullName || '') + '\')"><i class="fa-solid fa-trash-can"></i> Delete</button></td></tr>';
+});
+}
+
+function escapeHtml(s) {
+if (!s) return '';
+return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function escapeJsStr(s) {
+if (!s) return '';
+return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"');
+}
+
+document.getElementById('searchUser').addEventListener('input', function(){ renderTable(allUsers); });
+document.getElementById('filterRole').addEventListener('change', function(){ renderTable(allUsers); });
+
+async function loadMasterData() {
+try {
+var [regSnap, stateSnap, divSnap, hubSnap] = await Promise.all([
+db.collection('regions').get(),
+db.collection('states').get(),
+db.collection('divisions').get(),
+db.collection('hubs').get()
+]);
+allRegions = regSnap.docs.map(function(d){ return {id: d.id, ...d.data()} });
+allStates = stateSnap.docs.map(function(d){ return {id: d.id, ...d.data()} });
+allDivisions = divSnap.docs.map(function(d){ return {id: d.id, ...d.data()} });
+allHubs = hubSnap.docs.map(function(d){ return {id: d.id, ...d.data()} });
+populateRegionSelect();
+populateHubSelect();
+} catch(e) { console.error(e); showToast('Error loading master data', 'fa-solid fa-triangle-exclamation'); }
+}
+
+async function loadUsers() {
+try {
+var snap = await db.collection('users').get();
+allUsers = snap.docs.map(function(d){ return {id: d.id, ...d.data()} });
+if (currentUser && currentUser.role !== 'Super Admin') {
+allUsers = allUsers.filter(function(u){
+if (currentUser.region && u.region !== currentUser.region) return false;
+if (currentUser.state && u.state !== currentUser.state) return false;
+if (currentUser.division && u.division !== currentUser.division) return false;
+return true;
+});
+}
+renderTable(allUsers);
+} catch(e) { console.error(e); showToast('Error loading users', 'fa-solid fa-triangle-exclamation'); }
+}
+
+window.addEventListener('DOMContentLoaded', async function(){
+var user = JSON.parse(localStorage.getItem('userSession'));
+if (!user || !user.role) {
+showToast('Session invalid! Redirecting...');
+setTimeout(function(){ window.location.href = 'login.html' }, 1200);
+return;
+}
+if (user.role !== 'Super Admin') {
+showToast('Access denied! Redirecting...');
+setTimeout(function(){ window.location.href = 'dashboard.html' }, 1200);
+return;
+}
+currentUser = user;
+document.getElementById('userAvatar').textContent = getInitials(user.fullName);
+document.getElementById('adminName').innerText = user.fullName || 'User';
+document.getElementById('userRoleBadge').innerText = user.role || '-';
+setupSidebar(user);
+await loadMasterData();
+await loadUsers();
+});
+</script>
 </body>
 </html>
