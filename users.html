@@ -82,6 +82,7 @@ tr:hover td{background:#fafcff}
 .empty-state i{font-size:36px;margin-bottom:10px;opacity:0.3}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--primary);color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.15);font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;z-index:3000;transform:translateY(80px);opacity:0;transition:var(--transition);max-width:340px}
 .toast.show{transform:translateY(0);opacity:1}
+.debug-bar{background:#fff3cd;border:1px solid #ffc107;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px;display:none;word-break:break-all}
 .form-grid.full-width .form-group{grid-column:1/-1}
 @media(max-width:1024px){.main-content{padding:16px 18px}}
 @media(max-width:768px){
@@ -109,6 +110,8 @@ tr:hover td{background:#fafcff}
 <span class="desig" id="userRoleBadge">&mdash;</span>
 </div>
 </div>
+
+<div id="debugInfo" class="debug-bar"></div>
 
 <div class="dash-section">
 <div class="section-header">
@@ -224,7 +227,7 @@ tr:hover td{background:#fafcff}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
-const firebaseConfig = {
+var firebaseConfig = {
 apiKey: "AIzaSyBTqKYPDlYh76cH5N-H-hgQqfn9ZQctCIs",
 authDomain: "prodution-box-erp.firebaseapp.com",
 projectId: "prodution-box-erp",
@@ -233,17 +236,25 @@ messagingSenderId: "240505136968",
 appId: "1:240505136968:web:78a954cd2a3af7e1b4bdb4"
 };
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+var db = firebase.firestore();
 
-let allRegions = [], allStates = [], allDivisions = [], allHubs = [], allUsers = [];
-let currentUser = null, editingUserId = null;
+var allRegions = [], allStates = [], allDivisions = [], allHubs = [], allUsers = [];
+var currentUser = null, editingUserId = null;
 
 function showToast(msg, icon) {
-const t = document.getElementById('toast');
+var t = document.getElementById('toast');
 document.getElementById('toastMsg').textContent = msg;
 t.querySelector('i').className = icon || 'fa-solid fa-check-circle';
 t.classList.add('show');
 setTimeout(function(){ t.classList.remove('show') }, 2500);
+}
+
+function debugLog(msg) {
+var d = document.getElementById('debugInfo');
+if (!d) return;
+d.style.display = 'block';
+d.innerHTML = d.innerHTML + '<div>' + escapeHtml(msg) + '</div>';
+console.log('[UserMgmt] ' + msg);
 }
 
 function getInitials(n) {
@@ -269,7 +280,7 @@ var items = mi('fa-solid fa-chart-pie', 'Dashboard', 'dashboard.html');
 if (user.role === 'Super Admin') {
 items += mi('fa-solid fa-users-gear', 'User Management', 'users.html', true);
 }
-if (['Super Admin','Admin','Regional Manager','Regional Office','State Manager','State Office'].includes(user.role)) {
+if (['Super Admin','Admin','Regional Manager','Regional Office','State Manager','State Office'].indexOf(user.role) !== -1) {
 items += mi('fa-solid fa-warehouse', 'Warehouse', 'hubs.html');
 }
 items += mi('fa-solid fa-arrow-down-long', 'Stock IN', 'stock-in.html');
@@ -300,9 +311,11 @@ stateSel.disabled = !region;
 divSel.innerHTML = '<option value="">Select Division</option>';
 divSel.disabled = true;
 if (region) {
-allStates.filter(function(s){ return s.region === region }).forEach(function(s){
-var o = document.createElement('option'); o.value = s.name; o.textContent = s.name; stateSel.appendChild(o);
-});
+for (var i = 0; i < allStates.length; i++) {
+if (allStates[i].region === region) {
+var o = document.createElement('option'); o.value = allStates[i].name; o.textContent = allStates[i].name; stateSel.appendChild(o);
+}
+}
 }
 });
 
@@ -312,9 +325,11 @@ var divSel = document.getElementById('userDivision');
 divSel.innerHTML = '<option value="">Select Division</option>';
 divSel.disabled = !state;
 if (state) {
-allDivisions.filter(function(d){ return d.state === state }).forEach(function(d){
-var o = document.createElement('option'); o.value = d.name; o.textContent = d.name; divSel.appendChild(o);
-});
+for (var i = 0; i < allDivisions.length; i++) {
+if (allDivisions[i].state === state) {
+var o = document.createElement('option'); o.value = allDivisions[i].name; o.textContent = allDivisions[i].name; divSel.appendChild(o);
+}
+}
 }
 });
 
@@ -346,27 +361,30 @@ editingUserId = null;
 function populateRegionSelect(selected) {
 var sel = document.getElementById('userRegion');
 sel.innerHTML = '<option value="">Select Region</option>';
-allRegions.forEach(function(r){
-var o = document.createElement('option'); o.value = r.name; o.textContent = r.name;
-if (r.name === selected) o.selected = true;
+for (var i = 0; i < allRegions.length; i++) {
+var o = document.createElement('option'); o.value = allRegions[i].name; o.textContent = allRegions[i].name;
+if (allRegions[i].name === selected) o.selected = true;
 sel.appendChild(o);
-});
+}
 }
 
 function populateHubSelect(selected) {
 var sel = document.getElementById('userHub');
 sel.innerHTML = '<option value="">Select Hub</option>';
-allHubs.forEach(function(h){
-var o = document.createElement('option'); o.value = h.name; o.textContent = h.name;
-if (h.name === selected) o.selected = true;
+for (var i = 0; i < allHubs.length; i++) {
+var o = document.createElement('option'); o.value = allHubs[i].name; o.textContent = allHubs[i].name;
+if (allHubs[i].name === selected) o.selected = true;
 sel.appendChild(o);
-});
+}
 }
 
 async function addUser() {
 try {
 var email = document.getElementById('userEmail').value.trim().toLowerCase();
-var exists = allUsers.some(function(u){ return u.email && u.email.toLowerCase() === email });
+var exists = false;
+for (var i = 0; i < allUsers.length; i++) {
+if (allUsers[i].email && allUsers[i].email.toLowerCase() === email) { exists = true; break; }
+}
 if (exists) { showToast('Email already exists!', 'fa-solid fa-triangle-exclamation'); resetBtn(); return; }
 var data = {
 fullName: document.getElementById('userName').value.trim(),
@@ -380,13 +398,13 @@ hub: document.getElementById('userHub').value || '',
 password: document.getElementById('userPassword').value,
 status: document.getElementById('userStatus').value,
 createdAt: new Date().toISOString(),
-createdBy: currentUser.fullName || currentUser.email || ''
+createdBy: (currentUser && (currentUser.fullName || currentUser.email)) || ''
 };
 await db.collection('users').add(data);
 showToast('User added successfully!');
 resetForm();
 await loadUsers();
-} catch(e) { console.error(e); showToast('Error adding user', 'fa-solid fa-triangle-exclamation'); }
+} catch(e) { console.error(e); showToast('Error adding user: ' + e.message, 'fa-solid fa-triangle-exclamation'); }
 resetBtn();
 }
 
@@ -403,7 +421,7 @@ division: document.getElementById('userDivision').value || '',
 hub: document.getElementById('userHub').value || '',
 status: document.getElementById('userStatus').value,
 updatedAt: new Date().toISOString(),
-updatedBy: currentUser.fullName || currentUser.email || ''
+updatedBy: (currentUser && (currentUser.fullName || currentUser.email)) || ''
 };
 var pwd = document.getElementById('userPassword').value;
 if (pwd) data.password = pwd;
@@ -411,7 +429,7 @@ await db.collection('users').doc(editingUserId).update(data);
 showToast('User updated successfully!');
 resetForm();
 await loadUsers();
-} catch(e) { console.error(e); showToast('Error updating user', 'fa-solid fa-triangle-exclamation'); }
+} catch(e) { console.error(e); showToast('Error updating user: ' + e.message, 'fa-solid fa-triangle-exclamation'); }
 resetBtn();
 }
 
@@ -427,11 +445,14 @@ try {
 await db.collection('users').doc(id).delete();
 showToast('User deleted successfully!');
 await loadUsers();
-} catch(e) { console.error(e); showToast('Error deleting user', 'fa-solid fa-triangle-exclamation'); }
+} catch(e) { console.error(e); showToast('Error deleting user: ' + e.message, 'fa-solid fa-triangle-exclamation'); }
 }
 
 function editUser(id) {
-var u = allUsers.find(function(x){ return x.id === id });
+var u = null;
+for (var i = 0; i < allUsers.length; i++) {
+if (allUsers[i].id === id) { u = allUsers[i]; break; }
+}
 if (!u) return;
 editingUserId = id;
 document.getElementById('formTitle').textContent = 'Edit User';
@@ -452,22 +473,26 @@ var stateSel = document.getElementById('userState');
 stateSel.innerHTML = '<option value="">Select State</option>';
 stateSel.disabled = !region;
 if (region) {
-allStates.filter(function(s){ return s.region === region }).forEach(function(s){
-var o = document.createElement('option'); o.value = s.name; o.textContent = s.name;
-if (s.name === u.state) o.selected = true;
+for (var i = 0; i < allStates.length; i++) {
+if (allStates[i].region === region) {
+var o = document.createElement('option'); o.value = allStates[i].name; o.textContent = allStates[i].name;
+if (allStates[i].name === u.state) o.selected = true;
 stateSel.appendChild(o);
-});
+}
+}
 }
 var state = u.state || '';
 var divSel = document.getElementById('userDivision');
 divSel.innerHTML = '<option value="">Select Division</option>';
 divSel.disabled = !state;
 if (state) {
-allDivisions.filter(function(d){ return d.state === state }).forEach(function(d){
-var o = document.createElement('option'); o.value = d.name; o.textContent = d.name;
-if (d.name === u.division) o.selected = true;
+for (var i = 0; i < allDivisions.length; i++) {
+if (allDivisions[i].state === state) {
+var o = document.createElement('option'); o.value = allDivisions[i].name; o.textContent = allDivisions[i].name;
+if (allDivisions[i].name === u.division) o.selected = true;
 divSel.appendChild(o);
-});
+}
+}
 }
 document.getElementById('userForm').scrollIntoView({behavior:'smooth'});
 }
@@ -476,33 +501,42 @@ function renderTable(users) {
 var tb = document.getElementById('usersTableBody');
 var searchVal = document.getElementById('searchUser').value.trim().toLowerCase();
 var roleFilter = document.getElementById('filterRole').value;
-var filtered = users.filter(function(u){
-if (roleFilter && u.role !== roleFilter) return false;
+var filtered = [];
+for (var i = 0; i < users.length; i++) {
+var u = users[i];
+if (roleFilter && u.role !== roleFilter) continue;
 if (searchVal) {
 var name = (u.fullName || '').toLowerCase();
 var email = (u.email || '').toLowerCase();
-if (name.indexOf(searchVal) === -1 && email.indexOf(searchVal) === -1) return false;
+if (name.indexOf(searchVal) === -1 && email.indexOf(searchVal) === -1) continue;
 }
-return true;
-});
+filtered.push(u);
+}
 document.getElementById('userCount').textContent = filtered.length + ' users';
 tb.innerHTML = '';
 if (!filtered.length) {
 tb.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>No users found.</p></div></td></tr>';
 return;
 }
-filtered.forEach(function(u, i){
+for (var i = 0; i < filtered.length; i++) {
+var u = filtered[i];
 var statusClass = (u.status === 'Active') ? 'status-active' : 'status-inactive';
-tb.innerHTML += '<tr><td>' + (i + 1) + '</td><td><strong>' + escapeHtml(u.fullName || '-') + '</strong></td><td>' + escapeHtml(u.email || '-') + '</td><td>' + escapeHtml(u.employeeCode || '-') + '</td><td>' + escapeHtml(u.role || '-') + '</td><td>' + escapeHtml(u.region || '-') + '</td><td>' + escapeHtml(u.state || '-') + '</td><td>' + escapeHtml(u.division || '-') + '</td><td>' + escapeHtml(u.hub || '-') + '</td><td><span class="status-badge ' + statusClass + '">' + escapeHtml(u.status || 'Active') + '</span></td><td><button class="action-btn edit" onclick="editUser(\'' + u.id + '\')"><i class="fa-solid fa-pen-to-square"></i> Edit</button> <button class="action-btn delete" onclick="deleteUser(\'' + u.id + '\',\'' + escapeJsStr(u.fullName || '') + '\')"><i class="fa-solid fa-trash-can"></i> Delete</button></td></tr>';
-});
+var row = '<tr><td>' + (i + 1) + '</td><td><strong>' + safeVal(u.fullName) + '</strong></td><td>' + safeVal(u.email) + '</td><td>' + safeVal(u.employeeCode) + '</td><td>' + safeVal(u.role) + '</td><td>' + safeVal(u.region) + '</td><td>' + safeVal(u.state) + '</td><td>' + safeVal(u.division) + '</td><td>' + safeVal(u.hub) + '</td><td><span class="status-badge ' + statusClass + '">' + safeVal(u.status, 'Active') + '</span></td><td><button class="action-btn edit" onclick="editUser(\'' + escapeAttr(u.id) + '\')"><i class="fa-solid fa-pen-to-square"></i> Edit</button> <button class="action-btn delete" onclick="deleteUser(\'' + escapeAttr(u.id) + '\',\'' + escapeAttr(u.fullName || '') + '\')"><i class="fa-solid fa-trash-can"></i> Delete</button></td></tr>';
+tb.innerHTML += row;
+}
+}
+
+function safeVal(val, fallback) {
+if (val === null || val === undefined || val === '') return fallback || '-';
+return escapeHtml(String(val));
 }
 
 function escapeHtml(s) {
 if (!s) return '';
-return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-function escapeJsStr(s) {
+function escapeAttr(s) {
 if (!s) return '';
 return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"');
 }
@@ -512,45 +546,77 @@ document.getElementById('filterRole').addEventListener('change', function(){ ren
 
 async function loadMasterData() {
 try {
-var [regSnap, stateSnap, divSnap, hubSnap] = await Promise.all([
-db.collection('regions').get(),
-db.collection('states').get(),
-db.collection('divisions').get(),
-db.collection('hubs').get()
-]);
-allRegions = regSnap.docs.map(function(d){ return {id: d.id, ...d.data()} });
-allStates = stateSnap.docs.map(function(d){ return {id: d.id, ...d.data()} });
-allDivisions = divSnap.docs.map(function(d){ return {id: d.id, ...d.data()} });
-allHubs = hubSnap.docs.map(function(d){ return {id: d.id, ...d.data()} });
+debugLog('Loading master data (regions, states, divisions, hubs)...');
+var regSnap = await db.collection('regions').get();
+var stateSnap = await db.collection('states').get();
+var divSnap = await db.collection('divisions').get();
+var hubSnap = await db.collection('hubs').get();
+allRegions = regSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
+allStates = stateSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
+allDivisions = divSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
+allHubs = hubSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
+debugLog('Master data loaded: ' + allRegions.length + ' regions, ' + allStates.length + ' states, ' + allDivisions.length + ' divisions, ' + allHubs.length + ' hubs');
 populateRegionSelect();
 populateHubSelect();
-} catch(e) { console.error(e); showToast('Error loading master data', 'fa-solid fa-triangle-exclamation'); }
+} catch(e) { console.error(e); debugLog('Error loading master data: ' + e.message); showToast('Error loading master data', 'fa-solid fa-triangle-exclamation'); }
 }
 
 async function loadUsers() {
 try {
+debugLog('Loading users from Firebase...');
 var snap = await db.collection('users').get();
-allUsers = snap.docs.map(function(d){ return {id: d.id, ...d.data()} });
+debugLog('Firebase returned ' + snap.docs.length + ' documents');
+var tempUsers = [];
+for (var i = 0; i < snap.docs.length; i++) {
+var d = snap.docs[i];
+var data = d.data();
+if (!data) {
+debugLog('WARNING: Document ' + d.id + ' has no data, skipping');
+continue;
+}
+tempUsers.push(Object.assign({id: d.id}, data));
+}
+allUsers = tempUsers;
+debugLog('Mapped ' + allUsers.length + ' users');
 if (currentUser && currentUser.role !== 'Super Admin') {
-allUsers = allUsers.filter(function(u){
-if (currentUser.region && u.region !== currentUser.region) return false;
-if (currentUser.state && u.state !== currentUser.state) return false;
-if (currentUser.division && u.division !== currentUser.division) return false;
-return true;
-});
+var filtered = [];
+for (var i = 0; i < allUsers.length; i++) {
+var u = allUsers[i];
+if (currentUser.region && u.region !== currentUser.region) continue;
+if (currentUser.state && u.state !== currentUser.state) continue;
+if (currentUser.division && u.division !== currentUser.division) continue;
+filtered.push(u);
+}
+debugLog('Filtered to ' + filtered.length + ' users (non-Super Admin view)');
+allUsers = filtered;
 }
 renderTable(allUsers);
-} catch(e) { console.error(e); showToast('Error loading users', 'fa-solid fa-triangle-exclamation'); }
+debugLog('Users rendered successfully');
+} catch(e) { console.error(e); debugLog('ERROR loading users: ' + e.message); showToast('Error loading users: ' + e.message, 'fa-solid fa-triangle-exclamation');
+document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users. Check console (F12) for details.</p><p style="font-size:11px;margin-top:4px;color:#dc2626">' + escapeHtml(e.message) + '</p></div></td></tr>';
+}
 }
 
 window.addEventListener('DOMContentLoaded', async function(){
-var user = JSON.parse(localStorage.getItem('userSession'));
+try {
+debugLog('Page loaded, initializing...');
+var sessionStr = localStorage.getItem('userSession');
+if (!sessionStr) {
+debugLog('No session found, redirecting to login');
+showToast('Session invalid! Redirecting...');
+setTimeout(function(){ window.location.href = 'login.html' }, 1200);
+return;
+}
+var user = JSON.parse(sessionStr);
+debugLog('Session user: ' + (user.email || 'unknown') + ', role: ' + (user.role || 'none'));
 if (!user || !user.role) {
+debugLog('Invalid session data');
 showToast('Session invalid! Redirecting...');
 setTimeout(function(){ window.location.href = 'login.html' }, 1200);
 return;
 }
 if (user.role !== 'Super Admin') {
+debugLog('Access denied for role: ' + user.role);
 showToast('Access denied! Redirecting...');
 setTimeout(function(){ window.location.href = 'dashboard.html' }, 1200);
 return;
@@ -560,8 +626,15 @@ document.getElementById('userAvatar').textContent = getInitials(user.fullName);
 document.getElementById('adminName').innerText = user.fullName || 'User';
 document.getElementById('userRoleBadge').innerText = user.role || '-';
 setupSidebar(user);
+debugLog('Loading data...');
 await loadMasterData();
 await loadUsers();
+debugLog('Initialization complete');
+} catch(e) {
+console.error('FATAL ERROR in initialization:', e);
+debugLog('FATAL ERROR: ' + e.message);
+showToast('Error loading page: ' + e.message, 'fa-solid fa-triangle-exclamation');
+}
 });
 </script>
 </body>
