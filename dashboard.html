@@ -156,6 +156,7 @@ tr:hover td{background:#fafcff}
 <div class="stat-card"><div class="stat-info"><h3 id="countPendingDemands">0</h3><p>Pending Demands</p></div><div class="stat-icon icon-amber"><i class="fa-solid fa-file-clock"></i></div></div>
 <div class="stat-card"><div class="stat-info"><h3 id="countTodayIn">0</h3><p>Today Stock IN</p></div><div class="stat-icon icon-green"><i class="fa-solid fa-arrow-down-long"></i></div></div>
 <div class="stat-card"><div class="stat-info"><h3 id="countTodayOut">0</h3><p>Today Stock OUT</p></div><div class="stat-icon icon-rose"><i class="fa-solid fa-arrow-up-long"></i></div></div>
+<div class="stat-card"><div class="stat-info"><h3 id="countTotalRemaining">0</h3><p>Total Remaining</p></div><div class="stat-icon icon-purple"><i class="fa-solid fa-boxes-stacked"></i></div></div>
 </div>
 
 <div class="dash-section">
@@ -534,6 +535,7 @@ function applyFiltersAndRender(user) {
     document.getElementById("countPendingDemands").innerText = pd.length;
     document.getElementById("countTodayIn").innerText = ti.toLocaleString();
     document.getElementById("countTodayOut").innerText = to.toLocaleString();
+    document.getElementById("countTotalRemaining").innerText = rem.toLocaleString();
 
     // Aggregate by region|state|division|item
     var map = new Map();
