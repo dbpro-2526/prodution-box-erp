@@ -166,7 +166,7 @@ tr:hover td{background:#fafcff}
 <div class="form-group">
 <label>Password <span class="required" id="pwdRequired">*</span></label>
 <div class="password-wrapper">
-<input type="password" id="userPassword" placeholder="Enter password" required>
+<input type="password" id="userPassword" placeholder="Enter password">
 <button type="button" class="pwd-toggle" id="pwdToggle"><i class="fa-regular fa-eye"></i></button>
 </div>
 </div>
@@ -224,16 +224,17 @@ tr:hover td{background:#fafcff}
 
 <div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastMsg">Done</span></div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 var firebaseConfig = {
-apiKey: "AIzaSyBTqKYPDlYh76cH5N-H-hgQqfn9ZQctCIs",
+apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
 authDomain: "prodution-box-erp.firebaseapp.com",
 projectId: "prodution-box-erp",
-storageBucket: "prodution-box-erp.appspot.com",
-messagingSenderId: "240505136968",
-appId: "1:240505136968:web:78a954cd2a3af7e1b4bdb4"
+storageBucket: "prodution-box-erp.firebasestorage.app",
+messagingSenderId: "426698063494",
+appId: "1:426698063494:web:880dd323f24bd4121ddb07",
+measurementId: "G-948852RZLB"
 };
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
@@ -277,7 +278,8 @@ return '<a' + (href ? ' href="' + href + '"' : '') + ' class="menu-item' + (acti
 function setupSidebar(user) {
 var menu = document.getElementById('dynamicSidebarMenu');
 var items = mi('fa-solid fa-chart-pie', 'Dashboard', 'dashboard.html');
-if (user.role === 'Super Admin') {
+if (["Super Admin", "Admin"].indexOf(user.role) !== -1) {
+items += mi('fa-solid fa-cubes', 'Items', 'items.html');
 items += mi('fa-solid fa-users-gear', 'User Management', 'users.html', true);
 }
 if (['Super Admin','Admin','Regional Manager','Regional Office','State Manager','State Office'].indexOf(user.role) !== -1) {
@@ -354,7 +356,6 @@ document.getElementById('pwdRequired').style.display = 'inline';
 document.getElementById('userPassword').required = true;
 document.getElementById('formTitle').textContent = 'Add New User';
 document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save User';
-document.getElementById('submitBtn').disabled = false;
 document.getElementById('cancelBtn').style.display = 'none';
 editingUserId = null;
 }
@@ -469,12 +470,11 @@ document.getElementById('userStatus').value = u.status || 'Active';
 document.getElementById('userPassword').value = '';
 populateRegionSelect(u.region || '');
 populateHubSelect(u.hub || '');
-
 var region = u.region || '';
 var stateSel = document.getElementById('userState');
 stateSel.innerHTML = '<option value="">Select State</option>';
+stateSel.disabled = !region;
 if (region) {
-stateSel.disabled = false;
 for (var i = 0; i < allStates.length; i++) {
 if (allStates[i].region === region) {
 var o = document.createElement('option'); o.value = allStates[i].name; o.textContent = allStates[i].name;
@@ -482,15 +482,12 @@ if (allStates[i].name === u.state) o.selected = true;
 stateSel.appendChild(o);
 }
 }
-} else {
-stateSel.disabled = true;
 }
-
 var state = u.state || '';
 var divSel = document.getElementById('userDivision');
 divSel.innerHTML = '<option value="">Select Division</option>';
+divSel.disabled = !state;
 if (state) {
-divSel.disabled = false;
 for (var i = 0; i < allDivisions.length; i++) {
 if (allDivisions[i].state === state) {
 var o = document.createElement('option'); o.value = allDivisions[i].name; o.textContent = allDivisions[i].name;
@@ -498,8 +495,6 @@ if (allDivisions[i].name === u.division) o.selected = true;
 divSel.appendChild(o);
 }
 }
-} else {
-divSel.disabled = true;
 }
 document.getElementById('userForm').scrollIntoView({behavior:'smooth'});
 }
@@ -540,11 +535,7 @@ return escapeHtml(String(val));
 
 function escapeHtml(s) {
 if (!s) return '';
-return s.replace(/&/g,'&amp;')
-.replace(/</g,'&lt;')
-.replace(/>/g,'&gt;')
-.replace(/"/g,'&quot;')
-.replace(/'/g,'&#39;');
+return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 function escapeAttr(s) {
@@ -557,7 +548,7 @@ document.getElementById('filterRole').addEventListener('change', function(){ ren
 
 async function loadMasterData() {
 try {
-debugLog('Loading master data...');
+debugLog('Loading master data (regions, states, divisions, hubs)...');
 var regSnap = await db.collection('regions').get();
 var stateSnap = await db.collection('states').get();
 var divSnap = await db.collection('divisions').get();
@@ -566,22 +557,29 @@ allRegions = regSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.da
 allStates = stateSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
 allDivisions = divSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
 allHubs = hubSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
+debugLog('Master data loaded: ' + allRegions.length + ' regions, ' + allStates.length + ' states, ' + allDivisions.length + ' divisions, ' + allHubs.length + ' hubs');
 populateRegionSelect();
 populateHubSelect();
-} catch(e) { console.error(e); debugLog('Error loading master data: ' + e.message); }
+} catch(e) { console.error(e); debugLog('Error loading master data: ' + e.message); showToast('Error loading master data', 'fa-solid fa-triangle-exclamation'); }
 }
 
 async function loadUsers() {
 try {
 debugLog('Loading users from Firebase...');
 var snap = await db.collection('users').get();
+debugLog('Firebase returned ' + snap.docs.length + ' documents');
 var tempUsers = [];
 for (var i = 0; i < snap.docs.length; i++) {
 var d = snap.docs[i];
 var data = d.data();
-if (data) tempUsers.push(Object.assign({id: d.id}, data));
+if (!data) {
+debugLog('WARNING: Document ' + d.id + ' has no data, skipping');
+continue;
+}
+tempUsers.push(Object.assign({id: d.id}, data));
 }
 allUsers = tempUsers;
+debugLog('Mapped ' + allUsers.length + ' users');
 if (currentUser && currentUser.role !== 'Super Admin') {
 var filtered = [];
 for (var i = 0; i < allUsers.length; i++) {
@@ -591,27 +589,37 @@ if (currentUser.state && u.state !== currentUser.state) continue;
 if (currentUser.division && u.division !== currentUser.division) continue;
 filtered.push(u);
 }
+debugLog('Filtered to ' + filtered.length + ' users (non-Super Admin view)');
 allUsers = filtered;
 }
 renderTable(allUsers);
-} catch(e) { 
-console.error(e); 
-debugLog('ERROR loading users: ' + e.message);
-document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444"></i><p>Error loading users. Please check Firestore Security Rules.</p></div></td></tr>';
+debugLog('Users rendered successfully');
+} catch(e) { console.error(e); debugLog('ERROR loading users: ' + e.message); showToast('Error loading users: ' + e.message, 'fa-solid fa-triangle-exclamation');
+document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users. Check console (F12) for details.</p><p style="font-size:11px;margin-top:4px;color:#dc2626">' + escapeHtml(e.message) + '</p></div></td></tr>';
 }
 }
 
 window.addEventListener('DOMContentLoaded', async function(){
 try {
+debugLog('Page loaded, initializing...');
 var sessionStr = localStorage.getItem('userSession');
 if (!sessionStr) {
+debugLog('No session found, redirecting to login');
 showToast('Session invalid! Redirecting...');
 setTimeout(function(){ window.location.href = 'login.html' }, 1200);
 return;
 }
 var user = JSON.parse(sessionStr);
-if (!user || user.role !== 'Super Admin') {
-showToast('Access denied! Super Admin required.');
+debugLog('Session user: ' + (user.email || 'unknown') + ', role: ' + (user.role || 'none'));
+if (!user || !user.role) {
+debugLog('Invalid session data');
+showToast('Session invalid! Redirecting...');
+setTimeout(function(){ window.location.href = 'login.html' }, 1200);
+return;
+}
+if (["Super Admin", "Admin"].indexOf(user.role) === -1) {
+debugLog('Access denied for role: ' + user.role);
+showToast('Access denied! Redirecting...');
 setTimeout(function(){ window.location.href = 'dashboard.html' }, 1200);
 return;
 }
@@ -620,11 +628,14 @@ document.getElementById('userAvatar').textContent = getInitials(user.fullName);
 document.getElementById('adminName').innerText = user.fullName || 'User';
 document.getElementById('userRoleBadge').innerText = user.role || '-';
 setupSidebar(user);
+debugLog('Loading data...');
 await loadMasterData();
 await loadUsers();
+debugLog('Initialization complete');
 } catch(e) {
-console.error(e);
-showToast('Fatal error during initialization');
+console.error('FATAL ERROR in initialization:', e);
+debugLog('FATAL ERROR: ' + e.message);
+showToast('Error loading page: ' + e.message, 'fa-solid fa-triangle-exclamation');
 }
 });
 </script>
