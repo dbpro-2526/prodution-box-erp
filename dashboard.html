@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Donation Box Inventory</title>
+<link rel="icon" href="dblogo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
+:root{--primary:#0F4C81;--accent:#2563EB;--bg:#f0f4f9;--sidebar-bg:#0F4C81;--text-dark:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--shadow:0 2px 12px rgba(0,0,0,0.06);--radius:14px;--radius-sm:10px;--transition:0.3s ease}
+body{background:var(--bg);color:var(--text-dark);display:flex;min-height:100vh;overflow-x:hidden}
+.sidebar{width:240px;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:1000;transition:transform var(--transition)}
+.sidebar-brand{padding:18px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar-brand img{width:36px;height:36px;border-radius:8px}
+.sidebar-brand h2{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
+.sidebar-menu{padding:12px 10px;display:flex;flex-direction:column;gap:2px;flex-grow:1;overflow-y:auto}
+.menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;color:rgba(255,255,255,0.7);text-decoration:none;border-radius:var(--radius-sm);font-weight:500;font-size:13px;transition:all var(--transition);cursor:pointer}
+.menu-item i{width:18px;text-align:center;font-size:14px}
+.menu-item:hover{background:rgba(255,255,255,0.12);color:#fff}
+.menu-item.active{background:rgba(255,255,255,0.18);color:#fff;font-weight:600}
+.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,0.1)}
+.btn-logout{width:100%;padding:10px;background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-sm);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px}
+.btn-logout:hover{background:rgba(239,68,68,0.35);color:#fff}
+.hamburger{display:none;position:fixed;top:10px;left:10px;z-index:1001;width:38px;height:38px;border-radius:10px;background:var(--sidebar-bg);color:#fff;border:none;font-size:16px;cursor:pointer;align-items:center;justify-content:center}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;opacity:0;transition:opacity var(--transition)}
+.sidebar-overlay.show{opacity:1}
+.main-content{margin-left:240px;width:calc(100% - 240px);padding:20px 24px;min-height:100vh}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.top-bar-left h1{font-size:20px;font-weight:700;color:var(--primary)}
+.user-info{display:flex;align-items:center;gap:10px;background:#fff;padding:6px 16px 6px 10px;border-radius:30px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.user-info .avatar{width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.user-info .name{font-size:13px;font-weight:600}
+.user-info .desig{font-size:11px;color:var(--text-muted);background:#f1f5f9;padding:1px 8px;border-radius:8px}
+.filter-toggle{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px}
+.filter-toggle:hover{background:#1d4ed8}
+.filter-panel{position:fixed;top:0;right:-340px;width:320px;height:100vh;background:#fff;z-index:2000;box-shadow:-4px 0 24px rgba(0,0,0,0.12);transition:right var(--transition);display:flex;flex-direction:column}
+.filter-panel.open{right:0}
+.filter-panel-header{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.filter-panel-header h3{font-size:15px;font-weight:600}
+.filter-panel-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted);padding:4px}
+.filter-panel-body{padding:16px 18px;overflow-y:auto;flex-grow:1}
+.filter-group{margin-bottom:14px}
+.filter-group label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:3px}
+.filter-group input,.filter-group select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff}
+.filter-group input:focus,.filter-group select:focus{border-color:var(--accent)}
+.filter-group input:disabled,.filter-group select:disabled{background:#f1f5f9;cursor:not-allowed;opacity:0.7}
+.filter-group .lock-badge{font-size:10px;color:var(--text-muted);margin-top:2px;display:block}
+.filter-panel-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px}
+.filter-panel-footer button{flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none}
+.btn-filter-apply{background:var(--accent);color:#fff}
+.btn-filter-reset{background:#f1f5f9;color:var(--text-dark)}
+.filter-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1999}
+.filter-overlay.show{display:block}
+.filter-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filter-badge{background:#fff;border:1px solid var(--border);padding:4px 10px;border-radius:20px;font-size:11px;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow)}
+.filter-badge.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:#fff;padding:16px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.08)}
+.stat-info h3{font-size:22px;font-weight:700;color:var(--primary)}
+.stat-info p{font-size:11px;color:var(--text-muted);margin-top:1px}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.icon-blue{background:#dbeafe;color:#2563eb}.icon-green{background:#d1fae5;color:#059669}
+.icon-amber{background:#fef3c7;color:#d97706}.icon-rose{background:#ffe4e6;color:#e11d48}
+.icon-purple{background:#f3e8ff;color:#9333ea}
+.action-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.action-bar button{padding:8px 16px;border-radius:var(--radius-sm);font-weight:500;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border:none}
+.btn-action{background:var(--accent);color:#fff}
+.btn-action-secondary{background:#fff;color:var(--text-dark);border:1px solid var(--border)}
+.dash-section{background:#fff;padding:18px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:16px}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.section-header h2{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.section-header h2 i{color:var(--accent)}
+.table-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th{background:#f8fafc;padding:10px 12px;color:var(--text-muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafcff}
+.remaining-positive{color:#059669;font-weight:600}
+.remaining-zero{color:var(--text-muted);font-weight:500}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty-state i{font-size:36px;margin-bottom:10px;opacity:0.3}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--primary);color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.15);font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;z-index:3000;transform:translateY(80px);opacity:0;transition:var(--transition);max-width:340px}
+.toast.show{transform:translateY(0);opacity:1}
+@media(max-width:1024px){.main-content{padding:16px 18px}}
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.hamburger{display:flex}.sidebar-overlay{display:block}
+.main-content{margin-left:0;width:100%;padding:60px 12px 16px}.top-bar{flex-direction:column}.filter-panel{width:100%;right:-100%}
+.stats-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.stat-card{padding:12px}.stat-info h3{font-size:18px}
+.dash-section{padding:12px}table{min-width:550px}.toast{left:12px;right:12px;bottom:12px;max-width:none}}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr 1fr;gap:6px}.action-bar{flex-direction:column}.action-bar button{width:100%}}
+</style>
+</head>
+<body>
+<button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="sidebar" id="sidebar">
+<div class="sidebar-brand"><img src="dblogo.png" alt="Logo"><h2>Donation Box Inventory</h2></div>
+<div class="sidebar-menu" id="dynamicSidebarMenu"><div class="menu-item active"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+<div class="sidebar-footer"><button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></div>
+</div>
+<div class="filter-overlay" id="filterOverlay"></div>
+<div class="filter-panel" id="filterPanel">
+<div class="filter-panel-header">
+<h3><i class="fa-solid fa-sliders"></i> Filter Options</h3>
+<button class="filter-panel-close" id="filterClose"><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div class="filter-panel-body">
+<div class="filter-group"><label>Date Range</label><input type="date" id="filterDate"></div>
+<div class="filter-group"><label>Item Name</label><select id="filterItem"><option value="">All Items</option></select><span class="lock-badge" id="lockItem"></span></div>
+<div class="filter-group"><label>Region</label><select id="filterRegion"><option value="">All Regions</option></select><span class="lock-badge" id="lockRegion"></span></div>
+<div class="filter-group"><label>State</label><select id="filterState"><option value="">All States</option></select><span class="lock-badge" id="lockState"></span></div>
+<div class="filter-group"><label>Division</label><select id="filterDivision"><option value="">All Divisions</option></select><span class="lock-badge" id="lockDivision"></span></div>
+<div class="filter-group"><label>User</label><select id="filterUser"><option value="">All Users</option></select><span class="lock-badge" id="lockUser"></span></div>
+<div class="filter-group"><label>Warehouse / Hub</label><select id="filterHub"><option value="">All Hubs</option></select><span class="lock-badge" id="lockHub"></span></div>
+</div>
+<div class="filter-panel-footer">
+<button class="btn-filter-reset" id="filterReset">Reset</button>
+<button class="btn-filter-apply" id="filterApply">Apply Filter</button>
+</div>
+</div>
+
+<div class="main-content">
+<div class="top-bar">
+<div class="top-bar-left"><h1 id="dashboardTitle">Loading...</h1></div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+<div class="user-info">
+<div class="avatar" id="userAvatar">U</div>
+<span class="name" id="adminName">Loading...</span>
+<span class="desig" id="userRoleBadge">&mdash;</span>
+</div>
+<button class="filter-toggle" id="filterToggle"><i class="fa-solid fa-sliders"></i> Filters</button>
+</div>
+</div>
+
+<p id="dashboardSubtitle" style="font-size:12px;color:var(--text-muted);margin-bottom:16px">Please wait while data syncs...</p>
+<div class="filter-badges" id="filterBadges"></div>
+
+<div class="action-bar" id="operatorActionPanel">
+<button class="btn-action" id="btnUserManage" style="display:none;"><i class="fa-solid fa-users-gear"></i> User Management</button>
+<button class="btn-action-secondary" id="btnWarehouse" style="display:none;"><i class="fa-solid fa-warehouse"></i> Warehouse</button>
+<button class="btn-action" id="btnStockIn" style="display:none;"><i class="fa-solid fa-square-plus"></i> Stock IN</button>
+<button class="btn-action-secondary" id="btnStockOut" style="display:none;"><i class="fa-solid fa-square-minus"></i> Stock OUT</button>
+<button class="btn-action" id="btnDemand" style="display:none;"><i class="fa-solid fa-file-signature"></i> Demand</button>
+<button class="btn-action-secondary" id="btnExportExcel" style="display:none;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+</div>
+
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-info"><h3 id="countPendingDemands">0</h3><p>Pending Demands</p></div><div class="stat-icon icon-amber"><i class="fa-solid fa-file-clock"></i></div></div>
+<div class="stat-card"><div class="stat-info"><h3 id="countTodayIn">0</h3><p>Today Stock IN</p></div><div class="stat-icon icon-green"><i class="fa-solid fa-arrow-down-long"></i></div></div>
+<div class="stat-card"><div class="stat-info"><h3 id="countTodayOut">0</h3><p>Today Stock OUT</p></div><div class="stat-icon icon-rose"><i class="fa-solid fa-arrow-up-long"></i></div></div>
+</div>
+
+<div class="dash-section">
+<div class="section-header">
+<h2><i class="fa-solid fa-table"></i> Division-wise Stock Summary</h2>
+<span style="font-size:11px;color:var(--text-muted)" id="tableRowCount">0 entries</span>
+</div>
+<div class="table-wrap">
+<table><thead><tr><th>Region</th><th>State</th><th>Division</th><th>Item Name</th><th>Stock IN</th><th>Stock OUT</th><th>Remaining</th></tr></thead>
+<tbody id="mainTableBody"><tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading data...</p></div></td></tr></tbody></table>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastMsg">Done</span></div>
+
+<script>
+var firebaseConfig = {
+    apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
+    authDomain: "prodution-box-erp.firebaseapp.com",
+    projectId: "prodution-box-erp",
+    storageBucket: "prodution-box-erp.firebasestorage.app",
+    messagingSenderId: "426698063494",
+    appId: "1:426698063494:web:880dd323f24bd4121ddb07",
+    measurementId: "G-948852RZLB"
+};
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
+
+var allLedger = [], allHubs = [], allUsers = [], allDemands = [], allItems = [];
+var currentUser = null;
+var filterApplied = false;
+
+function showToast(msg, icon) {
+    var t = document.getElementById("toast");
+    document.getElementById("toastMsg").textContent = msg;
+    t.querySelector("i").className = icon || "fa-solid fa-check-circle";
+    t.classList.add("show");
+    setTimeout(function(){ t.classList.remove("show") }, 2500);
+}
+
+function getInitials(n) {
+    return n ? n.split(" ").map(function(w){ return w[0] }).join("").toUpperCase().slice(0,2) : "U";
+}
+
+document.getElementById("hamburgerBtn").addEventListener("click", function() {
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebarOverlay").classList.toggle("show");
+});
+document.getElementById("sidebarOverlay").addEventListener("click", function() {
+    document.getElementById("sidebar").classList.remove("open");
+    document.getElementById("sidebarOverlay").classList.remove("show");
+});
+document.getElementById("filterToggle").addEventListener("click", function() {
+    document.getElementById("filterPanel").classList.add("open");
+    document.getElementById("filterOverlay").classList.add("show");
+});
+document.getElementById("filterClose").addEventListener("click", closeFilter);
+document.getElementById("filterOverlay").addEventListener("click", closeFilter);
+function closeFilter() {
+    document.getElementById("filterPanel").classList.remove("open");
+    document.getElementById("filterOverlay").classList.remove("show");
+}
+
+window.addEventListener("DOMContentLoaded", async function() {
+    var user;
+    try {
+        user = JSON.parse(localStorage.getItem("userSession"));
+    } catch(e) {
+        showToast("Session invalid! Redirecting...");
+        setTimeout(function(){ window.location.href = "login.html" }, 1200);
+        return;
+    }
+    if (!user || !user.role) {
+        showToast("Session invalid! Redirecting...");
+        setTimeout(function(){ window.location.href = "login.html" }, 1200);
+        return;
+    }
+    currentUser = user;
+    document.getElementById("userAvatar").textContent = getInitials(user.fullName);
+    document.getElementById("adminName").innerText = user.fullName || "User";
+    document.getElementById("userRoleBadge").innerText = user.role || "-";
+    setupUI(user);
+    await loadAllData(user);
+});
+
+function mi(icon, label, href, active) {
+    return '<a' + (href ? ' href="' + href + '"' : "") + ' class="menu-item' + (active ? " active" : "") + '"><i class="' + icon + '"></i> ' + label + "</a>";
+}
+
+function setupUI(user) {
+    var menu = document.getElementById("dynamicSidebarMenu");
+    var title = document.getElementById("dashboardTitle");
+    var sub = document.getElementById("dashboardSubtitle");
+
+    if (user.role === "User") {
+        title.innerText = "User Personal Hub";
+        sub.innerText = "Welcome.";
+        menu.innerHTML = mi("fa-solid fa-layer-group", "Dashboard", "#", true);
+        document.getElementById("operatorActionPanel").style.display = "none";
+        return;
+    }
+
+    var items = mi("fa-solid fa-chart-pie", "Dashboard", "#", true);
+    if (["Super Admin", "Admin"].indexOf(user.role) !== -1) {
+        items += mi("fa-solid fa-cubes", "Items", "items.html");
+        items += mi("fa-solid fa-users", "User Management", "users.html");
+        items += mi("fa-solid fa-warehouse", "Warehouse", "hubs.html");
+        items += mi("fa-solid fa-arrow-down-long", "Stock IN", "stock-in.html");
+        items += mi("fa-solid fa-arrow-up-long", "Stock OUT", "stock-out.html");
+        items += mi("fa-solid fa-file-signature", "Demand", "demand.html");
+    } else if (["Regional Office", "State Office", "Warehouse Manager", "Hub Manager", "Inventory Loader", "Division Manager"].indexOf(user.role) !== -1) {
+        items += mi("fa-solid fa-arrow-down-long", "Stock IN", "stock-in.html");
+        items += mi("fa-solid fa-arrow-up-long", "Stock OUT", "stock-out.html");
+        items += mi("fa-solid fa-file-signature", "Demand", "demand.html");
+    }
+
+    title.innerText = user.role + " Console";
+    sub.innerText = user.role === "Super Admin" || user.role === "Admin" ? "Full governance." :
+                    user.role === "Regional Manager" ? "Regional Supervisor " + (user.region || "") + " - View Only." :
+                    user.role === "Regional Office" ? "Regional Ops " + (user.region || "") + " - Entries." :
+                    user.role === "State Manager" ? "State Inspector " + (user.state || "") + " - View Only." :
+                    user.role === "State Office" ? "State Logistics " + (user.state || "") + " - Entries." :
+                    user.role === "Division Manager" ? "Division " + (user.division || "") + " - Entries." :
+                    user.role === "Warehouse Manager" || user.role === "Hub Manager" ? user.role + " " + (user.hub || "") + " - Facility." :
+                    user.role === "Inventory Loader" ? "Inventory " + (user.hub || "") + " - Facility." :
+                    "Welcome.";
+
+    if (["Super Admin", "Admin"].indexOf(user.role) !== -1) {
+        document.getElementById("btnUserManage").style.display = "inline-flex";
+        document.getElementById("btnWarehouse").style.display = "inline-flex";
+        document.getElementById("btnStockIn").style.display = "inline-flex";
+        document.getElementById("btnStockOut").style.display = "inline-flex";
+        document.getElementById("btnDemand").style.display = "inline-flex";
+    } else if (["Regional Office"].indexOf(user.role) !== -1) {
+        document.getElementById("btnStockIn").style.display = "inline-flex";
+        document.getElementById("btnStockOut").style.display = "inline-flex";
+        document.getElementById("btnDemand").style.display = "inline-flex";
+    } else if (["State Office"].indexOf(user.role) !== -1) {
+        document.getElementById("btnStockIn").style.display = "inline-flex";
+        document.getElementById("btnStockOut").style.display = "inline-flex";
+        document.getElementById("btnDemand").style.display = "inline-flex";
+    } else if (["Division Manager"].indexOf(user.role) !== -1) {
+        document.getElementById("btnStockIn").style.display = "inline-flex";
+        document.getElementById("btnStockOut").style.display = "inline-flex";
+        document.getElementById("btnDemand").style.display = "inline-flex";
+    } else if (["Warehouse Manager", "Hub Manager", "Inventory Loader"].indexOf(user.role) !== -1) {
+        document.getElementById("btnStockIn").style.display = "inline-flex";
+        document.getElementById("btnStockOut").style.display = "inline-flex";
+        document.getElementById("btnDemand").style.display = "inline-flex";
+    }
+
+    if (["Super Admin", "Admin", "Regional Office", "State Office", "Warehouse Manager", "Hub Manager", "Inventory Loader"].indexOf(user.role) !== -1) {
+        document.getElementById("btnExportExcel").style.display = "inline-flex";
+    }
+
+    menu.innerHTML = items;
+}
+
+document.getElementById("btnStockIn").addEventListener("click", function(){ if(currentUser) window.location.href = "stock-in.html" });
+document.getElementById("btnStockOut").addEventListener("click", function(){ if(currentUser) window.location.href = "stock-out.html" });
+document.getElementById("btnDemand").addEventListener("click", function(){ if(currentUser) window.location.href = "demand.html" });
+document.getElementById("btnUserManage").addEventListener("click", function(){ if(currentUser) window.location.href = "users.html" });
+document.getElementById("btnWarehouse").addEventListener("click", function(){ if(currentUser) window.location.href = "hubs.html" });
+document.getElementById("btnExportExcel").addEventListener("click", function(){ exportToExcel() });
+
+function exportToExcel() {
+    var table = document.querySelector("#mainTableBody");
+    if (!table || !table.rows.length || table.rows[0].cells.length === 1) {
+        showToast("No data to export", "fa-solid fa-triangle-exclamation");
+        return;
+    }
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.table_to_sheet(document.querySelector("table"));
+    XLSX.utils.book_append_sheet(wb, ws, "Inventory");
+    XLSX.writeFile(wb, "Inventory_" + new Date().toISOString().split("T")[0] + ".xlsx");
+    showToast("Exported to Excel");
+}
+
+async function loadAllData(user) {
+    try {
+        var uS = await db.collection("users").get();
+        var hS = await db.collection("hubs").get();
+        var lS = await db.collection("stock_ledger").get();
+        var dS = await db.collection("demands").get();
+
+        allUsers = [];
+        uS.forEach(function(d){ allUsers.push(Object.assign({id: d.id}, d.data())) });
+        allHubs = [];
+        hS.forEach(function(d){ allHubs.push(Object.assign({id: d.id}, d.data())) });
+        allLedger = [];
+        lS.forEach(function(d){ allLedger.push(Object.assign({id: d.id}, d.data())) });
+        allDemands = [];
+        dS.forEach(function(d){ allDemands.push(Object.assign({id: d.id}, d.data())) });
+
+        var itemSet = new Set();
+        allLedger.forEach(function(l){ if (l.itemName) itemSet.add(l.itemName) });
+        allDemands.forEach(function(d){ if (d.itemName) itemSet.add(d.itemName) });
+        allItems = Array.from(itemSet).sort();
+
+        populateFilterDropdowns(user);
+        applyFiltersAndRender(user);
+    } catch(e) { console.error(e); showToast("Data error", "fa-solid fa-triangle-exclamation"); }
+}
+
+function getScopedData(user) {
+    var fU = [], fL = [], fD = [], hN = [];
+    if (["Super Admin", "Admin"].indexOf(user.role) !== -1) {
+        fU = allUsers; fL = allLedger; fD = allDemands; hN = allHubs.map(function(h){ return h.name });
+    } else if (["Regional Manager", "Regional Office"].indexOf(user.role) !== -1) {
+        var rh = allHubs.filter(function(h){ return h.region === user.region });
+        hN = rh.map(function(h){ return h.name });
+        fU = allUsers.filter(function(u){ return u.region === user.region });
+        fL = allLedger.filter(function(l){ return hN.indexOf(l.hubName) !== -1 || hN.indexOf(l.hub) !== -1 || l.region === user.region });
+        fD = allDemands.filter(function(d){ return d.region === user.region });
+    } else if (["State Manager", "State Office"].indexOf(user.role) !== -1) {
+        var sh = allHubs.filter(function(h){ return h.state === user.state });
+        hN = sh.map(function(h){ return h.name });
+        fU = allUsers.filter(function(u){ return u.state === user.state });
+        fL = allLedger.filter(function(l){ return hN.indexOf(l.hubName) !== -1 || hN.indexOf(l.hub) !== -1 || l.state === user.state });
+        fD = allDemands.filter(function(d){ return d.state === user.state });
+    } else if (user.role === "Division Manager") {
+        var dh = allHubs.filter(function(h){ return h.division === user.division });
+        hN = dh.map(function(h){ return h.name });
+        fU = allUsers.filter(function(u){ return u.division === user.division });
+        fL = allLedger.filter(function(l){ return hN.indexOf(l.hubName) !== -1 || hN.indexOf(l.hub) !== -1 || l.division === user.division });
+        fD = allDemands.filter(function(d){ return d.division === user.division });
+    } else if (user.role === "User") {
+        fU = []; fL = []; fD = []; hN = [];
+    } else {
+        hN = [user.hub || ""];
+        fU = []; fL = allLedger.filter(function(l){ return l.hubName === user.hub || l.hub === user.hub });
+        fD = allDemands.filter(function(d){ return d.hubName === user.hub || d.hub === user.hub });
+    }
+    return { users: fU, ledger: fL, demands: fD, hubs: hN };
+}
+
+function populateFilterDropdowns(user) {
+    var regions = [...new Set(allHubs.map(function(h){ return h.region }).filter(Boolean))].sort();
+    var states = [...new Set(allHubs.map(function(h){ return h.state }).filter(Boolean))].sort();
+    var divisions = [...new Set(allHubs.map(function(h){ return h.division }).filter(Boolean))].sort();
+    var hubs = [...new Set(allHubs.map(function(h){ return h.name }).filter(Boolean))].sort();
+    var usernames = allUsers.map(function(u){ return u.fullName || u.id }).filter(Boolean);
+
+    function pop(id, items) {
+        var s = document.getElementById(id);
+        s.innerHTML = '<option value="">All</option>';
+        for (var i = 0; i < items.length; i++) {
+            var o = document.createElement("option");
+            o.value = items[i];
+            o.textContent = items[i];
+            s.appendChild(o);
+        }
+    }
+    pop("filterItem", allItems);
+    pop("filterRegion", regions);
+    pop("filterState", states);
+    pop("filterDivision", divisions);
+    pop("filterUser", usernames);
+    pop("filterHub", hubs);
+
+    function lock(id, bid, val, label) {
+        var s = document.getElementById(id);
+        var b = document.getElementById(bid);
+        if (val) { s.value = val; s.disabled = true; b.textContent = "Locked: " + label + " = " + val; }
+        else { b.textContent = ""; }
+    }
+    lock("filterRegion", "lockRegion", user.region, "Region");
+    lock("filterState", "lockState", user.state, "State");
+    lock("filterDivision", "lockDivision", user.division, "Division");
+    lock("filterHub", "lockHub", user.hub, "Hub");
+}
+
+document.getElementById("filterApply").addEventListener("click", function() {
+    filterApplied = true;
+    applyFiltersAndRender(currentUser);
+    closeFilter();
+    showToast("Filter applied");
+});
+document.getElementById("filterReset").addEventListener("click", function() {
+    var selects = document.querySelectorAll("#filterPanel select");
+    for (var i = 0; i < selects.length; i++) {
+        if (!selects[i].disabled) selects[i].value = "";
+    }
+    document.getElementById("filterDate").value = "";
+    filterApplied = false;
+    applyFiltersAndRender(currentUser);
+    closeFilter();
+    showToast("Filter reset");
+});
+
+function applyFiltersAndRender(user) {
+    var scoped = getScopedData(user);
+    var data = scoped.ledger;
+    var demands = scoped.demands;
+
+    var f = {
+        date: document.getElementById("filterDate").value,
+        item: document.getElementById("filterItem").value,
+        region: document.getElementById("filterRegion").value,
+        state: document.getElementById("filterState").value,
+        division: document.getElementById("filterDivision").value,
+        user: document.getElementById("filterUser").value,
+        hub: document.getElementById("filterHub").value
+    };
+
+    if (filterApplied) {
+        if (f.date) data = data.filter(function(d){ return d.date && d.date === f.date });
+        if (f.item) data = data.filter(function(d){ return d.itemName === f.item });
+        if (f.region) data = data.filter(function(d){ return d.region === f.region });
+        if (f.state) data = data.filter(function(d){ return d.state === f.state });
+        if (f.division) data = data.filter(function(d){ return d.division === f.division });
+        if (f.user) data = data.filter(function(d){ return d.userName === f.user || d.createdBy === f.user });
+        if (f.hub) data = data.filter(function(d){ return d.hubName === f.hub || d.hub === f.hub });
+
+        var fb = document.getElementById("filterBadges");
+        fb.innerHTML = "";
+        var keys = Object.keys(f);
+        for (var i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            var v = f[k];
+            if (v) {
+                var b = document.createElement("span");
+                b.className = "filter-badge active";
+                b.innerHTML = v + ' <i class="fa-solid fa-xmark"></i>';
+                (function(kk) {
+                    b.querySelector("i").addEventListener("click", function() {
+                        var selId = "filter" + kk.charAt(0).toUpperCase() + kk.slice(1);
+                        var s = document.getElementById(selId);
+                        if (s && !s.disabled) s.value = "";
+                        applyFiltersAndRender(currentUser);
+                    });
+                })(k);
+                fb.appendChild(b);
+            }
+        }
+    } else {
+        document.getElementById("filterBadges").innerHTML = "";
+    }
+
+    var today = new Date().toISOString().split("T")[0];
+    var td = data.filter(function(d){ return d.date === today });
+    var pd = demands.filter(function(d){ return !d.status || d.status === "Pending Allocation" || d.status === "Pending" });
+    var ti = 0, to = 0, totIn = 0, totOut = 0;
+
+    for (var i = 0; i < td.length; i++) {
+        var q = parseInt(td[i].quantity) || 0;
+        if ((td[i].type || "IN").toUpperCase() === "IN") ti += q;
+        else to += q;
+    }
+    for (var i = 0; i < data.length; i++) {
+        var q = parseInt(data[i].quantity) || 0;
+        if ((data[i].type || "IN").toUpperCase() === "IN") totIn += q;
+        else totOut += q;
+    }
+    var rem = totIn - totOut;
+
+    document.getElementById("countPendingDemands").innerText = pd.length;
+    document.getElementById("countTodayIn").innerText = ti.toLocaleString();
+    document.getElementById("countTodayOut").innerText = to.toLocaleString();
+
+    // Aggregate by region|state|division|item
+    var map = new Map();
+    for (var i = 0; i < data.length; i++) {
+        var d = data[i];
+        var r = d.region || "-", s = d.state || "-", dv = d.division || "-", it = d.itemName || "Unknown";
+        var key = r + "|" + s + "|" + dv + "|" + it;
+        var q = parseInt(d.quantity) || 0;
+        var t = (d.type || "IN").toUpperCase();
+        if (!map.has(key)) map.set(key, { region: r, state: s, division: dv, item: it, inQty: 0, outQty: 0 });
+        var e = map.get(key);
+        if (t === "IN") e.inQty += q;
+        else e.outQty += q;
+    }
+
+    var agg = Array.from(map.values()).sort(function(a, b){ return a.item.localeCompare(b.item) });
+    var tb = document.getElementById("mainTableBody");
+    tb.innerHTML = "";
+
+    if (!agg.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-database"></i><p>No data found.</p></div></td></tr>';
+    } else {
+        for (var i = 0; i < agg.length; i++) {
+            var r = agg[i];
+            var rm = r.inQty - r.outQty;
+            tb.innerHTML += "<tr><td>" + esc(r.region) + "</td><td>" + esc(r.state) + "</td><td>" + esc(r.division) + '</td><td><strong>' + esc(r.item) + '</strong></td><td style="font-weight:600;color:#059669">' + Number(r.inQty).toLocaleString() + '</td><td style="font-weight:600;color:#e11d48">' + Number(r.outQty).toLocaleString() + '</td><td class="' + (rm > 0 ? "remaining-positive" : "remaining-zero") + '">' + Number(rm).toLocaleString() + "</td></tr>";
+        }
+    }
+    document.getElementById("tableRowCount").innerText = agg.length + " entries";
+}
+
+function esc(s) {
+    if (!s) return "-";
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+document.getElementById("logoutBtn").addEventListener("click", function() {
+    localStorage.removeItem("userSession");
+    showToast("Logging out...");
+    setTimeout(function(){ window.location.href = "login.html" }, 800);
+});
+</script>
+</body>
+</html>
