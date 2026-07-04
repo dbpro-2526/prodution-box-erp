@@ -628,7 +628,14 @@ document.getElementById('userAvatar').textContent = getInitials(user.fullName);
 document.getElementById('adminName').innerText = user.fullName || 'User';
 document.getElementById('userRoleBadge').innerText = user.role || '-';
 setupSidebar(user);
-} catch(e) 
+debugLog('Loading data...');
+await loadMasterData();
+await loadUsers();
+debugLog('Initialization complete');
+} catch(e) {
+console.error('FATAL ERROR in initialization:', e);
+debugLog('FATAL ERROR: ' + e.message);
+showToast('Error loading page: ' + e.message, 'fa-solid fa-triangle-exclamation');
 }
 });
 </script>
