@@ -292,7 +292,7 @@ function setupUI(user) {
         items += mi("fa-solid fa-arrow-down-long", "Stock IN", "stock-in.html");
         items += mi("fa-solid fa-arrow-up-long", "Stock OUT", "stock-out.html");
         items += mi("fa-solid fa-file-signature", "Demand", "demand.html");
-    } else if (["Regional Office", "State Office", "Warehouse Manager", "Hub Manager", "Inventory Loader", "Division Manager"].indexOf(user.role) !== -1) {
+    } else if (["Regional Manager", "Regional Office", "State Manager", "State Office", "Warehouse Manager", "Hub Manager", "Inventory Loader", "Division Manager"].indexOf(user.role) !== -1) {
         items += mi("fa-solid fa-arrow-down-long", "Stock IN", "stock-in.html");
         items += mi("fa-solid fa-arrow-up-long", "Stock OUT", "stock-out.html");
         items += mi("fa-solid fa-file-signature", "Demand", "demand.html");
@@ -305,8 +305,8 @@ function setupUI(user) {
                     user.role === "State Manager" ? "State Inspector " + (user.state || "") + " - View Only." :
                     user.role === "State Office" ? "State Logistics " + (user.state || "") + " - Entries." :
                     user.role === "Division Manager" ? "Division " + (user.division || "") + " - Entries." :
-                    user.role === "Warehouse Manager" || user.role === "Hub Manager" ? user.role + " " + (user.hub || "") + " - Facility." :
-                    user.role === "Inventory Loader" ? "Inventory " + (user.hub || "") + " - Facility." :
+                    user.role === "Warehouse Manager" || user.role === "Hub Manager" ? user.role + " " + (user.hub || user.warehouse || "") + " - Facility." :
+                    user.role === "Inventory Loader" ? "Inventory " + (user.hub || user.warehouse || "") + " - Facility." :
                     "Welcome.";
 
     if (["Super Admin", "Admin"].indexOf(user.role) !== -1) {
@@ -315,15 +315,7 @@ function setupUI(user) {
         document.getElementById("btnStockIn").style.display = "inline-flex";
         document.getElementById("btnStockOut").style.display = "inline-flex";
         document.getElementById("btnDemand").style.display = "inline-flex";
-    } else if (["Regional Office"].indexOf(user.role) !== -1) {
-        document.getElementById("btnStockIn").style.display = "inline-flex";
-        document.getElementById("btnStockOut").style.display = "inline-flex";
-        document.getElementById("btnDemand").style.display = "inline-flex";
-    } else if (["State Office"].indexOf(user.role) !== -1) {
-        document.getElementById("btnStockIn").style.display = "inline-flex";
-        document.getElementById("btnStockOut").style.display = "inline-flex";
-        document.getElementById("btnDemand").style.display = "inline-flex";
-    } else if (["Division Manager"].indexOf(user.role) !== -1) {
+    } else if (["Regional Manager", "Regional Office", "State Manager", "State Office", "Division Manager"].indexOf(user.role) !== -1) {
         document.getElementById("btnStockIn").style.display = "inline-flex";
         document.getElementById("btnStockOut").style.display = "inline-flex";
         document.getElementById("btnDemand").style.display = "inline-flex";
@@ -333,7 +325,7 @@ function setupUI(user) {
         document.getElementById("btnDemand").style.display = "inline-flex";
     }
 
-    if (["Super Admin", "Admin", "Regional Office", "State Office", "Warehouse Manager", "Hub Manager", "Inventory Loader"].indexOf(user.role) !== -1) {
+    if (["Super Admin", "Admin", "Regional Manager", "Regional Office", "State Manager", "State Office", "Warehouse Manager", "Hub Manager", "Inventory Loader"].indexOf(user.role) !== -1) {
         document.getElementById("btnExportExcel").style.display = "inline-flex";
     }
 
@@ -420,9 +412,10 @@ function getScopedData(user) {
     } else if (user.role === "User") {
         fU = []; fL = []; fD = []; hN = [];
     } else {
-        hN = [user.hub || ""];
-        fU = []; fL = allLedger.filter(function(l){ return l.hubName === user.hub || l.hub === user.hub });
-        fD = allDemands.filter(function(d){ return d.hubName === user.hub || d.hub === user.hub });
+        var hub = user.hub || user.warehouse || "";
+        hN = [hub];
+        fU = []; fL = allLedger.filter(function(l){ return l.hubName === hub || l.hub === hub });
+        fD = allDemands.filter(function(d){ return d.hubName === hub || d.hub === hub });
     }
     return { users: fU, ledger: fL, demands: fD, hubs: hN };
 }
@@ -547,7 +540,7 @@ function populateFilterDropdowns(user) {
     msPopulate("msState", allStates, (["Super Admin","Admin"].indexOf(user.role)===-1 && user.state) ? user.state : null);
     msPopulate("msDivision", allDivisions, (["Super Admin","Admin"].indexOf(user.role)===-1 && user.division) ? user.division : null);
     msPopulate("msUser", allUsernames, null);
-    msPopulate("msHub", allHubNames, (["Super Admin","Admin"].indexOf(user.role)===-1 && user.hub) ? user.hub : null);
+    msPopulate("msHub", allHubNames, (["Super Admin","Admin"].indexOf(user.role)===-1 && (user.hub || user.warehouse)) ? (user.hub || user.warehouse) : null);
 }
 
 document.getElementById("filterApply").addEventListener("click", function() {
