@@ -1,188 +1,158 @@
+$ @"
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donation Box</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ko or Jayad Pfeosna sma ka Sam Desbord</title>
     <link rel="icon" href="dblogo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        :root { --primary-color: #0F4C81; --accent-color: #2563EB; --bg-light: #f4f7fe; --sidebar-width: 260px; --text-dark: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0; }
-        body { background-color: var(--bg-light); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
-        .sidebar { width: var(--sidebar-width); background: #fff; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100; }
-        .sidebar-brand { padding: 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); }
-        .sidebar-brand img { width: 40px; height: 40px; border-radius: 8px; }
-        .sidebar-brand h2 { font-size: 15px; font-weight: 700; color: var(--primary-color); line-height: 1.2; }
-        .sidebar-menu { padding: 20px 15px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
-        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: var(--text-muted); text-decoration: none; border-radius: 10px; font-weight: 500; font-size: 14px; transition: all 0.2s ease; }
-        .menu-item:hover, .menu-item.active { background: #eff6ff; color: var(--accent-color); }
-        .sidebar-footer { padding: 20px 15px; border-top: 1px solid var(--border-color); }
-        .btn-logout { width: 100%; padding: 12px; background: #fee2e2; color: #ef4444; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
-        .btn-logout:hover { background: #fca5a5; }
-        .main-content { margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width)); padding: 40px; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .user-profile { display: flex; align-items: center; gap: 12px; background: #fff; padding: 8px 16px; border-radius: 30px; border: 1px solid var(--border-color); }
-        .user-profile i { font-size: 20px; color: var(--primary-color); }
-        .action-control-panel { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .stat-card { background: #fff; padding: 22px; border-radius: 16px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
-        .stat-info h3 { font-size: 26px; font-weight: 700; color: var(--primary-color); }
-        .stat-info p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
-        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .icon-blue { background: #e0f2fe; color: #0284c7; }
-        .icon-green { background: #dcfce7; color: #16a34a; }
-        .icon-purple { background: #f3e8ff; color: #9333ea; }
+        :root { --primary: #0F4C81; --accent: #2563EB; --bg: #f0f4f9; --sidebar-bg: #0F4C81; --text-dark: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --card-shadow: 0 2px 12px rgba(0,0,0,0.06); --sidebar-w: 260px; --radius: 14px; --radius-sm: 10px; --transition: 0.3s ease; }
+        body { background: var(--bg); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
+        .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 1000; transition: transform var(--transition); }
+        .sidebar-brand { padding: 20px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-brand img { width: 38px; height: 38px; border-radius: 8px; }
+        .sidebar-brand h2 { font-size: 14px; font-weight: 600; color: #fff; line-height: 1.3; }
+        .sidebar-menu { padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1; overflow-y: auto; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; color: rgba(255,255,255,0.7); text-decoration: none; border-radius: var(--radius-sm); font-weight: 500; font-size: 13px; transition: all var(--transition); }
+        .menu-item i { width: 18px; text-align: center; font-size: 15px; }
+        .menu-item:hover { background: rgba(255,255,255,0.12); color: #fff; }
+        .menu-item.active { background: rgba(255,255,255,0.18); color: #fff; font-weight: 600; }
+        .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .btn-logout { width: 100%; padding: 11px; background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; }
+        .btn-logout:hover { background: rgba(239,68,68,0.35); color: #fff; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; transition: opacity var(--transition); }
+        .sidebar-overlay.show { opacity: 1; }
+        .hamburger { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001; width: 40px; height: 40px; border-radius: 10px; background: var(--sidebar-bg); color: #fff; border: none; font-size: 18px; cursor: pointer; align-items: center; justify-content: center; }
+        .main-content { margin-left: var(--sidebar-w); width: calc(100% - var(--sidebar-w)); padding: 30px; min-height: 100vh; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+        .header-left h1 { font-size: 22px; font-weight: 700; color: var(--primary); }
+        .header-left p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+        .user-profile { display: flex; align-items: center; gap: 10px; background: #fff; padding: 7px 18px 7px 12px; border-radius: 30px; border: 1px solid var(--border); box-shadow: var(--card-shadow); white-space: nowrap; }
+        .user-profile .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0; }
+        .action-panel { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+        .action-panel button { padding: 9px 18px; border-radius: var(--radius-sm); font-weight: 500; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; border: none; }
+        .btn-primary-action { background: var(--accent); color: #fff; }
+        .btn-secondary-action { background: #fff; color: var(--text-dark); border: 1px solid var(--border); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin-bottom: 28px; }
+        .stat-card { background: #fff; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--card-shadow); display: flex; align-items: center; justify-content: space-between; }
+        .stat-info h3 { font-size: 24px; font-weight: 700; color: var(--primary); }
+        .stat-info p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .icon-blue { background: #dbeafe; color: #2563eb; }
+        .icon-green { background: #d1fae5; color: #059669; }
         .icon-amber { background: #fef3c7; color: #d97706; }
-        .icon-emerald { background: #ecfdf5; color: #059669; }
-        .icon-rose { background: #fff1f2; color: #e11d48; }
-        .dashboard-section { background: #fff; padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 30px; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn-add { background: var(--accent-color); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .btn-secondary-action { background: #e2e8f0; color: var(--text-dark); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f8fafc; padding: 14px 16px; color: var(--text-muted); font-weight: 600; font-size: 13px; border-bottom: 2px solid var(--border-color); }
-        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-        .badge-in { background: #dcfce7; color: #16a34a; }
+        .icon-emerald { background: #d1fae5; color: #059669; }
+        .icon-rose { background: #ffe4e6; color: #e11d48; }
+        .dash-section { background: #fff; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--card-shadow); margin-bottom: 24px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .section-header h2 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .section-header h2 i { color: var(--accent); }
+        .btn-sm { padding: 7px 16px; font-size: 12px; border-radius: 8px; cursor: pointer; border: none; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .btn-sm-primary { background: var(--accent); color: #fff; }
+        .table-wrap { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: #f8fafc; padding: 12px 14px; color: var(--text-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+        tr:last-child td { border-bottom: none; }
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+        .badge-in { background: #d1fae5; color: #059669; }
         .badge-out { background: #ffe4e6; color: #e11d48; }
         .badge-demand { background: #fef3c7; color: #b45309; }
-        .badge-admin { background: #eff6ff; color: #2563EB; }
-        .actions-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 4px; }
-        .actions-btn:hover { color: var(--accent-color); }
-        .inline-action-btn { background: var(--accent-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 5px; }
-        .user-click-link { color: var(--accent-color); text-decoration: none; font-weight: 600; }
-        .user-click-link:hover { text-decoration: underline; }
+        .badge-admin { background: #dbeafe; color: #2563eb; }
+        .badge-active { background: #d1fae5; color: #059669; }
+        .text-link { color: var(--accent); text-decoration: none; font-weight: 500; }
+        .text-link:hover { text-decoration: underline; }
+        .action-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 15px; padding: 4px 6px; border-radius: 6px; }
+        .action-btn:hover { background: #f1f5f9; color: var(--accent); }
+        .inline-btn { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; border: none; }
+        .inline-btn-primary { background: var(--accent); color: #fff; }
+        .inline-btn-ghost { background: #f1f5f9; color: var(--text-dark); }
+        .empty-state { text-align: center; padding: 30px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 32px; margin-bottom: 10px; opacity: 0.4; }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--primary); color: #fff; padding: 14px 24px; border-radius: var(--radius-sm); box-shadow: 0 6px 24px rgba(0,0,0,0.15); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; z-index: 2000; transform: translateY(80px); opacity: 0; transition: var(--transition); max-width: 360px; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .hamburger { display: flex; }
+            .sidebar-overlay { display: block; }
+            .main-content { margin-left: 0; width: 100%; padding: 70px 16px 20px; }
+            .header-top { flex-direction: column; align-items: flex-start; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+            .stat-card { padding: 14px; }
+            .stat-info h3 { font-size: 20px; }
+            .dash-section { padding: 16px; }
+            table { min-width: 500px; }
+            .toast { left: 16px; right: 16px; bottom: 16px; max-width: none; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .action-panel { flex-direction: column; }
+            .action-panel button { width: 100%; justify-content: center; }
+        }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <img src="dblogo.png" alt="Logo">
-            <h2>Donation Box ERP Desbord</h2>
+            <h2>Ko or Jayad Pfeosna sma ka Sam Desbord</h2>
         </div>
-        <div class="sidebar-menu" id="dynamicSidebarMenu"></div>
+        <div class="sidebar-menu" id="dynamicSidebarMenu"><div class="menu-item active"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
         <div class="sidebar-footer">
             <button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout System</button>
         </div>
     </div>
-
     <div class="main-content">
         <div class="header-top">
-            <div>
-                <h1 id="dashboardTitle" style="font-size: 24px; font-weight: 700;">Loading Control Hub...</h1>
-                <p id="dashboardSubtitle" style="color: var(--text-muted); font-size: 14px;">Please wait while configurations sync...</p>
+            <div class="header-left">
+                <h1 id="dashboardTitle">Loading Control Hub...</h1>
+                <p id="dashboardSubtitle">Please wait while configurations sync...</p>
             </div>
             <div class="user-profile">
-                <i class="fa-solid fa-circle-user"></i>
-                <span id="adminName" style="font-weight: 600; font-size: 14px;">Loading...</span>
+                <div class="avatar" id="userAvatar">U</div>
+                <span id="adminName">Loading...</span>
             </div>
         </div>
-
-        <div class="action-control-panel" id="operatorActionPanel">
-            <button class="btn-add" id="btnActionDemand" style="display:none;"><i class="fa-solid fa-file-signature"></i> Create New Demand</button>
-            <button class="btn-secondary-action" id="btnActionStockIn" style="display:none;"><i class="fa-solid fa-square-plus"></i> Log Stock IN</button>
-            <button class="btn-secondary-action" id="btnActionStockOut" style="display:none;"><i class="fa-solid fa-square-minus"></i> Log Stock OUT</button>
+        <div class="action-panel" id="operatorActionPanel">
+            <button class="btn-primary-action" id="btnActionDemand" style="display:none;"><i class="fa-solid fa-file-signature"></i> Create Demand</button>
+            <button class="btn-secondary-action" id="btnActionStockIn" style="display:none;"><i class="fa-solid fa-square-plus"></i> Stock IN</button>
+            <button class="btn-secondary-action" id="btnActionStockOut" style="display:none;"><i class="fa-solid fa-square-minus"></i> Stock OUT</button>
         </div>
-
         <div class="stats-grid" id="statsGridContainer">
-            <div class="stat-card" id="cardUsers">
-                <div class="stat-info"><h3 id="countUsers">0</h3><p>Total Scope Users</p></div>
-                <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
-            </div>
-            <div class="stat-card" id="cardHubs">
-                <div class="stat-info"><h3 id="countHubs">0</h3><p>Monitored Hub Nodes</p></div>
-                <div class="stat-icon icon-green"><i class="fa-solid fa-warehouse"></i></div>
-            </div>
-            <div class="stat-card" id="cardDemands">
-                <div class="stat-info"><h3 id="countDemands">0</h3><p>Active Demands Pipeline</p></div>
-                <div class="stat-icon icon-amber"><i class="fa-solid fa-file-pull-request"></i></div>
-            </div>
-            <div class="stat-card" id="cardStockIn">
-                <div class="stat-info"><h3 id="countStockIn">0</h3><p>Total Stock IN Ledger</p></div>
-                <div class="stat-icon icon-emerald"><i class="fa-solid fa-arrow-down-long"></i></div>
-            </div>
-            <div class="stat-card" id="cardStockOut">
-                <div class="stat-info"><h3 id="countStockOut">0</h3><p>Total Stock OUT Ledger</p></div>
-                <div class="stat-icon icon-rose"><i class="fa-solid fa-arrow-up-long"></i></div>
-            </div>
+            <div class="stat-card"><div class="stat-info"><h3 id="countUsers">0</h3><p>Total Users</p></div><div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div></div>
+            <div class="stat-card"><div class="stat-info"><h3 id="countHubs">0</h3><p>Hub Nodes</p></div><div class="stat-icon icon-green"><i class="fa-solid fa-warehouse"></i></div></div>
+            <div class="stat-card"><div class="stat-info"><h3 id="countDemands">0</h3><p>Active Demands</p></div><div class="stat-icon icon-amber"><i class="fa-solid fa-file-pull-request"></i></div></div>
+            <div class="stat-card"><div class="stat-info"><h3 id="countStockIn">0</h3><p>Stock IN</p></div><div class="stat-icon icon-emerald"><i class="fa-solid fa-arrow-down-long"></i></div></div>
+            <div class="stat-card"><div class="stat-info"><h3 id="countStockOut">0</h3><p>Stock OUT</p></div><div class="stat-icon icon-rose"><i class="fa-solid fa-arrow-up-long"></i></div></div>
         </div>
-
-        <div class="dashboard-section" id="accountsOverviewSection">
+        <div class="dash-section" id="accountsOverviewSection">
             <div class="section-header">
-                <h2 style="font-size: 18px; font-weight: 600;">System Administrative Overview</h2>
-                <button class="btn-add" id="configureEntityBtn" style="display:none;" onclick="window.location.href='users.html'"><i class="fa-solid fa-plus"></i> Configure New Entity</button>
+                <h2><i class="fa-solid fa-users"></i> System Administrative Overview</h2>
+                <button class="btn-sm btn-sm-primary" id="configureEntityBtn" style="display:none;" onclick="window.location.href='users.html'"><i class="fa-solid fa-plus"></i> New Entity</button>
             </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name / Description</th>
-                            <th>Role / Scope</th>
-                            <th>Status</th>
-                            <th>Hierarchy Zone Links</th>
-                            <th>Action Controls</th>
-                        </tr>
-                    </thead>
-                    <tbody id="overviewTableBody">
-                        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Syncing users scope registry...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Status</th><th>Zone</th><th>Actions</th></tr></thead><tbody id="overviewTableBody"><tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Syncing users...</p></div></td></tr></tbody></table></div>
         </div>
-
-        <div class="dashboard-section" id="demandsLedgerSection">
-            <div class="section-header">
-                <h2 style="font-size: 18px; font-weight: 600;"><i class="fa-solid fa-file-contract"></i> Active Material & Box Demands Ledger</h2>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Demand Ref ID</th>
-                            <th>Requesting Entity / Zone</th>
-                            <th>Required Items Summary</th>
-                            <th>Quantity</th>
-                            <th>Current Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="demandLedgerTableBody">
-                        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Fetching scoped demand flows...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="dash-section" id="demandsLedgerSection">
+            <div class="section-header"><h2><i class="fa-solid fa-file-contract"></i> Active Demands Ledger</h2></div>
+            <div class="table-wrap"><table><thead><tr><th>Ref ID</th><th>Requesting Entity</th><th>Item</th><th>Qty</th><th>Status</th></tr></thead><tbody id="demandLedgerTableBody"><tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Fetching demands...</p></div></td></tr></tbody></table></div>
         </div>
-
-        <div class="dashboard-section" id="stockLedgerSection">
-            <div class="section-header">
-                <h2 style="font-size: 18px; font-weight: 600;"><i class="fa-solid fa-right-left"></i> Live Stock In / Out Ledger Logs</h2>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Item Details</th>
-                            <th>Transaction Type</th>
-                            <th>Quantity</th>
-                            <th>Warehouse Hub</th>
-                            <th>Date & Time</th>
-                        </tr>
-                    </thead>
-                    <tbody id="stockLedgerTableBody">
-                        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Fetching scoped transactions...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="dash-section" id="stockLedgerSection">
+            <div class="section-header"><h2><i class="fa-solid fa-right-left"></i> Stock In/Out Ledger</h2></div>
+            <div class="table-wrap"><table><thead><tr><th>Item</th><th>Type</th><th>Qty</th><th>Hub</th><th>Date</th></tr></thead><tbody id="stockLedgerTableBody"><tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Fetching transactions...</p></div></td></tr></tbody></table></div>
         </div>
     </div>
-
+    <div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastMsg">Action completed</span></div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
         const firebaseConfig = {
             apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
             authDomain: "prodution-box-erp.firebaseapp.com",
@@ -192,212 +162,121 @@
             appId: "1:426698063494:web:880dd323f24bd4121ddb07",
             measurementId: "G-948852RZLB"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
+        function showToast(msg, icon) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            t.querySelector('i').className = icon || "fa-solid fa-check-circle";
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+        function getInitials(n) { return n ? n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) : 'U'; }
+        document.getElementById('hamburgerBtn').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        });
+        document.getElementById('sidebarOverlay').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+        });
         window.addEventListener('DOMContentLoaded', () => {
-            const activeUser = JSON.parse(localStorage.getItem('userSession'));
-            if (!activeUser || !activeUser.role) {
-                alert("Unauthorized Entry! Active Session Invalid. Redirecting...");
-                window.location.href = "login.html";
-                return;
-            }
-            document.getElementById("adminName").innerText = activeUser.fullName || "User Panel";
-            setupDashboardStructure(activeUser);
-            fetchScopedDataMetrics(activeUser);
+            const u = JSON.parse(localStorage.getItem('userSession'));
+            if (!u || !u.role) { showToast("Session invalid! Redirecting..."); setTimeout(()=>window.location.href="login.html",1200); return; }
+            document.getElementById('userAvatar').textContent = getInitials(u.fullName);
+            document.getElementById('adminName').innerText = u.fullName || "User";
+            setupDashboard(u);
+            fetchData(u);
         });
-
-        function setupDashboardStructure(user) {
-            const menuContainer = document.getElementById('dynamicSidebarMenu');
-            const titleEl = document.getElementById('dashboardTitle');
-            const subEl = document.getElementById('dashboardSubtitle');
+        function setupDashboard(user) {
+            const menu = document.getElementById('dynamicSidebarMenu');
+            const title = document.getElementById('dashboardTitle');
+            const sub = document.getElementById('dashboardSubtitle');
             const confBtn = document.getElementById('configureEntityBtn');
-            const btnDemand = document.getElementById('btnActionDemand');
-            const btnIn = document.getElementById('btnActionStockIn');
-            const btnOut = document.getElementById('btnActionStockOut');
-
+            const bD = document.getElementById('btnActionDemand');
+            const bI = document.getElementById('btnActionStockIn');
+            const bO = document.getElementById('btnActionStockOut');
             if (user.role === "User") {
-                titleEl.innerText = "User Personal Hub";
-                subEl.innerText = "Welcome to your synchronized personal terminal dashboard.";
-                menuContainer.innerHTML = '<a href="#" class="menu-item active"><i class="fa-solid fa-layer-group"></i> Pan Wxces</a>';
-                document.getElementById('operatorActionPanel').style.display = "none";
-                document.getElementById('statsGridContainer').style.display = "none";
-                document.getElementById('accountsOverviewSection').style.display = "none";
-                document.getElementById('demandsLedgerSection').style.display = "none";
-                document.getElementById('stockLedgerSection').style.display = "none";
+                title.innerText = "User Personal Hub"; sub.innerText = "Welcome to your personal terminal dashboard.";
+                menu.innerHTML = '<a href="#" class="menu-item active"><i class="fa-solid fa-layer-group"></i> Pan Wxces</a>';
+                document.getElementById('operatorActionPanel').style.display="none";
+                document.getElementById('statsGridContainer').style.display="none";
+                document.getElementById('accountsOverviewSection').style.display="none";
+                document.getElementById('demandsLedgerSection').style.display="none";
+                document.getElementById('stockLedgerSection').style.display="none";
                 return;
             }
-
-            let genericMenus = '<a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>';
-
-            if (user.role === "Super Admin" || user.role === "Admin") {
-                titleEl.innerText = `${user.role} Global Console`;
-                subEl.innerText = "Full continuous read/write governance across all global nodes & logistics.";
-                if(confBtn) confBtn.style.display = "block";
-                btnDemand.style.display = "inline-flex"; btnIn.style.display = "inline-flex"; btnOut.style.display = "inline-flex";
-                menuContainer.innerHTML = genericMenus + `
-                    <a href="users.html" class="menu-item"><i class="fa-solid fa-users"></i> Global User Master</a>
-                    <a href="hubs.html" class="menu-item"><i class="fa-solid fa-warehouse"></i> Strategic Node Master</a>
-                    <a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> Master SKU Catalogs</a>
-                    <a href="#" class="menu-item"><i class="fa-solid fa-file-invoice-dollar"></i> Global Audit Trails</a>`;
-            } else if (user.role === "Regional Manager") {
-                titleEl.innerText = `Regional Supervisor Hub (${user.region || 'Assigned Region'})`;
-                subEl.innerText = `Holistic View-Only Monitoring across States and Divisions under Region: ${user.region || 'All'}`;
-                menuContainer.innerHTML = genericMenus + `
-                    <a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Regional Infrastructure</a>
-                    <a href="#" class="menu-item"><i class="fa-solid fa-file-waveform"></i> Region Telemetry View</a>`;
-            } else if (user.role === "Regional Office") {
-                titleEl.innerText = `Regional Operations Desk (${user.region || 'Assigned Region'})`;
-                subEl.innerText = `Authorized for user adjustments & execution pipeline entries under Region: ${user.region || 'All'}`;
-                btnDemand.style.display = "inline-flex"; btnIn.style.display = "inline-flex"; btnOut.style.display = "inline-flex";
-                menuContainer.innerHTML = genericMenus + `
-                    <a href="#" class="menu-item"><i class="fa-solid fa-users-gear"></i> Regional Staff Mapping</a>
-                    <a href="#" class="menu-item"><i class="fa-solid fa-right-left"></i> Region Tx Entries</a>`;
-            } else if (user.role === "State Manager") {
-                titleEl.innerText = `State Inspector Command (${user.state || 'Assigned State'})`;
-                subEl.innerText = `Displaying telemetry grids across all divisions inside State: ${user.state || 'All'}`;
-                menuContainer.innerHTML = genericMenus + `
-                    <a href="#" class="menu-item"><i class="fa-solid fa-truck-ramp-box"></i> State Allocation Ledgers</a>`;
-            } else if (user.role === "State Office") {
-                titleEl.innerText = `State Logistics Counter (${user.state || 'Assigned State'})`;
-                subEl.innerText = `Data execution pipelines enabled for State Territory: ${user.state || 'All'}`;
-                btnDemand.style.display = "inline-flex"; btnIn.style.display = "inline-flex"; btnOut.style.display = "inline-flex";
-                menuContainer.innerHTML = genericMenus + `
-                    <a href="#" class="menu-item"><i class="fa-solid fa-right-left"></i> State Tx Inputs</a>`;
-            } else if (user.role === "Division Manager") {
-                titleEl.innerText = `Division Command Matrix (${user.division || 'Assigned Division'})`;
-                subEl.innerText = `Monitoring streams linked directly to local division segment: ${user.division || 'All'}`;
-                btnDemand.style.display = "inline-flex";
-                menuContainer.innerHTML = genericMenus + `
-                    <a href="#" class="menu-item"><i class="fa-solid fa-rectangle-list"></i> Division Taskbooks</a>`;
-            } else if (user.role === "Warehouse Manager" || user.role === "Hub Manager" || user.role === "Inventory Loader") {
-                titleEl.innerText = `${user.role} Vault Console`;
-                subEl.innerText = `Facility Link Node: ${user.hub || 'Local Node Station'}`;
-                btnDemand.style.display = "inline-flex"; btnIn.style.display = "inline-flex"; btnOut.style.display = "inline-flex";
-                document.getElementById('accountsOverviewSection').style.display = "none";
-                document.getElementById('cardUsers').style.display = "none";
-                menuContainer.innerHTML = genericMenus + `
-                    <a href="#" class="menu-item"><i class="fa-solid fa-boxes-packing"></i> Local Hub Inventory</a>`;
+            const dash = '<a href="#" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>';
+            if (["Super Admin","Admin"].includes(user.role)) {
+                title.innerText = user.role+" Global Console"; sub.innerText = "Full read/write governance across all nodes.";
+                if(confBtn) confBtn.style.display="inline-flex";
+                bD.style.display="inline-flex"; bI.style.display="inline-flex"; bO.style.display="inline-flex";
+                menu.innerHTML = dash+'<a href="users.html" class="menu-item"><i class="fa-solid fa-users"></i> User Master</a><a href="hubs.html" class="menu-item"><i class="fa-solid fa-warehouse"></i> Node Master</a><a href="#" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> SKU Catalog</a><a href="#" class="menu-item"><i class="fa-solid fa-file-invoice-dollar"></i> Audit Trails</a>';
+            } else if (user.role==="Regional Manager") {
+                title.innerText = "Regional Supervisor ("+(user.region||'Region')+")"; sub.innerText = "View-Only monitoring — Region: "+(user.region||'All');
+                menu.innerHTML = dash+'<a href="#" class="menu-item"><i class="fa-solid fa-warehouse"></i> Infrastructure</a><a href="#" class="menu-item"><i class="fa-solid fa-file-waveform"></i> Telemetry</a>';
+            } else if (user.role==="Regional Office") {
+                title.innerText = "Regional Ops Desk ("+(user.region||'Region')+")"; sub.innerText = "User adjustments & entries — Region: "+(user.region||'All');
+                bD.style.display="inline-flex"; bI.style.display="inline-flex"; bO.style.display="inline-flex";
+                menu.innerHTML = dash+'<a href="#" class="menu-item"><i class="fa-solid fa-users-gear"></i> Staff Mapping</a><a href="#" class="menu-item"><i class="fa-solid fa-right-left"></i> Tx Entries</a>';
+            } else if (user.role==="State Manager") {
+                title.innerText = "State Inspector ("+(user.state||'State')+")"; sub.innerText = "Telemetry across divisions — State: "+(user.state||'All');
+                menu.innerHTML = dash+'<a href="#" class="menu-item"><i class="fa-solid fa-truck-ramp-box"></i> Allocation Ledgers</a>';
+            } else if (user.role==="State Office") {
+                title.innerText = "State Logistics ("+(user.state||'State')+")"; sub.innerText = "Execution pipelines — State: "+(user.state||'All');
+                bD.style.display="inline-flex"; bI.style.display="inline-flex"; bO.style.display="inline-flex";
+                menu.innerHTML = dash+'<a href="#" class="menu-item"><i class="fa-solid fa-right-left"></i> Tx Inputs</a>';
+            } else if (user.role==="Division Manager") {
+                title.innerText = "Division Command ("+(user.division||'Division')+")"; sub.innerText = "Local monitoring: "+(user.division||'All');
+                bD.style.display="inline-flex";
+                menu.innerHTML = dash+'<a href="#" class="menu-item"><i class="fa-solid fa-rectangle-list"></i> Taskbooks</a>';
+            } else if (["Warehouse Manager","Hub Manager","Inventory Loader"].includes(user.role)) {
+                title.innerText = user.role+" Console"; sub.innerText = "Facility: "+(user.hub||'Local Node');
+                bD.style.display="inline-flex"; bI.style.display="inline-flex"; bO.style.display="inline-flex";
+                document.getElementById('accountsOverviewSection').style.display="none";
+                document.querySelector('#cardUsers') && (document.querySelector('#cardUsers').style.display="none");
+                menu.innerHTML = dash+'<a href="#" class="menu-item"><i class="fa-solid fa-boxes-packing"></i> Local Inventory</a>';
             }
         }
-
-        async function fetchScopedDataMetrics(user) {
-            if (user.role === "User") return;
+        async function fetchData(user) {
+            if (user.role==="User") return;
             try {
-                let usersList = [], hubsList = [], ledgerList = [], demandsList = [];
-                const usersRaw = await getDocs(collection(db, "users"));
-                const hubsRaw = await getDocs(collection(db, "hubs"));
-                const ledgerRaw = await getDocs(collection(db, "stock_ledger"));
-                const demandsRaw = await getDocs(collection(db, "demands"));
-                usersRaw.forEach(d => usersList.push({ id: d.id, ...d.data() }));
-                hubsRaw.forEach(d => hubsList.push({ id: d.id, ...d.data() }));
-                ledgerRaw.forEach(d => ledgerList.push({ id: d.id, ...d.data() }));
-                demandsRaw.forEach(d => demandsList.push({ id: d.id, ...d.data() }));
-
-                let filteredUsers = [], filteredLedger = [], filteredDemands = [], allowedHubNames = [];
-
-                if (user.role === "Super Admin" || user.role === "Admin") {
-                    filteredUsers = usersList; filteredLedger = ledgerList; filteredDemands = demandsList;
-                    allowedHubNames = hubsList.map(h => h.name);
-                } else if (user.role === "Regional Manager" || user.role === "Regional Office") {
-                    const regionalHubs = hubsList.filter(h => h.region === user.region);
-                    allowedHubNames = regionalHubs.map(h => h.name);
-                    filteredUsers = usersList.filter(u => u.region === user.region);
-                    filteredLedger = ledgerList.filter(l => allowedHubNames.includes(l.hubName));
-                    filteredDemands = demandsList.filter(d => d.region === user.region);
-                } else if (user.role === "State Manager" || user.role === "State Office") {
-                    const stateHubs = hubsList.filter(h => h.state === user.state);
-                    allowedHubNames = stateHubs.map(h => h.name);
-                    filteredUsers = usersList.filter(u => u.state === user.state);
-                    filteredLedger = ledgerList.filter(l => allowedHubNames.includes(l.hubName));
-                    filteredDemands = demandsList.filter(d => d.state === user.state);
-                } else if (user.role === "Division Manager") {
-                    const divHubs = hubsList.filter(h => h.division === user.division);
-                    allowedHubNames = divHubs.map(h => h.name);
-                    filteredUsers = usersList.filter(u => u.division === user.division);
-                    filteredLedger = ledgerList.filter(l => allowedHubNames.includes(l.hubName));
-                    filteredDemands = demandsList.filter(d => d.division === user.division);
-                } else {
-                    allowedHubNames = [user.hub || ""];
-                    filteredUsers = [];
-                    filteredLedger = ledgerList.filter(l => l.hubName === user.hub);
-                    filteredDemands = demandsList.filter(d => d.hubName === user.hub);
+                const [uS, hS, lS, dS] = await Promise.all([getDocs(collection(db,"users")), getDocs(collection(db,"hubs")), getDocs(collection(db,"stock_ledger")), getDocs(collection(db,"demands"))]);
+                const allU=[]; uS.forEach(d=>allU.push({id:d.id,...d.data()}));
+                const allH=[]; hS.forEach(d=>allH.push({id:d.id,...d.data()}));
+                const allL=[]; lS.forEach(d=>allL.push({id:d.id,...d.data()}));
+                const allD=[]; dS.forEach(d=>allD.push({id:d.id,...d.data()}));
+                let fU=[], fL=[], fD=[], hN=[];
+                if (["Super Admin","Admin"].includes(user.role)) { fU=allU; fL=allL; fD=allD; hN=allH.map(h=>h.name); }
+                else if (["Regional Manager","Regional Office"].includes(user.role)) { const rh=allH.filter(h=>h.region===user.region); hN=rh.map(h=>h.name); fU=allU.filter(u=>u.region===user.region); fL=allL.filter(l=>hN.includes(l.hubName)); fD=allD.filter(d=>d.region===user.region); }
+                else if (["State Manager","State Office"].includes(user.role)) { const sh=allH.filter(h=>h.state===user.state); hN=sh.map(h=>h.name); fU=allU.filter(u=>u.state===user.state); fL=allL.filter(l=>hN.includes(l.hubName)); fD=allD.filter(d=>d.state===user.state); }
+                else if (user.role==="Division Manager") { const dh=allH.filter(h=>h.division===user.division); hN=dh.map(h=>h.name); fU=allU.filter(u=>u.division===user.division); fL=allL.filter(l=>hN.includes(l.hubName)); fD=allD.filter(d=>d.division===user.division); }
+                else { hN=[user.hub||""]; fU=[]; fL=allL.filter(l=>l.hubName===user.hub); fD=allD.filter(d=>d.hubName===user.hub); }
+                const el = id=>document.getElementById(id);
+                if(el('countUsers')) el('countUsers').innerText = fU.length;
+                el('countHubs').innerText = hN.length;
+                el('countDemands').innerText = fD.length;
+                let sin=0, sout=0;
+                const lB = el('stockLedgerTableBody'); lB.innerHTML = "";
+                if (!fL.length) { lB.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-database"></i><p>No transactions found.</p></div></td></tr>'; }
+                else { fL.forEach(r=>{ const q=parseInt(r.quantity)||0; const t=(r.type||"IN").toUpperCase(); if(t==="IN") sin+=q; else sout+=q; lB.innerHTML += '<tr><td><span class="text-link">'+(r.itemName||"Asset")+'</span></td><td><span class="badge '+(t==='IN'?'badge-in':'badge-out')+'">'+t+'</span></td><td><strong>'+q.toLocaleString()+'</strong></td><td>'+(r.hubName||"—")+'</td><td style="color:var(--text-muted);font-size:12px;">'+(r.date||"N/A")+'</td></tr>'; }); }
+                el('countStockIn').innerText = sin.toLocaleString();
+                el('countStockOut').innerText = sout.toLocaleString();
+                const dB = el('demandLedgerTableBody'); dB.innerHTML = "";
+                if (!fD.length) { dB.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-file-contract"></i><p>No demands in this scope.</p></div></td></tr>'; }
+                else { fD.forEach(d=>{ dB.innerHTML += '<tr><td><strong style="color:var(--primary)">'+(d.id||"REF")+'</strong></td><td>'+(d.requestedBy||"Entity")+' ('+(d.division||d.state||"—")+')</td><td>'+(d.itemName||"Item")+'</td><td><strong>'+parseInt(d.quantity||0).toLocaleString()+'</strong></td><td><span class="badge badge-demand">'+(d.status||"Pending")+'</span></td></tr>'; }); }
+                const uB = el('overviewTableBody');
+                if (uB) {
+                    uB.innerHTML = "";
+                    if (!fU.length) { uB.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-users"></i><p>No users in scope.</p></div></td></tr>'; }
+                    else { fU.forEach(u=>{ let acts='<span style="color:var(--text-muted);font-size:12px;">—</span>'; if(["Super Admin","Admin"].includes(user.role)) { acts='<button class="action-btn" title="More"><i class="fa-solid fa-ellipsis-vertical"></i></button>'; } else if(user.role==="Regional Office") { acts='<button class="inline-btn inline-btn-primary" onclick="alert(\'Reset: '+u.id+'\')"><i class="fa-solid fa-key"></i></button><button class="inline-btn inline-btn-ghost" onclick="alert(\'Map: '+u.id+'\')"><i class="fa-solid fa-map-pin"></i></button>'; } uB.innerHTML += '<tr><td><a href="#" class="text-link">'+(u.fullName||"User")+'</a></td><td><span class="badge badge-admin">'+(u.role||"—")+'</span></td><td><span class="badge badge-active">● Active</span></td><td>'+(u.region||u.state||u.division||"Core")+'</td><td>'+acts+'</td></tr>'; }); }
                 }
-
-                const cardUsersEl = document.getElementById('countUsers');
-                if (cardUsersEl) cardUsersEl.innerText = filteredUsers.length;
-                document.getElementById('countHubs').innerText = allowedHubNames.length;
-                document.getElementById('countDemands').innerText = filteredDemands.length;
-
-                let stockInTotal = 0, stockOutTotal = 0;
-                const ledgerTableBody = document.getElementById('stockLedgerTableBody');
-                ledgerTableBody.innerHTML = "";
-                filteredLedger.forEach(data => {
-                    const qty = parseInt(data.quantity) || 0;
-                    const type = (data.type || "IN").toUpperCase();
-                    if (type === "IN") stockInTotal += qty; else stockOutTotal += qty;
-                    ledgerTableBody.innerHTML += `<tr>
-                        <td style="font-weight: 500;">${data.itemName || "Unnamed Asset SKU"}</td>
-                        <td><span class="badge ${type === 'IN' ? 'badge-in' : 'badge-out'}">${type}</span></td>
-                        <td style="font-weight: 600;">${qty.toLocaleString()} Pcs</td>
-                        <td>${data.hubName || "Local Node Warehouse"}</td>
-                        <td style="color: var(--text-muted); font-size: 13px;">${data.date || "N/A"}</td>
-                    </tr>`;
-                });
-                document.getElementById('countStockIn').innerText = stockInTotal.toLocaleString();
-                document.getElementById('countStockOut').innerText = stockOutTotal.toLocaleString();
-
-                const demandTableBody = document.getElementById('demandLedgerTableBody');
-                demandTableBody.innerHTML = "";
-                if (filteredDemands.length === 0) {
-                    demandTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No pipeline demand allocations configured inside this scope.</td></tr>';
-                } else {
-                    filteredDemands.forEach(dData => {
-                        demandTableBody.innerHTML += `<tr>
-                            <td style="font-weight: 600; color: var(--primary-color);">${dData.id || "REF-ID"}</td>
-                            <td>${dData.requestedBy || "Field Hub Node"} (${dData.division || dData.state || "Global Division"})</td>
-                            <td style="font-weight: 500;">${dData.itemName || "Donation Box Serialized Asset"}</td>
-                            <td style="font-weight:600;">${parseInt(dData.quantity || 0).toLocaleString()} Pcs</td>
-                            <td><span class="badge badge-demand">${dData.status || "Pending Allocation"}</span></td>
-                        </tr>`;
-                    });
-                }
-
-                const tableBody = document.getElementById('overviewTableBody');
-                if (tableBody) {
-                    tableBody.innerHTML = "";
-                    if (filteredUsers.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No structural staff registry reports loaded within this network profile.</td></tr>';
-                    } else {
-                        filteredUsers.forEach(userData => {
-                            let actionControlsMarkup = "---";
-                            if (user.role === "Super Admin" || user.role === "Admin") {
-                                actionControlsMarkup = `<button class="actions-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>`;
-                            } else if (user.role === "Regional Office") {
-                                actionControlsMarkup = `
-                                    <button class="inline-action-btn" onclick="alert('Resetting password for ${userData.id}')"><i class="fa-solid fa-key"></i> Reset</button>
-                                    <button class="inline-action-btn" style="background:#e2e8f0; color:#1e293b;" onclick="alert('Mapping zone for ${userData.id}')"><i class="fa-solid fa-map-pin"></i> Map</button>`;
-                            }
-                            tableBody.innerHTML += `<tr>
-                                <td><a href="#" class="user-click-link">${userData.fullName || 'Anonymous Profile'}</a></td>
-                                <td><span class="badge badge-admin">${userData.role || 'Scoped Node'}</span></td>
-                                <td><span style="color:#16a34a; font-weight:600;">● Synchronized</span></td>
-                                <td>${userData.region || userData.state || userData.division || 'Global Network Core'}</td>
-                                <td>${actionControlsMarkup}</td>
-                            </tr>`;
-                        });
-                    }
-                }
-            } catch(err) {
-                console.error("Data tracking matrix sync crash:", err);
-            }
+            } catch(e) { console.error(e); showToast("Failed to load data.","fa-solid fa-triangle-exclamation"); }
         }
-
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('userSession');
-            window.location.href = "login.html";
-        });
+        document.getElementById('logoutBtn').addEventListener('click', ()=>{ localStorage.removeItem('userSession'); showToast("Logging out..."); setTimeout(()=>window.location.href="login.html",800); });
+        document.getElementById('btnActionDemand').addEventListener('click', ()=>showToast("New Demand form coming soon"));
+        document.getElementById('btnActionStockIn').addEventListener('click', ()=>showToast("Stock IN form coming soon"));
+        document.getElementById('btnActionStockOut').addEventListener('click', ()=>showToast("Stock OUT form coming soon"));
     </script>
 </body>
 </html>
