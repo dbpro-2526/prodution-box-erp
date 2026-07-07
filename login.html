@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Box Department ERP | Login</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f4f7fe 0%, #eef2f6 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            width: 430px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+            padding: 40px 35px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            width: 85px;
+            height: 85px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 700;
+            color: #0F4C81;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13.5px;
+            margin-top: 6px;
+            margin-bottom: 30px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        .input-group input {
+            width: 100%;
+            height: 48px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding-left: 15px;
+            padding-right: 45px;
+            font-size: 14.5px;
+            outline: none;
+            transition: all .3s ease;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+
+        .input-group input:focus {
+            border-color: #2563EB;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+        }
+
+        .password-box {
+            position: relative;
+        }
+
+        .password-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #64748b;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+        
+        .password-box i:hover {
+            color: #2563EB;
+        }
+
+        .remember {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 13.5px;
+            color: #64748b;
+        }
+
+        .remember label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .remember a {
+            color: #2563EB;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .remember a:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 48px;
+            background: #2563EB;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background .2s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+            color: #2563EB;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .error {
+            display: none;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fee2e2;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13.5px;
+        }
+
+        .success {
+            display: none;
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #dcfce7;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13.5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <div class="logo">
+      <img src="dblogo.png" alt="Logo">
+    </div>
+
+    <div class="title">Donation Box ERP</div>
+    <div class="subtitle">Donation Box Department<br>Inventory & Warehouse Management</div>
+
+    <div id="error" class="error"></div>
+    <div id="success" class="success"></div>
+
+    <form id="loginForm">
+        <div class="input-group">
+            <label>Employee Code</label>
+            <input type="text" id="employeeCode" placeholder="Enter Employee Code" required>
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <div class="password-box">
+                <input type="password" id="password" placeholder="Enter Password" required>
+                <i class="fa-solid fa-eye" id="togglePassword"></i>
+            </div>
+        </div>
+
+        <div class="remember">
+            <label>
+                <input type="checkbox" id="remember"> Remember Me
+            </label>
+            <a href="#">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="login-btn">LOGIN</button>
+
+        <div class="loading" id="loading">Please Wait...</div>
+    </form>
+
+    <div class="footer">Version 1.0.0</div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+<script>
+// Aapki provided Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ",
+    authDomain: "prodution-box-erp.firebaseapp.com",
+    projectId: "prodution-box-erp",
+    storageBucket: "prodution-box-erp.firebasestorage.app",
+    messagingSenderId: "426698063494",
+    appId: "1:426698063494:web:880dd323f24bd4121ddb07",
+    measurementId: "G-948852RZLB"
+};
+
+// Firebase Initialize
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const loginForm = document.getElementById("loginForm");
+const togglePassword = document.getElementById("togglePassword");
+const passwordInput = document.getElementById("password");
+const loading = document.getElementById("loading");
+const error = document.getElementById("error");
+const success = document.getElementById("success");
+
+// Password Show/Hide Feature
+togglePassword.addEventListener("click", function () {
+    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
+    
+    // Icon toggling
+    if (type === "password") {
+        this.classList.remove("fa-eye-slash");
+        this.classList.add("fa-eye");
+    } else {
+        this.classList.remove("fa-eye");
+        this.classList.add("fa-eye-slash");
+    }
+});
+
+// Form Submit Functionality
+loginForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    
+    error.style.display = "none";
+    success.style.display = "none";
+    loading.style.display = "block";
+
+    const empCode = document.getElementById("employeeCode").value.trim();
+    const pass = passwordInput.value.trim();
+
+    // Firestore query collection "users" ke liye
+    db.collection("users")
+    .where("employeeCode", "==", empCode)
+    .get()
+    .then((querySnapshot) => {
+
+        if (querySnapshot.empty) {
+            loading.style.display = "none";
+            error.style.display = "block";
+            error.innerHTML = "Employee Code not found!";
+            return;
+        }
+
+        const doc = querySnapshot.docs[0];
+        const userData = doc.data();
+
+        // Password verification
+        if (userData.password === pass) {
+
+            if (userData.status !== "Active" && userData.status !== "active") {
+                loading.style.display = "none";
+                error.style.display = "block";
+                error.innerHTML = "Your account is inactive. Contact Admin.";
+                return;
+            }
+
+            // LocalStorage mein data structured save karna
+            localStorage.setItem("userSession", JSON.stringify({
+                uid: doc.id || "",
+                employeeCode: userData.employeeCode || empCode,
+                fullName: userData.fullName || "",
+                mobile: userData.mobile || "",
+                email: userData.email || "",
+                photo: userData.photo || "",
+                role: userData.role || "",
+                department: userData.department || "",
+                designation: userData.designation || "",
+                region: userData.region || "",
+                state: userData.state || "",
+                division: userData.division || "",
+                hub: userData.hub || userData.warehouse || "",
+                warehouse: userData.warehouse || userData.hub || "",
+                status: userData.status || ""
+            }));
+
+            localStorage.setItem("userRole", userData.role || "");
+            localStorage.setItem("userName", userData.fullName || "");
+            localStorage.setItem("employeeCode", userData.employeeCode || empCode);
+            localStorage.setItem("loginStatus", "true");
+
+            success.style.display = "block";
+            success.innerHTML = `Welcome ${userData.role || ""}<br>${userData.fullName || ""}`;
+            loading.style.display = "none";
+
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 1500);
+
+        } else {
+            loading.style.display = "none";
+            error.style.display = "block";
+            error.innerHTML = "Incorrect Password!";
+        }
+    })
+    .catch((err) => {
+        loading.style.display = "none";
+        error.style.display = "block";
+        error.innerHTML = "Database Error: " + err.message;
+    });
+});
+
+// Enter key submit handling
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        loginForm.requestSubmit();
+    }
+});
+</script>
+
+</body>
+</html>
