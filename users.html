@@ -271,7 +271,6 @@ t.classList.add('show');
 setTimeout(function(){ t.classList.remove('show') }, 2500);
 }
 
-// Cleaned debugLog: Only logs in browser console (F12) for developers, completely hidden from users
 function debugLog(msg) {
 console.log('[UserMgmt] ' + msg);
 }
@@ -367,7 +366,7 @@ if (!e.target.closest('.ms-wrap')) msCloseAll();
 });
 function msPopulate(id, items, selectedVals) {
 var drop = document.getElementById(id + 'Drop');
-var header = document.querySelector('#' + id + ' .ms-header');
+if (!drop) return;
 if (!selectedVals) selectedVals = [];
 if (!Array.isArray(selectedVals)) selectedVals = [selectedVals].filter(Boolean);
 drop.innerHTML = '';
@@ -412,6 +411,7 @@ var sel = [];
 for (var i = 0; i < chs.length; i++) { if (chs[i].checked) sel.push(chs[i].value); }
 var label = document.querySelector('#' + id + ' .ms-label');
 var count = document.getElementById(id + 'Count');
+if (!label) return;
 if (sel.length === 0 || sel.length === items.length) {
 label.textContent = 'All ' + id.replace('ms','').replace(/s$/i,'') + 's';
 if (count) count.textContent = '';
@@ -450,7 +450,7 @@ var stateOptions = getStatesForRegions(regions);
 var validStates = currentStates.filter(function(s){ return stateOptions.indexOf(s) !== -1 });
 if (validStates.length !== currentStates.length) {
 var header = document.querySelector('#msStatesWrap .ms-header');
-if (!header.classList.contains('disabled')) {
+if (header && !header.classList.contains('disabled')) {
 msPopulate('msStatesWrap', stateOptions, validStates);
 rebuildDivisions();
 return;
@@ -587,8 +587,10 @@ resetBtn();
 
 function resetBtn() {
 var btn = document.getElementById('submitBtn');
+if(btn) {
 btn.disabled = false;
 btn.innerHTML = editingUserId ? '<i class="fa-solid fa-floppy-disk"></i> Update User' : '<i class="fa-solid fa-floppy-disk"></i> Save User';
+}
 }
 
 async function deleteUser(id, name) {
@@ -634,6 +636,7 @@ openModal();
 
 function renderTable(users) {
 var tb = document.getElementById('usersTableBody');
+if(!tb) return;
 var searchVal = document.getElementById('searchUser').value.trim().toLowerCase();
 var roleFilter = document.getElementById('filterRole').value;
 var filtered = [];
@@ -686,20 +689,22 @@ document.getElementById('filterRole').addEventListener('change', function(){ ren
 async function loadMasterData() {
 try {
 debugLog('Loading master data...');
-var regSnap = await db.collection('regions').get();
-var stateSnap = await db.collection('states').get();
-var divSnap = await db.collection('divisions').get();
-var hubSnap = await db.collection('hubs').get();
-allRegions = regSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
-allStates = stateSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
-allDivisions = divSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
-allHubs = hubSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
+var regSnap = await db.collection('regions').get().catch(e => { console.warn(e); return {docs:[]}; });
+var stateSnap = await db.collection('states').get().catch(e => { console.warn(e); return {docs:[]}; });
+var divSnap = await db.collection('divisions').get().catch(e => { console.warn(e); return {docs:[]}; });
+var hubSnap = await db.collection('hubs').get().catch(e => { console.warn(e); return {docs:[]}; });
+allRegions = regSnap.docs ? regSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
+allStates = stateSnap.docs ? stateSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
+allDivisions = divSnap.docs ? divSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
+allHubs = hubSnap.docs ? hubSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
+} catch(e) { 
+console.error(e); 
+}
 var regionItems = getRegionNames();
 msPopulate('msRegionsWrap', regionItems, []);
 msPopulate('msStatesWrap', [], []);
 msPopulate('msDivisionsWrap', [], []);
 msPopulate('msHubsWrap', getHubsForDivisions([]), []);
-} catch(e) { console.error(e); showToast('Error loading master data', 'fa-solid fa-triangle-exclamation'); }
 }
 
 async function loadUsers() {
@@ -726,8 +731,10 @@ filtered.push(u);
 allUsers = filtered;
 }
 renderTable(allUsers);
-} catch(e) { console.error(e); showToast('Error loading users: ' + e.message, 'fa-solid fa-triangle-exclamation');
-document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users.</p></div></td></tr>';
+} catch(e) { 
+console.error(e); 
+var tb = document.getElementById('usersTableBody');
+if(tb) tb.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users.</p></div></td></tr>';
 }
 }
 
@@ -756,7 +763,6 @@ await loadMasterData();
 await loadUsers();
 } catch(e) {
 console.error('Initialization error:', e);
-showToast('Error loading page: ' + e.message, 'fa-solid fa-triangle-exclamation');
 }
 });
 </script>
