@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
 :root{--primary:#0F4C81;--accent:#2563EB;--bg:#f0f4f9;--sidebar-bg:#0F4C81;--text-dark:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--shadow:0 2px 12px rgba(0,0,0,0.06);--radius:14px;--radius-sm:10px;--transition:0.3s ease}
@@ -85,7 +86,9 @@ tr:hover td{background:#fafcff}
 .action-btn.edit{background:#dbeafe;color:#2563eb}.action-btn.edit:hover{background:#bfdbfe}
 .action-btn.dispatch{background:#fef3c7;color:#d97706}.action-btn.dispatch:hover{background:#fde68a}
 .action-btn.receive{background:#d1fae5;color:#059669}.action-btn.receive:hover{background:#a7f3d0}
-
+.file-upload-wrap{display:flex;align-items:center;gap:10px}
+.file-upload-wrap input[type=file]{font-size:12px;flex:1}
+.file-upload-wrap .file-name{font-size:11px;color:var(--text-muted)}
 .empty-state i{font-size:36px;margin-bottom:10px;opacity:0.3}
 .spinner-container{display:flex;align-items:center;justify-content:center;padding:60px 20px}
 .spinner-container .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite}
@@ -248,9 +251,11 @@ tr:hover td{background:#fafcff}
 <span class="lock-badge" id="lockHub"></span>
 </div>
                 <div class="form-group full">
-                        <label>Attachment URL (Google Drive / image / PDF link)</label>
-                        <input type="url" id="fieldAttachUrl" placeholder="Paste shareable link here..." oninput="previewAttachUrl()">
-                        <img id="fieldAttachPreview" style="display:none;margin-top:6px;max-width:120px;max-height:80px;border-radius:6px;border:1px solid var(--border);cursor:pointer" onclick="openImgViewer(this.src)" alt="">
+                        <label>Attachment</label>
+                        <div class="file-upload-wrap">
+                        <input type="file" id="fieldFile" accept="image/*,.pdf,.doc,.docx">
+                        <span class="file-name" id="fileNameDisplay"></span>
+                        </div>
                 </div>
                 <div class="form-group full">
                         <label>Notes</label>
@@ -288,6 +293,7 @@ var firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
+var storage = firebase.storage();
 var currentUser = null;
 var allHubs = [];
 var allEntries = [];
@@ -487,6 +493,12 @@ document.addEventListener("keydown", function(e) {
 
 document.getElementById("btnAddItem").addEventListener("click", addDemandItem);
 
+/* File upload */
+document.getElementById("fieldFile").addEventListener("change", function() {
+    var file = this.files[0];
+    document.getElementById("fileNameDisplay").textContent = file ? file.name : "";
+});
+
 function getDirectUrl(url) {
   if (!url) return url;
   var m = url.match(/\/file\/d\/([^/]+)/);
@@ -496,15 +508,18 @@ function getDirectUrl(url) {
   return url;
 }
 
-function previewAttachUrl() {
-  var url = document.getElementById("fieldAttachUrl").value.trim();
-  var img = document.getElementById("fieldAttachPreview");
-  if (url.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i) || url.indexOf("drive.google.com") !== -1) {
-    img.src = getDirectUrl(url);
-    img.style.display = "block";
-  } else {
-    img.style.display = "none";
-  }
+async function uploadFile(file) {
+    if (!file) return "";
+    var ref = storage.ref("demands/" + Date.now() + "_" + file.name);
+    try {
+        var snap = await ref.put(file);
+        var url = await snap.ref.getDownloadURL();
+        return url;
+    } catch(e) {
+        console.error("Upload error", e);
+        showToast("File upload failed", "error");
+        return "";
+    }
 }
 
 async function onRegionChange() {
@@ -633,11 +648,6 @@ function editDemand(id) {
     if (!document.getElementById("fieldHub").disabled && entry.hub) document.getElementById("fieldHub").value = entry.hub || entry.hubName || "";
     if (entry.region) { onRegionChange(); setTimeout(function(){ if (!document.getElementById("fieldState").disabled && entry.state) document.getElementById("fieldState").value = entry.state; if (entry.state) { onStateChange(); setTimeout(function(){ if (!document.getElementById("fieldDivision").disabled && entry.division) document.getElementById("fieldDivision").value = entry.division; }, 300); } }, 300); }
     uploadedFileUrl = entry.attachmentUrl || "";
-    document.getElementById("fieldAttachUrl").value = uploadedFileUrl;
-    if (uploadedFileUrl) {
-      document.getElementById("fieldAttachPreview").src = getDirectUrl(uploadedFileUrl);
-      document.getElementById("fieldAttachPreview").style.display = "block";
-    }
     document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Update Demand';
     openModal();
 }
@@ -814,7 +824,11 @@ document.getElementById("demandForm").addEventListener("submit", async function(
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
     try {
-        uploadedFileUrl = document.getElementById("fieldAttachUrl").value.trim();
+        var file = document.getElementById("fieldFile").files[0];
+        if (file) {
+            var url = await uploadFile(file);
+            if (url) uploadedFileUrl = url;
+        }
 
         var data = {
             date: document.getElementById("fieldDate").value,
@@ -850,8 +864,8 @@ document.getElementById("demandForm").addEventListener("submit", async function(
         document.getElementById("fieldPriority").value = "Medium";
         document.getElementById("fieldRequestingEntity").value = "";
         document.getElementById("fieldNotes").value = "";
-        document.getElementById("fieldAttachUrl").value = "";
-        document.getElementById("fieldAttachPreview").style.display = "none";
+        document.getElementById("fieldFile").value = "";
+        document.getElementById("fileNameDisplay").textContent = "";
         uploadedFileUrl = "";
         if (!document.getElementById("fieldRegion").disabled) {
             document.getElementById("fieldRegion").value = "";
@@ -899,8 +913,8 @@ document.getElementById("addEntryBtn").addEventListener("click", function() {
     document.getElementById("fieldPriority").value = "Medium";
     document.getElementById("fieldRequestingEntity").value = "";
     document.getElementById("fieldNotes").value = "";
-    document.getElementById("fieldAttachUrl").value = "";
-    document.getElementById("fieldAttachPreview").style.display = "none";
+    document.getElementById("fieldFile").value = "";
+    document.getElementById("fileNameDisplay").textContent = "";
     uploadedFileUrl = "";
     document.getElementById("fieldDate").value = new Date().toISOString().split("T")[0];
     document.getElementById("errorItems").style.display = "none";
