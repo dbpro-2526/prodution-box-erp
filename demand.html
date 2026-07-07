@@ -304,6 +304,7 @@ var currentUser = null;
 var allHubs = [];
 var allEntries = [];
 var isSubmitting = false;
+var isReceiving = false;
 var regionsCache = [];
 var allItems = [];
 var demandItems = [];
@@ -656,7 +657,9 @@ function canReceive(entry) {
     if (["Super Admin", "Admin"].indexOf(currentUser.role) !== -1) return true;
     var st = entry.status || "Pending";
     if (st !== "Dispatched") return false;
-    if (entry.division && currentUser.division && entry.division === currentUser.division) return true;
+    var userDiv = currentUser.division || "";
+    var userDivs = currentUser.divisions || [];
+    if (entry.division && (entry.division === userDiv || userDivs.indexOf(entry.division) !== -1)) return true;
     return false;
 }
 
@@ -750,10 +753,12 @@ async function dispatchDemand(id) {
 }
 
 async function receiveDemand(id) {
+    if (isReceiving) return;
     var entry = null;
     for (var i = 0; i < allEntries.length; i++) { if (allEntries[i].id === id) { entry = allEntries[i]; break; } }
     if (!entry) return;
     if (!confirm("Confirm receive of all items?")) return;
+    isReceiving = true;
     try {
         var items = entry.items && entry.items.length ? entry.items : [{itemName: entry.itemName, quantity: entry.quantity || 0, unit: entry.unit || "Piece"}];
         var receiveLog = entry.receiveLog || [];
@@ -783,6 +788,7 @@ async function receiveDemand(id) {
         showToast("Demand completed! Stock IN auto-created.", "success");
         await loadHistory();
     } catch(e) { console.error(e); showToast("Error: " + e.message, "error"); }
+    isReceiving = false;
 }
 
 function exportExcel() {
@@ -1051,3 +1057,4 @@ document.getElementById("entryModal").addEventListener("click", function(e) {
 </script>
 </body>
 </html>
+
