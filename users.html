@@ -430,8 +430,6 @@ function msGetSelected(id) {
 var chs = document.querySelectorAll('#' + id + 'Drop .ms-opt input');
 var sel = [];
 for (var i = 0; i < chs.length; i++) { if (chs[i].checked) sel.push(chs[i].value); }
-var allCb = document.getElementById(id + '_all');
-if (allCb && allCb.checked && document.querySelectorAll('#' + id + 'Drop .ms-opt').length > 0) return [];
 return sel;
 }
 
@@ -486,33 +484,13 @@ var validHubs = currentHubs.filter(function(h){ return hubOptions.indexOf(h) !==
 msPopulate('msHubsWrap', hubOptions, validHubs);
 }
 
-// Setup region change → rebuild states
-document.addEventListener('click', function(e) {
-if (e.target.closest('#msRegionsWrap') && !e.target.closest('.ms-drop')) {
-setTimeout(rebuildStates, 50);
-}
-});
-// Custom change detection for checkboxes
-function setupMsWatchers() {
-['msRegionsWrap','msStatesWrap','msDivisionsWrap'].forEach(function(id) {
-var drop = document.getElementById(id + 'Drop');
-if (!drop) return;
-var obs = new MutationObserver(function() {
-if (id === 'msRegionsWrap') { setTimeout(rebuildStates, 10); }
-else if (id === 'msStatesWrap') { setTimeout(rebuildDivisions, 10); }
-else if (id === 'msDivisionsWrap') { setTimeout(rebuildHubs, 10); }
-});
-obs.observe(drop, { childList: true, subtree: true, attributeFilter: ['checked'] });
-});
-}
-// Simpler: detect checkbox changes via click delegation
+// Detect checkbox changes to rebuild cascading dropdowns
 document.addEventListener('change', function(e) {
-if (e.target.closest('#msRegionsWrap .ms-opt input')) setTimeout(rebuildStates, 50);
-if (e.target.closest('#msStatesWrap .ms-opt input')) setTimeout(rebuildDivisions, 50);
-if (e.target.closest('#msDivisionsWrap .ms-opt input')) setTimeout(rebuildHubs, 50);
-if (e.target.closest('#msRegionsWrap .ms-all input')) setTimeout(rebuildStates, 50);
-if (e.target.closest('#msStatesWrap .ms-all input')) setTimeout(rebuildDivisions, 50);
-if (e.target.closest('#msDivisionsWrap .ms-all input')) setTimeout(rebuildHubs, 50);
+var wrap = e.target.closest('.ms-wrap');
+if (!wrap || e.target.type !== 'checkbox') return;
+if (wrap.id === 'msRegionsWrap') setTimeout(rebuildStates, 50);
+else if (wrap.id === 'msStatesWrap') setTimeout(rebuildDivisions, 50);
+else if (wrap.id === 'msDivisionsWrap') setTimeout(rebuildHubs, 50);
 });
 
 function populateFormMs(selectedRegions, selectedStates, selectedDivisions, selectedHubs) {
