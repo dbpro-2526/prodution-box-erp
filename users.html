@@ -30,10 +30,6 @@ body{background:var(--bg);color:var(--text-dark);display:flex;min-height:100vh;o
 .main-content{margin-left:240px;width:calc(100% - 240px);padding:20px 24px;min-height:100vh}
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
 .top-bar-left h1{font-size:20px;font-weight:700;color:var(--primary)}
-.user-info{display:flex;align-items:center;gap:10px;background:#fff;padding:6px 16px 6px 10px;border-radius:30px;border:1px solid var(--border);box-shadow:var(--shadow)}
-.user-info .avatar{width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
-.user-info .name{font-size:13px;font-weight:600}
-.user-info .desig{font-size:11px;color:var(--text-muted);background:#f1f5f9;padding:1px 8px;border-radius:8px}
 .dash-section{background:#fff;padding:18px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:16px}
 .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
 .section-header h2{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
@@ -92,9 +88,25 @@ tr:hover td{background:#fafcff}
 .modal h2 i{color:var(--accent)}
 .float-add-btn{position:fixed;top:82px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:18px;box-shadow:0 4px 16px rgba(37,99,235,0.35);cursor:pointer;transition:all var(--transition);z-index:500;display:flex;align-items:center;justify-content:center}
 .float-add-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(37,99,235,0.45)}
-.toast.show{transform:translateY(0);opacity:1}
 .debug-bar{background:#fff3cd;border:1px solid #ffc107;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px;display:none;word-break:break-all}
 .form-grid.full-width .form-group{grid-column:1/-1}
+.ms-wrap{position:relative;width:100%}
+.ms-header{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:#fff;cursor:pointer;min-height:35px;gap:4px}
+.ms-header:hover{border-color:var(--accent)}
+.ms-header.disabled{background:#f1f5f9;cursor:not-allowed;opacity:0.7}
+.ms-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-arrow{font-size:10px;color:var(--text-muted);transition:transform 0.2s}
+.ms-arrow.open{transform:rotate(180deg)}
+.ms-drop{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:100;max-height:220px;overflow-y:auto;margin-top:2px}
+.ms-drop.open{display:block}
+.ms-opt{display:flex;align-items:center;gap:8px;padding:7px 10px;cursor:pointer;font-size:12px;border-bottom:1px solid #f1f5f9}
+.ms-opt:last-child{border-bottom:none}
+.ms-opt:hover{background:#f8fafc}
+.ms-opt input[type=checkbox]{margin:0;cursor:pointer;accent-color:var(--accent)}
+.ms-opt label{cursor:pointer;flex:1;margin:0;font-weight:400;font-size:12px}
+.ms-all{border-bottom:1px solid var(--border);padding:6px 10px;font-size:11px;font-weight:600;color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:8px}
+.ms-all:hover{background:#f8fafc}
+.ms-count{font-size:10px;color:var(--accent);font-weight:600}
 @media(max-width:1024px){.main-content{padding:16px 18px}}
 @media(max-width:768px){
 .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.hamburger{display:flex}.sidebar-overlay{display:block}
@@ -115,11 +127,6 @@ tr:hover td{background:#fafcff}
 <div class="main-content">
 <div class="top-bar">
 <div class="top-bar-left"><h1>User Management</h1></div>
-<div class="user-info">
-<div class="avatar" id="userAvatar">U</div>
-<span class="name" id="adminName">Loading...</span>
-<span class="desig" id="userRoleBadge">&mdash;</span>
-</div>
 </div>
 
 <div id="debugInfo" class="debug-bar"></div>
@@ -160,19 +167,19 @@ tr:hover td{background:#fafcff}
 </div>
 <div class="form-group">
 <label>Region</label>
-<select id="userRegion"><option value="">Select Region</option></select>
+<div class="ms-wrap" id="msRegionsWrap"><div class="ms-header" onclick="msToggle('msRegionsWrap')"><span class="ms-label">All Regions</span><span class="ms-count" id="msRegionsCount"></span><i class="fa-solid fa-chevron-down ms-arrow"></i></div><div class="ms-drop" id="msRegionsDrop"></div></div>
 </div>
 <div class="form-group">
 <label>State</label>
-<select id="userState" disabled><option value="">Select State</option></select>
+<div class="ms-wrap" id="msStatesWrap"><div class="ms-header" onclick="msToggle('msStatesWrap')"><span class="ms-label">All States</span><span class="ms-count" id="msStatesCount"></span><i class="fa-solid fa-chevron-down ms-arrow"></i></div><div class="ms-drop" id="msStatesDrop"></div></div>
 </div>
 <div class="form-group">
 <label>Division</label>
-<select id="userDivision" disabled><option value="">Select Division</option></select>
+<div class="ms-wrap" id="msDivisionsWrap"><div class="ms-header" onclick="msToggle('msDivisionsWrap')"><span class="ms-label">All Divisions</span><span class="ms-count" id="msDivisionsCount"></span><i class="fa-solid fa-chevron-down ms-arrow"></i></div><div class="ms-drop" id="msDivisionsDrop"></div></div>
 </div>
 <div class="form-group">
 <label>Hub</label>
-<select id="userHub"><option value="">Select Hub</option></select>
+<div class="ms-wrap" id="msHubsWrap"><div class="ms-header" onclick="msToggle('msHubsWrap')"><span class="ms-label">All Hubs</span><span class="ms-count" id="msHubsCount"></span><i class="fa-solid fa-chevron-down ms-arrow"></i></div><div class="ms-drop" id="msHubsDrop"></div></div>
 </div>
 <div class="form-group">
 <label>Password <span class="required" id="pwdRequired">*</span></label>
@@ -229,7 +236,7 @@ tr:hover td{background:#fafcff}
 <div class="table-wrap">
 <table>
 <thead>
-<tr><th>S.No</th><th>Name</th><th>Email</th><th>Emp Code</th><th>Role</th><th>Region</th><th>State</th><th>Division</th><th>Hub</th><th>Status</th><th>Actions</th></tr>
+<tr><th>S.No</th><th>Name</th><th>Email</th><th>Emp Code</th><th>Role</th><th>Regions</th><th>States</th><th>Divisions</th><th>Hubs</th><th>Status</th><th>Actions</th></tr>
 </thead>
 <tbody id="usersTableBody"><tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading users...</p></div></td></tr></tbody>
 </table>
@@ -273,10 +280,6 @@ if (!d) return;
 d.style.display = 'block';
 d.innerHTML = d.innerHTML + '<div>' + escapeHtml(msg) + '</div>';
 console.log('[UserMgmt] ' + msg);
-}
-
-function getInitials(n) {
-return n ? n.split(' ').map(function(w){ return w[0] }).join('').toUpperCase().slice(0,2) : 'U';
 }
 
 document.getElementById('hamburgerBtn').addEventListener('click', function(){
@@ -337,37 +340,6 @@ if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-regular f
 else { inp.type = 'password'; icon.className = 'fa-regular fa-eye'; }
 });
 
-document.getElementById('userRegion').addEventListener('change', function(){
-var region = this.value;
-var stateSel = document.getElementById('userState');
-var divSel = document.getElementById('userDivision');
-stateSel.innerHTML = '<option value="">Select State</option>';
-stateSel.disabled = !region;
-divSel.innerHTML = '<option value="">Select Division</option>';
-divSel.disabled = true;
-if (region) {
-for (var i = 0; i < allStates.length; i++) {
-if (allStates[i].region === region) {
-var o = document.createElement('option'); o.value = allStates[i].name; o.textContent = allStates[i].name; stateSel.appendChild(o);
-}
-}
-}
-});
-
-document.getElementById('userState').addEventListener('change', function(){
-var state = this.value;
-var divSel = document.getElementById('userDivision');
-divSel.innerHTML = '<option value="">Select Division</option>';
-divSel.disabled = !state;
-if (state) {
-for (var i = 0; i < allDivisions.length; i++) {
-if (allDivisions[i].state === state) {
-var o = document.createElement('option'); o.value = allDivisions[i].name; o.textContent = allDivisions[i].name; divSel.appendChild(o);
-}
-}
-}
-});
-
 document.getElementById('cancelBtn').addEventListener('click', closeModal);
 
 document.getElementById('userForm').addEventListener('submit', function(e){
@@ -379,38 +351,194 @@ if (editingUserId) { updateUser(); }
 else { addUser(); }
 });
 
+// --- Multi-Select helpers ---
+function msToggle(id) {
+var drop = document.getElementById(id + 'Drop');
+var arrow = document.querySelector('#' + id + ' .ms-arrow');
+if (drop.classList.contains('open')) {
+drop.classList.remove('open');
+if (arrow) arrow.classList.remove('open');
+} else {
+msCloseAll();
+drop.classList.add('open');
+if (arrow) arrow.classList.add('open');
+}
+}
+function msCloseAll() {
+document.querySelectorAll('.ms-drop.open').forEach(function(el){ el.classList.remove('open') });
+document.querySelectorAll('.ms-arrow.open').forEach(function(el){ el.classList.remove('open') });
+}
+document.addEventListener('click', function(e) {
+if (!e.target.closest('.ms-wrap')) msCloseAll();
+});
+function msPopulate(id, items, selectedVals) {
+var drop = document.getElementById(id + 'Drop');
+var header = document.querySelector('#' + id + ' .ms-header');
+if (!selectedVals) selectedVals = [];
+if (!Array.isArray(selectedVals)) selectedVals = [selectedVals].filter(Boolean);
+drop.innerHTML = '';
+var allDiv = document.createElement('div');
+allDiv.className = 'ms-all';
+var allChecked = items.length > 0 && items.every(function(v){ return selectedVals.indexOf(v) !== -1 });
+allDiv.innerHTML = '<input type="checkbox" id="' + id + '_all"' + (allChecked ? ' checked' : '') + '> <label for="' + id + '_all">All</label>';
+allDiv.onclick = function(e) {
+var cb = allDiv.querySelector('input');
+if (e.target.tagName !== 'INPUT') cb.checked = !cb.checked;
+var chs = drop.querySelectorAll('.ms-opt input');
+for (var i = 0; i < chs.length; i++) chs[i].checked = cb.checked;
+msUpdateLabel(id, items);
+};
+drop.appendChild(allDiv);
+for (var i = 0; i < items.length; i++) {
+var div = document.createElement('div');
+div.className = 'ms-opt';
+var cb = document.createElement('input');
+cb.type = 'checkbox';
+cb.value = items[i];
+cb.checked = selectedVals.indexOf(items[i]) !== -1;
+cb.onchange = function() {
+var allCb = document.getElementById(id + '_all');
+var chs = drop.querySelectorAll('.ms-opt input');
+var allChecked = true;
+for (var j = 0; j < chs.length; j++) { if (!chs[j].checked) { allChecked = false; break; } }
+if (allCb) allCb.checked = allChecked;
+msUpdateLabel(id, items);
+};
+div.appendChild(cb);
+var lb = document.createElement('label');
+lb.textContent = items[i];
+div.appendChild(lb);
+drop.appendChild(div);
+}
+msUpdateLabel(id, items);
+}
+function msUpdateLabel(id, items) {
+var chs = document.querySelectorAll('#' + id + 'Drop .ms-opt input');
+var sel = [];
+for (var i = 0; i < chs.length; i++) { if (chs[i].checked) sel.push(chs[i].value); }
+var label = document.querySelector('#' + id + ' .ms-label');
+var count = document.getElementById(id + 'Count');
+if (sel.length === 0 || sel.length === items.length) {
+label.textContent = 'All ' + id.replace('ms','').replace(/s$/i,'') + 's';
+if (count) count.textContent = '';
+} else {
+label.textContent = sel.join(', ');
+if (count) count.textContent = sel.length + ' selected';
+}
+}
+function msGetSelected(id) {
+var chs = document.querySelectorAll('#' + id + 'Drop .ms-opt input');
+var sel = [];
+for (var i = 0; i < chs.length; i++) { if (chs[i].checked) sel.push(chs[i].value); }
+var allCb = document.getElementById(id + '_all');
+if (allCb && allCb.checked && document.querySelectorAll('#' + id + 'Drop .ms-opt').length > 0) return [];
+return sel;
+}
+
+// --- Cascading multi-select logic ---
+function getRegionNames() {
+return allRegions.map(function(r){ return r.name }).filter(Boolean);
+}
+function getStatesForRegions(regions) {
+if (!regions || !regions.length) return [];
+return allStates.filter(function(s){ return regions.indexOf(s.region) !== -1 }).map(function(s){ return s.name }).filter(Boolean);
+}
+function getDivisionsForStates(states) {
+if (!states || !states.length) return [];
+return allDivisions.filter(function(d){ return states.indexOf(d.state) !== -1 }).map(function(d){ return d.name }).filter(Boolean);
+}
+function getHubsForDivisions(divs) {
+if (!divs || !divs.length) return allHubs.map(function(h){ return h.name }).filter(Boolean);
+return allHubs.filter(function(h){ return divs.indexOf(h.division) !== -1 }).map(function(h){ return h.name }).filter(Boolean);
+}
+function rebuildStates() {
+var regions = msGetSelected('msRegionsWrap');
+var currentStates = msGetSelected('msStatesWrap');
+var stateOptions = getStatesForRegions(regions);
+var validStates = currentStates.filter(function(s){ return stateOptions.indexOf(s) !== -1 });
+if (validStates.length !== currentStates.length) {
+var header = document.querySelector('#msStatesWrap .ms-header');
+if (!header.classList.contains('disabled')) {
+msPopulate('msStatesWrap', stateOptions, validStates);
+rebuildDivisions();
+return;
+}
+}
+msPopulate('msStatesWrap', stateOptions, validStates);
+}
+function rebuildDivisions() {
+var states = msGetSelected('msStatesWrap');
+var currentDivs = msGetSelected('msDivisionsWrap');
+var divOptions = getDivisionsForStates(states);
+var validDivs = currentDivs.filter(function(d){ return divOptions.indexOf(d) !== -1 });
+if (validDivs.length !== currentDivs.length) {
+msPopulate('msDivisionsWrap', divOptions, validDivs);
+rebuildHubs();
+return;
+}
+msPopulate('msDivisionsWrap', divOptions, validDivs);
+}
+function rebuildHubs() {
+var divs = msGetSelected('msDivisionsWrap');
+var currentHubs = msGetSelected('msHubsWrap');
+var hubOptions = getHubsForDivisions(divs);
+var validHubs = currentHubs.filter(function(h){ return hubOptions.indexOf(h) !== -1 });
+msPopulate('msHubsWrap', hubOptions, validHubs);
+}
+
+// Setup region change → rebuild states
+document.addEventListener('click', function(e) {
+if (e.target.closest('#msRegionsWrap') && !e.target.closest('.ms-drop')) {
+setTimeout(rebuildStates, 50);
+}
+});
+// Custom change detection for checkboxes
+function setupMsWatchers() {
+['msRegionsWrap','msStatesWrap','msDivisionsWrap'].forEach(function(id) {
+var drop = document.getElementById(id + 'Drop');
+if (!drop) return;
+var obs = new MutationObserver(function() {
+if (id === 'msRegionsWrap') { setTimeout(rebuildStates, 10); }
+else if (id === 'msStatesWrap') { setTimeout(rebuildDivisions, 10); }
+else if (id === 'msDivisionsWrap') { setTimeout(rebuildHubs, 10); }
+});
+obs.observe(drop, { childList: true, subtree: true, attributeFilter: ['checked'] });
+});
+}
+// Simpler: detect checkbox changes via click delegation
+document.addEventListener('change', function(e) {
+if (e.target.closest('#msRegionsWrap .ms-opt input')) setTimeout(rebuildStates, 50);
+if (e.target.closest('#msStatesWrap .ms-opt input')) setTimeout(rebuildDivisions, 50);
+if (e.target.closest('#msDivisionsWrap .ms-opt input')) setTimeout(rebuildHubs, 50);
+if (e.target.closest('#msRegionsWrap .ms-all input')) setTimeout(rebuildStates, 50);
+if (e.target.closest('#msStatesWrap .ms-all input')) setTimeout(rebuildDivisions, 50);
+if (e.target.closest('#msDivisionsWrap .ms-all input')) setTimeout(rebuildHubs, 50);
+});
+
+function populateFormMs(selectedRegions, selectedStates, selectedDivisions, selectedHubs) {
+var regionItems = getRegionNames();
+var stateItems = getStatesForRegions(selectedRegions);
+var divItems = getDivisionsForStates(selectedStates);
+var hubItems = getHubsForDivisions(selectedDivisions);
+msPopulate('msRegionsWrap', regionItems, selectedRegions);
+msPopulate('msStatesWrap', stateItems, selectedStates);
+msPopulate('msDivisionsWrap', divItems, selectedDivisions);
+msPopulate('msHubsWrap', hubItems, selectedHubs);
+}
+
 function resetForm() {
 document.getElementById('userForm').reset();
-document.getElementById('userState').disabled = true;
-document.getElementById('userDivision').disabled = true;
-document.getElementById('userState').innerHTML = '<option value="">Select State</option>';
-document.getElementById('userDivision').innerHTML = '<option value="">Select Division</option>';
 document.getElementById('pwdRequired').style.display = 'inline';
 document.getElementById('userPassword').required = true;
 document.getElementById('formTitle').textContent = 'Add New User';
 document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save User';
 document.getElementById('cancelBtn').style.display = 'none';
 editingUserId = null;
-}
-
-function populateRegionSelect(selected) {
-var sel = document.getElementById('userRegion');
-sel.innerHTML = '<option value="">Select Region</option>';
-for (var i = 0; i < allRegions.length; i++) {
-var o = document.createElement('option'); o.value = allRegions[i].name; o.textContent = allRegions[i].name;
-if (allRegions[i].name === selected) o.selected = true;
-sel.appendChild(o);
-}
-}
-
-function populateHubSelect(selected) {
-var sel = document.getElementById('userHub');
-sel.innerHTML = '<option value="">Select Hub</option>';
-for (var i = 0; i < allHubs.length; i++) {
-var o = document.createElement('option'); o.value = allHubs[i].name; o.textContent = allHubs[i].name;
-if (allHubs[i].name === selected) o.selected = true;
-sel.appendChild(o);
-}
+var regionItems = getRegionNames();
+msPopulate('msRegionsWrap', regionItems, []);
+msPopulate('msStatesWrap', [], []);
+msPopulate('msDivisionsWrap', [], []);
+msPopulate('msHubsWrap', getHubsForDivisions([]), []);
 }
 
 async function addUser() {
@@ -421,15 +549,23 @@ for (var i = 0; i < allUsers.length; i++) {
 if (allUsers[i].email && allUsers[i].email.toLowerCase() === email) { exists = true; break; }
 }
 if (exists) { showToast('Email already exists!', 'fa-solid fa-triangle-exclamation'); resetBtn(); return; }
+var regions = msGetSelected('msRegionsWrap');
+var states = msGetSelected('msStatesWrap');
+var divisions = msGetSelected('msDivisionsWrap');
+var hubs = msGetSelected('msHubsWrap');
 var data = {
 fullName: document.getElementById('userName').value.trim(),
 email: email,
 employeeCode: document.getElementById('userEmpCode').value.trim(),
 role: document.getElementById('userRole').value,
-region: document.getElementById('userRegion').value || '',
-state: document.getElementById('userState').value || '',
-division: document.getElementById('userDivision').value || '',
-hub: document.getElementById('userHub').value || '',
+region: regions.length ? regions[0] : '',
+state: states.length ? states[0] : '',
+division: divisions.length ? divisions[0] : '',
+hub: hubs.length ? hubs[0] : '',
+regions: regions,
+states: states,
+divisions: divisions,
+hubs: hubs,
 password: document.getElementById('userPassword').value,
 status: document.getElementById('userStatus').value,
 createdAt: new Date().toISOString(),
@@ -446,15 +582,23 @@ resetBtn();
 
 async function updateUser() {
 try {
+var regions = msGetSelected('msRegionsWrap');
+var states = msGetSelected('msStatesWrap');
+var divisions = msGetSelected('msDivisionsWrap');
+var hubs = msGetSelected('msHubsWrap');
 var data = {
 fullName: document.getElementById('userName').value.trim(),
 email: document.getElementById('userEmail').value.trim().toLowerCase(),
 employeeCode: document.getElementById('userEmpCode').value.trim(),
 role: document.getElementById('userRole').value,
-region: document.getElementById('userRegion').value || '',
-state: document.getElementById('userState').value || '',
-division: document.getElementById('userDivision').value || '',
-hub: document.getElementById('userHub').value || '',
+region: regions.length ? regions[0] : '',
+state: states.length ? states[0] : '',
+division: divisions.length ? divisions[0] : '',
+hub: hubs.length ? hubs[0] : '',
+regions: regions,
+states: states,
+divisions: divisions,
+hubs: hubs,
 status: document.getElementById('userStatus').value,
 updatedAt: new Date().toISOString(),
 updatedBy: (currentUser && (currentUser.fullName || currentUser.email)) || ''
@@ -485,6 +629,12 @@ await loadUsers();
 } catch(e) { console.error(e); showToast('Error deleting user: ' + e.message, 'fa-solid fa-triangle-exclamation'); }
 }
 
+function getArrayVal(u, field) {
+if (u[field + 's'] && Array.isArray(u[field + 's']) && u[field + 's'].length) return u[field + 's'];
+if (u[field]) return [u[field]];
+return [];
+}
+
 function editUser(id) {
 var u = null;
 for (var i = 0; i < allUsers.length; i++) {
@@ -503,34 +653,11 @@ document.getElementById('userEmpCode').value = u.employeeCode || '';
 document.getElementById('userRole').value = u.role || '';
 document.getElementById('userStatus').value = u.status || 'Active';
 document.getElementById('userPassword').value = '';
-populateRegionSelect(u.region || '');
-populateHubSelect(u.hub || '');
-var region = u.region || '';
-var stateSel = document.getElementById('userState');
-stateSel.innerHTML = '<option value="">Select State</option>';
-stateSel.disabled = !region;
-if (region) {
-for (var i = 0; i < allStates.length; i++) {
-if (allStates[i].region === region) {
-var o = document.createElement('option'); o.value = allStates[i].name; o.textContent = allStates[i].name;
-if (allStates[i].name === u.state) o.selected = true;
-stateSel.appendChild(o);
-}
-}
-}
-var state = u.state || '';
-var divSel = document.getElementById('userDivision');
-divSel.innerHTML = '<option value="">Select Division</option>';
-divSel.disabled = !state;
-if (state) {
-for (var i = 0; i < allDivisions.length; i++) {
-if (allDivisions[i].state === state) {
-var o = document.createElement('option'); o.value = allDivisions[i].name; o.textContent = allDivisions[i].name;
-if (allDivisions[i].name === u.division) o.selected = true;
-divSel.appendChild(o);
-}
-}
-}
+var regions = getArrayVal(u, 'region');
+var states = getArrayVal(u, 'state');
+var divisions = getArrayVal(u, 'division');
+var hubs = getArrayVal(u, 'hub');
+populateFormMs(regions, states, divisions, hubs);
 openModal();
 }
 
@@ -558,7 +685,11 @@ return;
 for (var i = 0; i < filtered.length; i++) {
 var u = filtered[i];
 var statusClass = (u.status === 'Active') ? 'status-active' : 'status-inactive';
-var row = '<tr><td>' + (i + 1) + '</td><td><strong>' + safeVal(u.fullName) + '</strong></td><td>' + safeVal(u.email) + '</td><td>' + safeVal(u.employeeCode) + '</td><td>' + safeVal(u.role) + '</td><td>' + safeVal(u.region) + '</td><td>' + safeVal(u.state) + '</td><td>' + safeVal(u.division) + '</td><td>' + safeVal(u.hub) + '</td><td><span class="status-badge ' + statusClass + '">' + safeVal(u.status, 'Active') + '</span></td><td><button class="action-btn edit" onclick="editUser(\'' + escapeAttr(u.id) + '\')"><i class="fa-solid fa-pen-to-square"></i> Edit</button> <button class="action-btn delete" onclick="deleteUser(\'' + escapeAttr(u.id) + '\',\'' + escapeAttr(u.fullName || '') + '\')"><i class="fa-solid fa-trash-can"></i> Delete</button></td></tr>';
+var regions = getArrayVal(u, 'region').join(', ') || '-';
+var states = getArrayVal(u, 'state').join(', ') || '-';
+var divisions = getArrayVal(u, 'division').join(', ') || '-';
+var hubs = getArrayVal(u, 'hub').join(', ') || '-';
+var row = '<tr><td>' + (i + 1) + '</td><td><strong>' + safeVal(u.fullName) + '</strong></td><td>' + safeVal(u.email) + '</td><td>' + safeVal(u.employeeCode) + '</td><td>' + safeVal(u.role) + '</td><td>' + safeVal(regions) + '</td><td>' + safeVal(states) + '</td><td>' + safeVal(divisions) + '</td><td>' + safeVal(hubs) + '</td><td><span class="status-badge ' + statusClass + '">' + safeVal(u.status, 'Active') + '</span></td><td><button class="action-btn edit" onclick="editUser(\'' + escapeAttr(u.id) + '\')"><i class="fa-solid fa-pen-to-square"></i> Edit</button> <button class="action-btn delete" onclick="deleteUser(\'' + escapeAttr(u.id) + '\',\'' + escapeAttr(u.fullName || '') + '\')"><i class="fa-solid fa-trash-can"></i> Delete</button></td></tr>';
 tb.innerHTML += row;
 }
 }
@@ -593,8 +724,11 @@ allStates = stateSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.d
 allDivisions = divSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
 allHubs = hubSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
 debugLog('Master data loaded: ' + allRegions.length + ' regions, ' + allStates.length + ' states, ' + allDivisions.length + ' divisions, ' + allHubs.length + ' hubs');
-populateRegionSelect();
-populateHubSelect();
+var regionItems = getRegionNames();
+msPopulate('msRegionsWrap', regionItems, []);
+msPopulate('msStatesWrap', [], []);
+msPopulate('msDivisionsWrap', [], []);
+msPopulate('msHubsWrap', getHubsForDivisions([]), []);
 } catch(e) { console.error(e); debugLog('Error loading master data: ' + e.message); showToast('Error loading master data', 'fa-solid fa-triangle-exclamation'); }
 }
 
@@ -619,9 +753,9 @@ if (currentUser && currentUser.role !== 'Super Admin') {
 var filtered = [];
 for (var i = 0; i < allUsers.length; i++) {
 var u = allUsers[i];
-if (currentUser.region && u.region !== currentUser.region) continue;
-if (currentUser.state && u.state !== currentUser.state) continue;
-if (currentUser.division && currentUser.role !== "Super Admin" && currentUser.role !== "Admin" && u.division !== currentUser.division) continue;
+if (currentUser.region) { var ur = getArrayVal(u, 'region'); if (ur.indexOf(currentUser.region) === -1) continue; }
+if (currentUser.state) { var us = getArrayVal(u, 'state'); if (us.indexOf(currentUser.state) === -1) continue; }
+if (currentUser.division && currentUser.role !== "Super Admin" && currentUser.role !== "Admin") { var ud = getArrayVal(u, 'division'); if (ud.indexOf(currentUser.division) === -1) continue; }
 filtered.push(u);
 }
 debugLog('Filtered to ' + filtered.length + ' users (non-Super Admin view)');
@@ -659,9 +793,6 @@ setTimeout(function(){ window.location.href = 'dashboard.html' }, 1200);
 return;
 }
 currentUser = user;
-document.getElementById('userAvatar').textContent = getInitials(user.fullName);
-document.getElementById('adminName').innerText = user.fullName || 'User';
-document.getElementById('userRoleBadge').innerText = user.role || '-';
 setupSidebar(user);
 debugLog('Loading data...');
 await loadMasterData();
