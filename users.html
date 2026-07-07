@@ -88,6 +88,7 @@ tr:hover td{background:#fafcff}
 .modal h2 i{color:var(--accent)}
 .float-add-btn{position:fixed;top:82px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:18px;box-shadow:0 4px 16px rgba(37,99,235,0.35);cursor:pointer;transition:all var(--transition);z-index:500;display:flex;align-items:center;justify-content:center}
 .float-add-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(37,99,235,0.45)}
+.debug-bar{background:#fff3cd;border:1px solid #ffc107;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px;display:none;word-break:break-all}
 .form-grid.full-width .form-group{grid-column:1/-1}
 .ms-wrap{position:relative;width:100%}
 .ms-header{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:#fff;cursor:pointer;min-height:35px;gap:4px}
@@ -127,6 +128,8 @@ tr:hover td{background:#fafcff}
 <div class="top-bar">
 <div class="top-bar-left"><h1>User Management</h1></div>
 </div>
+
+<div id="debugInfo" class="debug-bar"></div>
 
 <div class="modal-overlay" id="userModal">
 <div class="modal">
@@ -271,6 +274,10 @@ t.classList.add('show');
 setTimeout(function(){ t.classList.remove('show') }, 2500);
 }
 
+function debugLog(msg) {
+console.log('[UserMgmt] ' + msg);
+}
+
 document.getElementById('hamburgerBtn').addEventListener('click', function(){
 document.getElementById('sidebar').classList.toggle('open');
 document.getElementById('sidebarOverlay').classList.toggle('show');
@@ -341,26 +348,29 @@ else { addUser(); }
 });
 
 // --- Multi-Select helpers ---
-function msToggle(id) {
-var wrap = document.getElementById(id);
-if (!wrap) return;
-var drop = document.getElementById(id + 'Drop');
-var arrow = wrap.querySelector('.ms-arrow');
-if (!drop) return;
+function msToggle(id){
+const wrap=document.getElementById(id);
+if(!wrap) return;
+const drop=document.getElementById(id+"Drop");
+const arrow=wrap.querySelector(".ms-arrow");
+if(!drop) return;
 msCloseAll();
-drop.classList.toggle('open');
-if (arrow) arrow.classList.toggle('open');
+drop.classList.toggle("open");
+if(arrow){
+arrow.classList.toggle("open");
 }
-
-function msCloseAll() {
-document.querySelectorAll('.ms-drop.open').forEach(function(el) { el.classList.remove('open'); });
-document.querySelectorAll('.ms-arrow.open').forEach(function(el) { el.classList.remove('open'); });
 }
-
+function msCloseAll(){
+document.querySelectorAll(".ms-drop").forEach(e=>{
+e.classList.remove("open");
+});
+document.querySelectorAll(".ms-arrow").forEach(e=>{
+e.classList.remove("open");
+});
+}
 document.addEventListener('click', function(e) {
 if (!e.target.closest('.ms-wrap')) msCloseAll();
 });
-
 function msPopulate(id, items, selectedVals) {
 var drop = document.getElementById(id + 'Drop');
 if (!drop) return;
@@ -377,30 +387,44 @@ if (e.target.tagName !== 'INPUT') cb.checked = !cb.checked;
 var chs = drop.querySelectorAll('.ms-opt input');
 for (var i = 0; i < chs.length; i++) chs[i].checked = cb.checked;
 msUpdateLabel(id, items);
+// Auto refresh cascading dropdowns
+if (id === "msRegionsWrap") { rebuildStates(); }
+if (id === "msStatesWrap") { rebuildDivisions(); }
+if (id === "msDivisionsWrap") { rebuildHubs(); }
 };
 drop.appendChild(allDiv);
+
 for (var i = 0; i < items.length; i++) {
-(function(idx) {
 var div = document.createElement('div');
 div.className = 'ms-opt';
 var cb = document.createElement('input');
 cb.type = 'checkbox';
-cb.value = items[idx];
-cb.checked = selectedVals.indexOf(items[idx]) !== -1;
-cb.onchange = function() {
-var allCb = document.getElementById(id + '_all');
-var chs = drop.querySelectorAll('.ms-opt input');
-var allChecked = true;
-for (var j = 0; j < chs.length; j++) { if (!chs[j].checked) { allChecked = false; break; } }
-if (allCb) allCb.checked = allChecked;
-msUpdateLabel(id, items);
-};
+cb.value = items[i];
+cb.checked = selectedVals.indexOf(items[i]) !== -1;
+
+cb.onchange = function () {
+    var allCb = document.getElementById(id + "_all");
+    var chs = drop.querySelectorAll(".ms-opt input");
+    var allChecked = true;
+    for (var j = 0; j < chs.length; j++) {
+        if (!chs[j].checked) {
+            allChecked = false;
+            break;
+        }
+    }
+    if (allCb) allCb.checked = allChecked;
+    msUpdateLabel(id, items);
+    
+    if (id === "msRegionsWrap") { rebuildStates(); }
+    if (id === "msStatesWrap") { rebuildDivisions(); }
+    if (id === "msDivisionsWrap") { rebuildHubs(); }
+}; // <-- SAHI BRACKET YAHAN AANA CHAHIYE THA
+
 div.appendChild(cb);
 var lb = document.createElement('label');
-lb.textContent = items[idx];
+lb.textContent = items[i];
 div.appendChild(lb);
 drop.appendChild(div);
-})(i);
 }
 msUpdateLabel(id, items);
 }
@@ -420,7 +444,6 @@ label.textContent = sel.join(', ');
 if (count) count.textContent = sel.length + ' selected';
 }
 }
-
 function msGetSelected(id) {
 var chs = document.querySelectorAll('#' + id + 'Drop .ms-opt input');
 var sel = [];
@@ -428,53 +451,64 @@ for (var i = 0; i < chs.length; i++) { if (chs[i].checked) sel.push(chs[i].value
 return sel;
 }
 
-// --- Cascading multi-select logic ---
+// --- Cascading multi-select logic fixed for "ALL" option ---
 function getRegionNames() {
 return allRegions.map(function(r){ return r.name }).filter(Boolean);
 }
-
-function getStatesForRegions(regions) {
-if (!regions || !regions.length) return [];
-return allStates.filter(function(s) { return regions.indexOf(s.regionName || s.region) !== -1 }).map(function(s) { return s.name }).filter(Boolean);
+function getStatesForRegions(regions){
+    if(!regions || regions.length===0){
+        return [...new Set(allStates.map(s=>s.name))];
+    }
+    return [...new Set(
+        allStates
+        .filter(s=>regions.includes(s.region))
+        .map(s=>s.name)
+    )];
 }
-
-function getDivisionsForStates(states) {
-if (!states || !states.length) return [];
-return allDivisions.filter(function(d) { return states.indexOf(d.stateName || d.state) !== -1 }).map(function(d) { return d.name }).filter(Boolean);
+function getDivisionsForStates(states){
+    if(!states || states.length===0){
+        return [...new Set(allDivisions.map(d=>d.name))];
+    }
+    return [...new Set(
+        allDivisions
+        .filter(d=>states.includes(d.state))
+        .map(d=>d.name)
+    )];
 }
-
-function getHubsForDivisions(divs) {
-if (!divs || !divs.length) return allHubs.map(function(h) { return h.name }).filter(Boolean);
-return allHubs.filter(function(h) { return divs.indexOf(h.division) !== -1 }).map(function(h) { return h.name }).filter(Boolean);
+function getHubsForDivisions(divs){
+    if(!divs || divs.length===0){
+        return [...new Set(allHubs.map(h=>h.name))];
+    }
+    return [...new Set(
+        allHubs
+        .filter(h=>divs.includes(h.division))
+        .map(h=>h.name)
+    )];
 }
-
 function rebuildStates() {
 var regions = msGetSelected('msRegionsWrap');
 var currentStates = msGetSelected('msStatesWrap');
 var stateOptions = getStatesForRegions(regions);
-var validStates = currentStates.filter(function(s) { return stateOptions.indexOf(s) !== -1 });
+var validStates = currentStates.filter(function(s){ return stateOptions.indexOf(s) !== -1 });
 msPopulate('msStatesWrap', stateOptions, validStates);
 rebuildDivisions();
 }
-
 function rebuildDivisions() {
 var states = msGetSelected('msStatesWrap');
 var currentDivs = msGetSelected('msDivisionsWrap');
 var divOptions = getDivisionsForStates(states);
-var validDivs = currentDivs.filter(function(d) { return divOptions.indexOf(d) !== -1 });
+var validDivs = currentDivs.filter(function(d){ return divOptions.indexOf(d) !== -1 });
 msPopulate('msDivisionsWrap', divOptions, validDivs);
 rebuildHubs();
 }
-
 function rebuildHubs() {
 var divs = msGetSelected('msDivisionsWrap');
 var hubOptions = getHubsForDivisions(divs);
 var currentHubs = msGetSelected('msHubsWrap');
-var validHubs = currentHubs.filter(function(h) { return hubOptions.indexOf(h) !== -1 });
+var validHubs = currentHubs.filter(function(h){ return hubOptions.indexOf(h) !== -1 });
 msPopulate('msHubsWrap', hubOptions, validHubs);
 }
 
-// Listen for checkbox changes to rebuild cascading dropdowns
 document.addEventListener('change', function(e) {
 var wrap = e.target.closest('.ms-wrap');
 if (!wrap || e.target.type !== 'checkbox') return;
@@ -504,9 +538,9 @@ document.getElementById('cancelBtn').style.display = 'none';
 editingUserId = null;
 var regionItems = getRegionNames();
 msPopulate('msRegionsWrap', regionItems, []);
-msPopulate('msStatesWrap', [], []);
-msPopulate('msDivisionsWrap', [], []);
-msPopulate('msHubsWrap', allHubs.map(function(h){ return h.name }).filter(Boolean), []);
+msPopulate('msStatesWrap', getStatesForRegions([]), []);
+msPopulate('msDivisionsWrap', getDivisionsForStates([]), []);
+msPopulate('msHubsWrap', getHubsForDivisions([]), []);
 }
 
 async function addUser() {
@@ -584,9 +618,10 @@ resetBtn();
 
 function resetBtn() {
 var btn = document.getElementById('submitBtn');
-if (!btn) return;
+if(btn) {
 btn.disabled = false;
 btn.innerHTML = editingUserId ? '<i class="fa-solid fa-floppy-disk"></i> Update User' : '<i class="fa-solid fa-floppy-disk"></i> Save User';
+}
 }
 
 async function deleteUser(id, name) {
@@ -632,7 +667,7 @@ openModal();
 
 function renderTable(users) {
 var tb = document.getElementById('usersTableBody');
-if (!tb) return;
+if(!tb) return;
 var searchVal = document.getElementById('searchUser').value.trim().toLowerCase();
 var roleFilter = document.getElementById('filterRole').value;
 var filtered = [];
@@ -684,24 +719,28 @@ document.getElementById('filterRole').addEventListener('change', function(){ ren
 
 async function loadMasterData() {
 try {
-var regSnap = await db.collection('regions').get().catch(function(e){ console.warn(e); return {docs:[]}; });
-var stateSnap = await db.collection('states').get().catch(function(e){ console.warn(e); return {docs:[]}; });
-var divSnap = await db.collection('divisions').get().catch(function(e){ console.warn(e); return {docs:[]}; });
-var hubSnap = await db.collection('hubs').get().catch(function(e){ console.warn(e); return {docs:[]}; });
+debugLog('Loading master data...');
+var regSnap = await db.collection('regions').get().catch(e => { console.warn(e); return {docs:[]}; });
+var stateSnap = await db.collection('states').get().catch(e => { console.warn(e); return {docs:[]}; });
+var divSnap = await db.collection('divisions').get().catch(e => { console.warn(e); return {docs:[]}; });
+var hubSnap = await db.collection('hubs').get().catch(e => { console.warn(e); return {docs:[]}; });
 allRegions = regSnap.docs ? regSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
 allStates = stateSnap.docs ? stateSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
 allDivisions = divSnap.docs ? divSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
 allHubs = hubSnap.docs ? hubSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
-} catch(e) { console.error(e); }
+} catch(e) { 
+console.error(e); 
+}
 var regionItems = getRegionNames();
 msPopulate('msRegionsWrap', regionItems, []);
-msPopulate('msStatesWrap', [], []);
-msPopulate('msDivisionsWrap', [], []);
-msPopulate('msHubsWrap', allHubs.map(function(h){ return h.name }).filter(Boolean), []);
+msPopulate('msStatesWrap', getStatesForRegions([]), []);
+msPopulate('msDivisionsWrap', getDivisionsForStates([]), []);
+msPopulate('msHubsWrap', getHubsForDivisions([]), []);
 }
 
 async function loadUsers() {
 try {
+debugLog('Loading users...');
 var snap = await db.collection('users').get();
 var tempUsers = [];
 for (var i = 0; i < snap.docs.length; i++) {
@@ -723,9 +762,10 @@ filtered.push(u);
 allUsers = filtered;
 }
 renderTable(allUsers);
-} catch(e) { console.error(e);
+} catch(e) { 
+console.error(e); 
 var tb = document.getElementById('usersTableBody');
-if (tb) tb.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users.</p></div></td></tr>';
+if(tb) tb.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users.</p></div></td></tr>';
 }
 }
 
