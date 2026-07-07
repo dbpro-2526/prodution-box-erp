@@ -88,7 +88,6 @@ tr:hover td{background:#fafcff}
 .modal h2 i{color:var(--accent)}
 .float-add-btn{position:fixed;top:82px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:18px;box-shadow:0 4px 16px rgba(37,99,235,0.35);cursor:pointer;transition:all var(--transition);z-index:500;display:flex;align-items:center;justify-content:center}
 .float-add-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(37,99,235,0.45)}
-.debug-bar{background:#fff3cd;border:1px solid #ffc107;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px;display:none;word-break:break-all}
 .form-grid.full-width .form-group{grid-column:1/-1}
 .ms-wrap{position:relative;width:100%}
 .ms-header{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:#fff;cursor:pointer;min-height:35px;gap:4px}
@@ -128,8 +127,6 @@ tr:hover td{background:#fafcff}
 <div class="top-bar">
 <div class="top-bar-left"><h1>User Management</h1></div>
 </div>
-
-<div id="debugInfo" class="debug-bar"></div>
 
 <div class="modal-overlay" id="userModal">
 <div class="modal">
@@ -274,11 +271,8 @@ t.classList.add('show');
 setTimeout(function(){ t.classList.remove('show') }, 2500);
 }
 
+// Cleaned debugLog: Only logs in browser console (F12) for developers, completely hidden from users
 function debugLog(msg) {
-var d = document.getElementById('debugInfo');
-if (!d) return;
-d.style.display = 'block';
-d.innerHTML = d.innerHTML + '<div>' + escapeHtml(msg) + '</div>';
 console.log('[UserMgmt] ' + msg);
 }
 
@@ -484,7 +478,6 @@ var validHubs = currentHubs.filter(function(h){ return hubOptions.indexOf(h) !==
 msPopulate('msHubsWrap', hubOptions, validHubs);
 }
 
-// Detect checkbox changes to rebuild cascading dropdowns
 document.addEventListener('change', function(e) {
 var wrap = e.target.closest('.ms-wrap');
 if (!wrap || e.target.type !== 'checkbox') return;
@@ -692,7 +685,7 @@ document.getElementById('filterRole').addEventListener('change', function(){ ren
 
 async function loadMasterData() {
 try {
-debugLog('Loading master data (regions, states, divisions, hubs)...');
+debugLog('Loading master data...');
 var regSnap = await db.collection('regions').get();
 var stateSnap = await db.collection('states').get();
 var divSnap = await db.collection('divisions').get();
@@ -701,32 +694,26 @@ allRegions = regSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.da
 allStates = stateSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
 allDivisions = divSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
 allHubs = hubSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
-debugLog('Master data loaded: ' + allRegions.length + ' regions, ' + allStates.length + ' states, ' + allDivisions.length + ' divisions, ' + allHubs.length + ' hubs');
 var regionItems = getRegionNames();
 msPopulate('msRegionsWrap', regionItems, []);
 msPopulate('msStatesWrap', [], []);
 msPopulate('msDivisionsWrap', [], []);
 msPopulate('msHubsWrap', getHubsForDivisions([]), []);
-} catch(e) { console.error(e); debugLog('Error loading master data: ' + e.message); showToast('Error loading master data', 'fa-solid fa-triangle-exclamation'); }
+} catch(e) { console.error(e); showToast('Error loading master data', 'fa-solid fa-triangle-exclamation'); }
 }
 
 async function loadUsers() {
 try {
-debugLog('Loading users from Firebase...');
+debugLog('Loading users...');
 var snap = await db.collection('users').get();
-debugLog('Firebase returned ' + snap.docs.length + ' documents');
 var tempUsers = [];
 for (var i = 0; i < snap.docs.length; i++) {
 var d = snap.docs[i];
 var data = d.data();
-if (!data) {
-debugLog('WARNING: Document ' + d.id + ' has no data, skipping');
-continue;
-}
+if (!data) continue;
 tempUsers.push(Object.assign({id: d.id}, data));
 }
 allUsers = tempUsers;
-debugLog('Mapped ' + allUsers.length + ' users');
 if (currentUser && currentUser.role !== 'Super Admin') {
 var filtered = [];
 for (var i = 0; i < allUsers.length; i++) {
@@ -736,49 +723,39 @@ if (currentUser.state) { var us = getArrayVal(u, 'state'); if (us.indexOf(curren
 if (currentUser.division && currentUser.role !== "Super Admin" && currentUser.role !== "Admin") { var ud = getArrayVal(u, 'division'); if (ud.indexOf(currentUser.division) === -1) continue; }
 filtered.push(u);
 }
-debugLog('Filtered to ' + filtered.length + ' users (non-Super Admin view)');
 allUsers = filtered;
 }
 renderTable(allUsers);
-debugLog('Users rendered successfully');
-} catch(e) { console.error(e); debugLog('ERROR loading users: ' + e.message); showToast('Error loading users: ' + e.message, 'fa-solid fa-triangle-exclamation');
-document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users. Check console (F12) for details.</p><p style="font-size:11px;margin-top:4px;color:#dc2626">' + escapeHtml(e.message) + '</p></div></td></tr>';
+} catch(e) { console.error(e); showToast('Error loading users: ' + e.message, 'fa-solid fa-triangle-exclamation');
+document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users.</p></div></td></tr>';
 }
 }
 
 window.addEventListener('DOMContentLoaded', async function(){
 try {
-debugLog('Page loaded, initializing...');
 var sessionStr = localStorage.getItem('userSession');
 if (!sessionStr) {
-debugLog('No session found, redirecting to login');
 showToast('Session invalid! Redirecting...');
 setTimeout(function(){ window.location.href = 'login.html' }, 1200);
 return;
 }
 var user = JSON.parse(sessionStr);
-debugLog('Session user: ' + (user.email || 'unknown') + ', role: ' + (user.role || 'none'));
 if (!user || !user.role) {
-debugLog('Invalid session data');
 showToast('Session invalid! Redirecting...');
 setTimeout(function(){ window.location.href = 'login.html' }, 1200);
 return;
 }
 if (["Super Admin", "Admin"].indexOf(user.role) === -1) {
-debugLog('Access denied for role: ' + user.role);
 showToast('Access denied! Redirecting...');
 setTimeout(function(){ window.location.href = 'dashboard.html' }, 1200);
 return;
 }
 currentUser = user;
 setupSidebar(user);
-debugLog('Loading data...');
 await loadMasterData();
 await loadUsers();
-debugLog('Initialization complete');
 } catch(e) {
-console.error('FATAL ERROR in initialization:', e);
-debugLog('FATAL ERROR: ' + e.message);
+console.error('Initialization error:', e);
 showToast('Error loading page: ' + e.message, 'fa-solid fa-triangle-exclamation');
 }
 });
