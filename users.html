@@ -428,14 +428,48 @@ var cb = document.createElement('input');
 cb.type = 'checkbox';
 cb.value = items[i];
 cb.checked = selectedVals.indexOf(items[i]) !== -1;
-cb.onchange = function() {
-var allCb = document.getElementById(id + '_all');
-var chs = drop.querySelectorAll('.ms-opt input');
-var allChecked = true;
-for (var j = 0; j < chs.length; j++) { if (!chs[j].checked) { allChecked = false; break; } }
-if (allCb) allCb.checked = allChecked;
-msUpdateLabel(id, items);
-};
+cb.onchange = function () {
+
+    var allCb = document.getElementById(id + "_all");
+
+    var chs = drop.querySelectorAll(".ms-opt input");
+
+    var allChecked = true;
+
+    for (var j = 0; j < chs.length; j++) {
+
+        if (!chs[j].checked) {
+
+            allChecked = false;
+
+            break;
+
+        }
+
+    }
+
+    if (allCb) allCb.checked = allChecked;
+
+    msUpdateLabel(id, items);
+
+    if (id === "msRegionsWrap") {
+
+        rebuildStates();
+
+    }
+
+    if (id === "msStatesWrap") {
+
+        rebuildDivisions();
+
+    }
+
+    if (id === "msDivisionsWrap") {
+
+        rebuildHubs();
+
+    }
+
 div.appendChild(cb);
 var lb = document.createElement('label');
 lb.textContent = items[i];
@@ -474,30 +508,58 @@ function getStatesForRegions(regions){
 
     if(!regions || regions.length===0){
 
-        return allStates.map(s=>s.name);
+        return [...new Set(allStates.map(s=>s.name))];
 
     }
 
-    return allStates
+    return [...new Set(
+
+        allStates
+
         .filter(s=>regions.includes(s.region))
-        .map(s=>s.name);
+
+        .map(s=>s.name)
+
+    )];
+}
+function getDivisionsForStates(states){
+
+    if(!states || states.length===0){
+
+        return [...new Set(allDivisions.map(d=>d.name))];
+
+    }
+
+    return [...new Set(
+
+        allDivisions
+
+        .filter(d=>states.includes(d.state))
+
+        .map(d=>d.name)
+
+    )];
 
 }
-function getDivisionsForStates(states) {
-if (!states || !states.length) {
-var currentRegions = msGetSelected('msRegionsWrap');
-states = getStatesForRegions(currentRegions);
-}
-return allDivisions.filter(function(d){ return states.indexOf(d.state) !== -1 }).map(function(d){ return d.name }).filter(Boolean);
-}
-function getHubsForDivisions(divs) {
-if (!divs || !divs.length) {
-var currentStates = msGetSelected('msStatesWrap');
-divs = getDivisionsForStates(currentStates);
-}
-return allHubs.filter(function(h){ return divs.indexOf(h.division) !== -1 }).map(function(h){ return h.name }).filter(Boolean);
-}
+function getHubsForDivisions(divs){
 
+    if(!divs || divs.length===0){
+
+        return [...new Set(allHubs.map(h=>h.name))];
+
+    }
+
+    return [...new Set(
+
+        allHubs
+
+        .filter(h=>divs.includes(h.division))
+
+        .map(h=>h.name)
+
+    )];
+
+}
 function rebuildStates() {
 var regions = msGetSelected('msRegionsWrap');
 var currentStates = msGetSelected('msStatesWrap');
