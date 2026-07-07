@@ -427,53 +427,50 @@ for (var i = 0; i < chs.length; i++) { if (chs[i].checked) sel.push(chs[i].value
 return sel;
 }
 
-// --- Cascading multi-select logic ---
+// --- Cascading multi-select logic fixed for "ALL" option ---
 function getRegionNames() {
 return allRegions.map(function(r){ return r.name }).filter(Boolean);
 }
 function getStatesForRegions(regions) {
-if (!regions || !regions.length) return [];
+if (!regions || !regions.length) regions = getRegionNames(); // If all/none selected, fallback to all regions
 return allStates.filter(function(s){ return regions.indexOf(s.region) !== -1 }).map(function(s){ return s.name }).filter(Boolean);
 }
 function getDivisionsForStates(states) {
-if (!states || !states.length) return [];
+if (!states || !states.length) {
+var currentRegions = msGetSelected('msRegionsWrap');
+states = getStatesForRegions(currentRegions);
+}
 return allDivisions.filter(function(d){ return states.indexOf(d.state) !== -1 }).map(function(d){ return d.name }).filter(Boolean);
 }
 function getHubsForDivisions(divs) {
+if (!divs || !divs.length) {
+var currentStates = msGetSelected('msStatesWrap');
+divs = getDivisionsForStates(currentStates);
+}
 if (!divs || !divs.length) return allHubs.map(function(h){ return h.name }).filter(Boolean);
 return allHubs.filter(function(h){ return divs.indexOf(h.division) !== -1 }).map(function(h){ return h.name }).filter(Boolean);
 }
+
 function rebuildStates() {
 var regions = msGetSelected('msRegionsWrap');
 var currentStates = msGetSelected('msStatesWrap');
 var stateOptions = getStatesForRegions(regions);
 var validStates = currentStates.filter(function(s){ return stateOptions.indexOf(s) !== -1 });
-if (validStates.length !== currentStates.length) {
-var header = document.querySelector('#msStatesWrap .ms-header');
-if (header && !header.classList.contains('disabled')) {
 msPopulate('msStatesWrap', stateOptions, validStates);
 rebuildDivisions();
-return;
-}
-}
-msPopulate('msStatesWrap', stateOptions, validStates);
 }
 function rebuildDivisions() {
 var states = msGetSelected('msStatesWrap');
 var currentDivs = msGetSelected('msDivisionsWrap');
 var divOptions = getDivisionsForStates(states);
 var validDivs = currentDivs.filter(function(d){ return divOptions.indexOf(d) !== -1 });
-if (validDivs.length !== currentDivs.length) {
 msPopulate('msDivisionsWrap', divOptions, validDivs);
 rebuildHubs();
-return;
-}
-msPopulate('msDivisionsWrap', divOptions, validDivs);
 }
 function rebuildHubs() {
 var divs = msGetSelected('msDivisionsWrap');
-var currentHubs = msGetSelected('msHubsWrap');
 var hubOptions = getHubsForDivisions(divs);
+var currentHubs = msGetSelected('msHubsWrap');
 var validHubs = currentHubs.filter(function(h){ return hubOptions.indexOf(h) !== -1 });
 msPopulate('msHubsWrap', hubOptions, validHubs);
 }
@@ -507,8 +504,8 @@ document.getElementById('cancelBtn').style.display = 'none';
 editingUserId = null;
 var regionItems = getRegionNames();
 msPopulate('msRegionsWrap', regionItems, []);
-msPopulate('msStatesWrap', [], []);
-msPopulate('msDivisionsWrap', [], []);
+msPopulate('msStatesWrap', getStatesForRegions([]), []);
+msPopulate('msDivisionsWrap', getDivisionsForStates([]), []);
 msPopulate('msHubsWrap', getHubsForDivisions([]), []);
 }
 
@@ -702,8 +699,8 @@ console.error(e);
 }
 var regionItems = getRegionNames();
 msPopulate('msRegionsWrap', regionItems, []);
-msPopulate('msStatesWrap', [], []);
-msPopulate('msDivisionsWrap', [], []);
+msPopulate('msStatesWrap', getStatesForRegions([]), []);
+msPopulate('msDivisionsWrap', getDivisionsForStates([]), []);
 msPopulate('msHubsWrap', getHubsForDivisions([]), []);
 }
 
