@@ -111,6 +111,16 @@ tr:hover td{background:#fafcff}
 .modal-close:hover{background:#e2e8f0;color:var(--text-dark)}
 .modal-body{padding:20px 24px 24px}
 .modal-body .form-card{box-shadow:none;margin:0;padding:0;border:none;border-radius:0}
+.img-viewer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:5000;justify-content:center;align-items:center;padding:20px;cursor:pointer}
+.img-viewer-overlay.show{display:flex}
+.img-viewer-wrap{position:relative;max-width:92vw;max-height:92vh;display:flex;flex-direction:column;align-items:center}
+.img-viewer-wrap img{max-width:100%;max-height:85vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.4);cursor:default}
+.img-viewer-close,.img-viewer-download{position:fixed;top:16px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.12);color:#fff;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background 0.2s}
+.img-viewer-close:hover,.img-viewer-download:hover{background:rgba(255,255,255,0.3)}
+.img-viewer-close{right:16px}.img-viewer-download{right:66px}
+.attach-thumb{display:inline-block;width:36px;height:36px;border-radius:6px;overflow:hidden;cursor:pointer;border:1px solid var(--border);vertical-align:middle}
+.attach-thumb img{width:100%;height:100%;object-fit:cover}
+.attach-icon{color:var(--accent);font-size:16px;cursor:pointer;vertical-align:middle}
 @media(max-width:768px){.float-add-btn{top:60px;right:12px}.modal-overlay{padding:16px 8px;align-items:center}.modal-body{padding:16px}}
 
 @media(max-width:1024px){.main-content{padding:16px 18px}}
@@ -262,6 +272,14 @@ tr:hover td{background:#fafcff}
 </div>
 
 <div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastMsg">Done</span></div>
+
+<div class="img-viewer-overlay" id="imgViewer" onclick="closeImgViewer()">
+<a class="img-viewer-download" id="imgDownloadBtn" href="#" target="_blank" title="Download" onclick="event.stopPropagation()"><i class="fa-solid fa-download"></i></a>
+<button class="img-viewer-close" onclick="closeImgViewer()"><i class="fa-solid fa-xmark"></i></button>
+<div class="img-viewer-wrap" onclick="event.stopPropagation()">
+<img id="imgViewerSrc" src="" alt="Attachment">
+</div>
+</div>
 
 <script>
 var firebaseConfig = {
@@ -456,6 +474,22 @@ function removeDemandItem(idx) {
     demandItems.splice(idx, 1);
     renderItemList();
 }
+
+function openImgViewer(url) {
+  document.getElementById("imgViewerSrc").src = url;
+  document.getElementById("imgDownloadBtn").href = url;
+  document.getElementById("imgViewer").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+function closeImgViewer() {
+  document.getElementById("imgViewer").classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") closeImgViewer();
+});
 
 document.getElementById("btnAddItem").addEventListener("click", addDemandItem);
 
@@ -676,7 +710,14 @@ function renderHistory() {
         var e = allEntries[i];
         var st = e.status || "Pending";
         var itemsHtml = itemsDisplay(e);
-        var attachHtml = e.attachmentUrl ? '<a href="' + esc(e.attachmentUrl) + '" target="_blank" style="color:var(--accent)"><i class="fa-solid fa-paperclip"></i></a>' : "-";
+        var attachHtml = "-";
+        if (e.attachmentUrl) {
+          if (e.attachmentUrl.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i)) {
+            attachHtml = '<span class="attach-thumb" onclick="openImgViewer(\'' + escAttr(e.attachmentUrl) + '\')"><img src="' + esc(e.attachmentUrl) + '" alt=""></span>';
+          } else {
+            attachHtml = '<a href="' + esc(e.attachmentUrl) + '" target="_blank" class="attach-icon" title="View"><i class="fa-solid fa-paperclip"></i></a>';
+          }
+        }
         var actionsHtml = "";
         if (canEditDemand(e) && st === "Pending") {
             actionsHtml += '<button class="action-btn edit" onclick="editDemand(\'' + escAttr(e.id) + '\')"><i class="fa-solid fa-pen-to-square"></i></button> ';
