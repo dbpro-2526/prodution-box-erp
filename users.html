@@ -7,7 +7,8 @@
 <link rel="icon" href="dblogo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
 :root{--primary:#0F4C81;--accent:#2563EB;--bg:#f0f4f9;--sidebar-bg:#0F4C81;--text-dark:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--shadow:0 2px 12px rgba(0,0,0,0.06);--radius:14px;--radius-sm:10px;--transition:0.3s ease}
@@ -345,21 +346,42 @@ else { addUser(); }
 });
 
 // --- Multi-Select helpers ---
-function msToggle(id) {
-var drop = document.getElementById(id + 'Drop');
-var arrow = document.querySelector('#' + id + ' .ms-arrow');
-if (drop.classList.contains('open')) {
-drop.classList.remove('open');
-if (arrow) arrow.classList.remove('open');
-} else {
+function msToggle(id){
+
+const wrap=document.getElementById(id);
+
+if(!wrap) return;
+
+const drop=document.getElementById(id+"Drop");
+
+const arrow=wrap.querySelector(".ms-arrow");
+
+if(!drop) return;
+
 msCloseAll();
-drop.classList.add('open');
-if (arrow) arrow.classList.add('open');
+
+drop.classList.toggle("open");
+
+if(arrow){
+
+arrow.classList.toggle("open");
+
 }
+
 }
-function msCloseAll() {
-document.querySelectorAll('.ms-drop.open').forEach(function(el){ el.classList.remove('open') });
-document.querySelectorAll('.ms-arrow.open').forEach(function(el){ el.classList.remove('open') });
+function msCloseAll(){
+
+document.querySelectorAll(".ms-drop").forEach(e=>{
+
+e.classList.remove("open");
+
+});
+
+document.querySelectorAll(".ms-arrow").forEach(e=>{
+
+e.classList.remove("open");
+
+});
 }
 document.addEventListener('click', function(e) {
 if (!e.target.closest('.ms-wrap')) msCloseAll();
@@ -379,7 +401,24 @@ var cb = allDiv.querySelector('input');
 if (e.target.tagName !== 'INPUT') cb.checked = !cb.checked;
 var chs = drop.querySelectorAll('.ms-opt input');
 for (var i = 0; i < chs.length; i++) chs[i].checked = cb.checked;
-msUpdateLabel(id, items);
+msUpdateLabel(id, items);// Auto refresh cascading dropdowns
+drop.querySelectorAll("input[type='checkbox']").forEach(cb => {
+    cb.addEventListener("change", function () {
+
+        if (id === "msRegionsWrap") {
+            rebuildStates();
+        }
+
+        if (id === "msStatesWrap") {
+            rebuildDivisions();
+        }
+
+        if (id === "msDivisionsWrap") {
+            rebuildHubs();
+        }
+
+    });
+});
 };
 drop.appendChild(allDiv);
 for (var i = 0; i < items.length; i++) {
@@ -431,9 +470,18 @@ return sel;
 function getRegionNames() {
 return allRegions.map(function(r){ return r.name }).filter(Boolean);
 }
-function getStatesForRegions(regions) {
-if (!regions || !regions.length) regions = getRegionNames(); // Fallback to all regions if empty
-return allStates.filter(function(s){ return regions.indexOf(s.region) !== -1 }).map(function(s){ return s.name }).filter(Boolean);
+function getStatesForRegions(regions){
+
+    if(!regions || regions.length===0){
+
+        return allStates.map(s=>s.name);
+
+    }
+
+    return allStates
+        .filter(s=>regions.includes(s.region))
+        .map(s=>s.name);
+
 }
 function getDivisionsForStates(states) {
 if (!states || !states.length) {
