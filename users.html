@@ -7,7 +7,7 @@
 <link rel="icon" href="dblogo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
 :root{--primary:#0F4C81;--accent:#2563EB;--bg:#f0f4f9;--sidebar-bg:#0F4C81;--text-dark:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--shadow:0 2px 12px rgba(0,0,0,0.06);--radius:14px;--radius-sm:10px;--transition:0.3s ease}
@@ -432,7 +432,7 @@ function getRegionNames() {
 return allRegions.map(function(r){ return r.name }).filter(Boolean);
 }
 function getStatesForRegions(regions) {
-if (!regions || !regions.length) regions = getRegionNames(); // If all/none selected, fallback to all regions
+if (!regions || !regions.length) regions = getRegionNames(); // Fallback to all regions if empty
 return allStates.filter(function(s){ return regions.indexOf(s.region) !== -1 }).map(function(s){ return s.name }).filter(Boolean);
 }
 function getDivisionsForStates(states) {
@@ -447,7 +447,6 @@ if (!divs || !divs.length) {
 var currentStates = msGetSelected('msStatesWrap');
 divs = getDivisionsForStates(currentStates);
 }
-if (!divs || !divs.length) return allHubs.map(function(h){ return h.name }).filter(Boolean);
 return allHubs.filter(function(h){ return divs.indexOf(h.division) !== -1 }).map(function(h){ return h.name }).filter(Boolean);
 }
 
