@@ -8,9 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://accounts.google.com/gsi/client"></script>
+<script src="https://apis.google.com/js/api.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
 :root{--primary:#0F4C81;--accent:#2563EB;--bg:#f0f4f9;--sidebar-bg:#0F4C81;--text-dark:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--shadow:0 2px 12px rgba(0,0,0,0.06);--radius:14px;--radius-sm:10px;--transition:0.3s ease}
@@ -86,9 +87,6 @@ tr:hover td{background:#fafcff}
 .action-btn.edit{background:#dbeafe;color:#2563eb}.action-btn.edit:hover{background:#bfdbfe}
 .action-btn.dispatch{background:#fef3c7;color:#d97706}.action-btn.dispatch:hover{background:#fde68a}
 .action-btn.receive{background:#d1fae5;color:#059669}.action-btn.receive:hover{background:#a7f3d0}
-.file-upload-wrap{display:flex;align-items:center;gap:10px}
-.file-upload-wrap input[type=file]{font-size:12px;flex:1}
-.file-upload-wrap .file-name{font-size:11px;color:var(--text-muted)}
 .empty-state i{font-size:36px;margin-bottom:10px;opacity:0.3}
 .spinner-container{display:flex;align-items:center;justify-content:center;padding:60px 20px}
 .spinner-container .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite}
@@ -252,10 +250,11 @@ tr:hover td{background:#fafcff}
 </div>
                 <div class="form-group full">
                         <label>Attachment</label>
-                        <div class="file-upload-wrap">
-                        <input type="file" id="fieldFile" accept="image/*,.pdf,.doc,.docx">
-                        <span class="file-name" id="fileNameDisplay"></span>
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                        <input type="url" id="fieldAttachUrl" placeholder="Paste link or select from Drive" oninput="previewAttachUrl()" style="flex:1;min-width:160px">
+                        <button type="button" class="btn-action" onclick="openDrivePicker()" style="font-size:11px;padding:8px 12px;white-space:nowrap"><i class="fa-brands fa-google-drive"></i> Drive</button>
                         </div>
+                        <img id="fieldAttachPreview" style="display:none;margin-top:6px;max-width:120px;max-height:80px;border-radius:6px;border:1px solid var(--border);cursor:pointer" onclick="openImgViewer(this.src)" alt="">
                 </div>
                 <div class="form-group full">
                         <label>Notes</label>
@@ -293,7 +292,6 @@ var firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
-var storage = firebase.storage();
 var currentUser = null;
 var allHubs = [];
 var allEntries = [];
@@ -493,11 +491,56 @@ document.addEventListener("keydown", function(e) {
 
 document.getElementById("btnAddItem").addEventListener("click", addDemandItem);
 
-/* File upload */
-document.getElementById("fieldFile").addEventListener("change", function() {
-    var file = this.files[0];
-    document.getElementById("fileNameDisplay").textContent = file ? file.name : "";
-});
+// --- Google Drive Picker ---
+var CLIENT_ID = "c426698063494-20gv1u5tbda7i2sc98993v09cacf8c3b.apps.googleusercontent.com";
+var API_KEY = "AIzaSyDrblc5WOyRrSMRJdWIPm8DX2p-YSeS5MQ";
+var accessToken = null;
+
+function openDrivePicker() {
+  if (accessToken) {
+    createPicker();
+    return;
+  }
+  google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: "https://www.googleapis.com/auth/drive.file",
+    callback: function(resp) {
+      if (resp.access_token) {
+        accessToken = resp.access_token;
+        createPicker();
+      } else {
+        showToast("Drive access denied", "error");
+      }
+    }
+  }).requestAccessToken();
+}
+
+function createPicker() {
+  gapi.load("picker", function() {
+    var picker = new google.picker.PickerBuilder()
+      .setDeveloperKey(API_KEY)
+      .setOAuthToken(accessToken)
+      .setAppId("426698063494")
+      .addView(google.picker.ViewId.DOCS)
+      .addView(google.picker.ViewId.PHOTOS)
+      .setOrigin(window.location.protocol + "//" + window.location.host)
+      .setCallback(pickerCallback)
+      .build();
+    picker.setVisible(true);
+  });
+}
+
+function pickerCallback(data) {
+  if (data.action === google.picker.Action.PICKED) {
+    var doc = data.docs[0];
+    var id = doc.id;
+    var name = doc.name;
+    var shareUrl = "https://drive.google.com/file/d/" + id + "/view";
+    document.getElementById("fieldAttachUrl").value = shareUrl;
+    previewAttachUrl();
+    showToast("File selected: " + name);
+  }
+}
 
 function getDirectUrl(url) {
   if (!url) return url;
@@ -508,18 +551,15 @@ function getDirectUrl(url) {
   return url;
 }
 
-async function uploadFile(file) {
-    if (!file) return "";
-    var ref = storage.ref("demands/" + Date.now() + "_" + file.name);
-    try {
-        var snap = await ref.put(file);
-        var url = await snap.ref.getDownloadURL();
-        return url;
-    } catch(e) {
-        console.error("Upload error", e);
-        showToast("File upload failed", "error");
-        return "";
-    }
+function previewAttachUrl() {
+  var url = document.getElementById("fieldAttachUrl").value.trim();
+  var img = document.getElementById("fieldAttachPreview");
+  if (url.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i) || url.indexOf("drive.google.com") !== -1) {
+    img.src = getDirectUrl(url);
+    img.style.display = "block";
+  } else {
+    img.style.display = "none";
+  }
 }
 
 async function onRegionChange() {
@@ -824,11 +864,7 @@ document.getElementById("demandForm").addEventListener("submit", async function(
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
     try {
-        var file = document.getElementById("fieldFile").files[0];
-        if (file) {
-            var url = await uploadFile(file);
-            if (url) uploadedFileUrl = url;
-        }
+        uploadedFileUrl = document.getElementById("fieldAttachUrl").value.trim();
 
         var data = {
             date: document.getElementById("fieldDate").value,
@@ -864,8 +900,8 @@ document.getElementById("demandForm").addEventListener("submit", async function(
         document.getElementById("fieldPriority").value = "Medium";
         document.getElementById("fieldRequestingEntity").value = "";
         document.getElementById("fieldNotes").value = "";
-        document.getElementById("fieldFile").value = "";
-        document.getElementById("fileNameDisplay").textContent = "";
+        document.getElementById("fieldAttachUrl").value = "";
+        document.getElementById("fieldAttachPreview").style.display = "none";
         uploadedFileUrl = "";
         if (!document.getElementById("fieldRegion").disabled) {
             document.getElementById("fieldRegion").value = "";
@@ -913,8 +949,8 @@ document.getElementById("addEntryBtn").addEventListener("click", function() {
     document.getElementById("fieldPriority").value = "Medium";
     document.getElementById("fieldRequestingEntity").value = "";
     document.getElementById("fieldNotes").value = "";
-    document.getElementById("fieldFile").value = "";
-    document.getElementById("fileNameDisplay").textContent = "";
+    document.getElementById("fieldAttachUrl").value = "";
+    document.getElementById("fieldAttachPreview").style.display = "none";
     uploadedFileUrl = "";
     document.getElementById("fieldDate").value = new Date().toISOString().split("T")[0];
     document.getElementById("errorItems").style.display = "none";
