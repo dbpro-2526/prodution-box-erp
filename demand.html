@@ -512,7 +512,13 @@ function previewAttachFile() {
   if (!file) { nameEl.textContent = ""; img.style.display = "none"; sizeEl.textContent = ""; uploadedFileData = ""; return; }
   nameEl.textContent = file.name;
   sizeEl.textContent = (file.size / 1024).toFixed(1) + " KB";
-  if (!file.type.match(/image\//)) { img.style.display = "none"; uploadedFileData = ""; return; }
+  if (!file.type.match(/image\//)) {
+    var reader = new FileReader();
+    reader.onload = function(e) { uploadedFileData = e.target.result; };
+    reader.readAsDataURL(file);
+    img.style.display = "none";
+    return;
+  }
   var reader = new FileReader();
   reader.onload = function(e) {
     var dataUrl = e.target.result;
@@ -520,12 +526,12 @@ function previewAttachFile() {
     var ctx = canvas.getContext("2d");
     var imgObj = new Image();
     imgObj.onload = function() {
-      var maxW = 800, maxH = 800, w = imgObj.width, h = imgObj.height;
+      var maxW = 600, maxH = 600, w = imgObj.width, h = imgObj.height;
       if (w > maxW) { h = h * maxW / w; w = maxW; }
       if (h > maxH) { w = w * maxH / h; h = maxH; }
       canvas.width = w; canvas.height = h;
       ctx.drawImage(imgObj, 0, 0, w, h);
-      uploadedFileData = canvas.toDataURL("image/jpeg", 0.7);
+      uploadedFileData = canvas.toDataURL("image/jpeg", 0.6);
       img.src = uploadedFileData;
       img.style.display = "block";
     };
@@ -622,6 +628,7 @@ function canDispatch(entry) {
 
 function canReceive(entry) {
     if (!currentUser) return false;
+    if (["Super Admin", "Admin"].indexOf(currentUser.role) !== -1) return true;
     var creator = entry.createdBy || "";
     if (creator !== (currentUser.fullName || "")) return false;
     var st = entry.status || "Pending";
@@ -956,3 +963,4 @@ document.getElementById("entryModal").addEventListener("click", function(e) {
 </script>
 </body>
 </html>
+
