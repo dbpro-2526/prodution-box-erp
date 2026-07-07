@@ -88,7 +88,6 @@ tr:hover td{background:#fafcff}
 .modal h2 i{color:var(--accent)}
 .float-add-btn{position:fixed;top:82px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:18px;box-shadow:0 4px 16px rgba(37,99,235,0.35);cursor:pointer;transition:all var(--transition);z-index:500;display:flex;align-items:center;justify-content:center}
 .float-add-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(37,99,235,0.45)}
-.debug-bar{background:#fff3cd;border:1px solid #ffc107;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px;display:none;word-break:break-all}
 .form-grid.full-width .form-group{grid-column:1/-1}
 .ms-wrap{position:relative;width:100%}
 .ms-header{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:#fff;cursor:pointer;min-height:35px;gap:4px}
@@ -128,8 +127,6 @@ tr:hover td{background:#fafcff}
 <div class="top-bar">
 <div class="top-bar-left"><h1>User Management</h1></div>
 </div>
-
-<div id="debugInfo" class="debug-bar"></div>
 
 <div class="modal-overlay" id="userModal">
 <div class="modal">
@@ -275,10 +272,6 @@ setTimeout(function(){ t.classList.remove('show') }, 2500);
 }
 
 function debugLog(msg) {
-var d = document.getElementById('debugInfo');
-if (!d) return;
-d.style.display = 'block';
-d.innerHTML = d.innerHTML + '<div>' + escapeHtml(msg) + '</div>';
 console.log('[UserMgmt] ' + msg);
 }
 
@@ -374,7 +367,6 @@ if (!e.target.closest('.ms-wrap')) msCloseAll();
 function msPopulate(id, items, selectedVals) {
 var drop = document.getElementById(id + 'Drop');
 if (!drop) return;
-var header = document.querySelector('#' + id + ' .ms-header');
 if (!selectedVals) selectedVals = [];
 if (!Array.isArray(selectedVals)) selectedVals = [selectedVals].filter(Boolean);
 drop.innerHTML = '';
@@ -435,20 +427,20 @@ for (var i = 0; i < chs.length; i++) { if (chs[i].checked) sel.push(chs[i].value
 return sel;
 }
 
-// --- Cascading multi-select logic ---
+// --- Cascading multi-select logic fixed for "ALL" option ---
 function getRegionNames() {
 return allRegions.map(function(r){ return r.name }).filter(Boolean);
 }
 function getStatesForRegions(regions) {
-if (!regions || !regions.length) regions = getRegionNames();
-return allStates.filter(function(s){ return regions.indexOf(s.regionName || s.region) !== -1 }).map(function(s){ return s.name }).filter(Boolean);
+if (!regions || !regions.length) regions = getRegionNames(); // If all/none selected, fallback to all regions
+return allStates.filter(function(s){ return regions.indexOf(s.region) !== -1 }).map(function(s){ return s.name }).filter(Boolean);
 }
 function getDivisionsForStates(states) {
 if (!states || !states.length) {
 var currentRegions = msGetSelected('msRegionsWrap');
 states = getStatesForRegions(currentRegions);
 }
-return allDivisions.filter(function(d){ return states.indexOf(d.stateName || d.state) !== -1 }).map(function(d){ return d.name }).filter(Boolean);
+return allDivisions.filter(function(d){ return states.indexOf(d.state) !== -1 }).map(function(d){ return d.name }).filter(Boolean);
 }
 function getHubsForDivisions(divs) {
 if (!divs || !divs.length) {
@@ -458,6 +450,7 @@ divs = getDivisionsForStates(currentStates);
 if (!divs || !divs.length) return allHubs.map(function(h){ return h.name }).filter(Boolean);
 return allHubs.filter(function(h){ return divs.indexOf(h.division) !== -1 }).map(function(h){ return h.name }).filter(Boolean);
 }
+
 function rebuildStates() {
 var regions = msGetSelected('msRegionsWrap');
 var currentStates = msGetSelected('msStatesWrap');
@@ -482,7 +475,6 @@ var validHubs = currentHubs.filter(function(h){ return hubOptions.indexOf(h) !==
 msPopulate('msHubsWrap', hubOptions, validHubs);
 }
 
-// Detect checkbox changes to rebuild cascading dropdowns
 document.addEventListener('change', function(e) {
 var wrap = e.target.closest('.ms-wrap');
 if (!wrap || e.target.type !== 'checkbox') return;
@@ -592,9 +584,10 @@ resetBtn();
 
 function resetBtn() {
 var btn = document.getElementById('submitBtn');
-if (!btn) return;
+if(btn) {
 btn.disabled = false;
 btn.innerHTML = editingUserId ? '<i class="fa-solid fa-floppy-disk"></i> Update User' : '<i class="fa-solid fa-floppy-disk"></i> Save User';
+}
 }
 
 async function deleteUser(id, name) {
@@ -640,7 +633,7 @@ openModal();
 
 function renderTable(users) {
 var tb = document.getElementById('usersTableBody');
-if (!tb) return;
+if(!tb) return;
 var searchVal = document.getElementById('searchUser').value.trim().toLowerCase();
 var roleFilter = document.getElementById('filterRole').value;
 var filtered = [];
@@ -693,15 +686,17 @@ document.getElementById('filterRole').addEventListener('change', function(){ ren
 async function loadMasterData() {
 try {
 debugLog('Loading master data...');
-var regSnap = await db.collection('regions').get().catch(function(e){ console.warn(e); return {docs:[]}; });
-var stateSnap = await db.collection('states').get().catch(function(e){ console.warn(e); return {docs:[]}; });
-var divSnap = await db.collection('divisions').get().catch(function(e){ console.warn(e); return {docs:[]}; });
-var hubSnap = await db.collection('hubs').get().catch(function(e){ console.warn(e); return {docs:[]}; });
+var regSnap = await db.collection('regions').get().catch(e => { console.warn(e); return {docs:[]}; });
+var stateSnap = await db.collection('states').get().catch(e => { console.warn(e); return {docs:[]}; });
+var divSnap = await db.collection('divisions').get().catch(e => { console.warn(e); return {docs:[]}; });
+var hubSnap = await db.collection('hubs').get().catch(e => { console.warn(e); return {docs:[]}; });
 allRegions = regSnap.docs ? regSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
 allStates = stateSnap.docs ? stateSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
 allDivisions = divSnap.docs ? divSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
 allHubs = hubSnap.docs ? hubSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
-} catch(e) { console.error(e); }
+} catch(e) { 
+console.error(e); 
+}
 var regionItems = getRegionNames();
 msPopulate('msRegionsWrap', regionItems, []);
 msPopulate('msStatesWrap', getStatesForRegions([]), []);
@@ -733,46 +728,38 @@ filtered.push(u);
 allUsers = filtered;
 }
 renderTable(allUsers);
-} catch(e) { console.error(e); 
+} catch(e) { 
+console.error(e); 
 var tb = document.getElementById('usersTableBody');
-if (tb) tb.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users.</p></div></td></tr>';
+if(tb) tb.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users.</p></div></td></tr>';
 }
 }
 
 window.addEventListener('DOMContentLoaded', async function(){
 try {
-debugLog('Page loaded, initializing...');
 var sessionStr = localStorage.getItem('userSession');
 if (!sessionStr) {
-debugLog('No session found, redirecting to login');
 showToast('Session invalid! Redirecting...');
 setTimeout(function(){ window.location.href = 'login.html' }, 1200);
 return;
 }
 var user = JSON.parse(sessionStr);
-debugLog('Session user: ' + (user.email || 'unknown') + ', role: ' + (user.role || 'none'));
 if (!user || !user.role) {
-debugLog('Invalid session data');
 showToast('Session invalid! Redirecting...');
 setTimeout(function(){ window.location.href = 'login.html' }, 1200);
 return;
 }
 if (["Super Admin", "Admin"].indexOf(user.role) === -1) {
-debugLog('Access denied for role: ' + user.role);
 showToast('Access denied! Redirecting...');
 setTimeout(function(){ window.location.href = 'dashboard.html' }, 1200);
 return;
 }
 currentUser = user;
 setupSidebar(user);
-debugLog('Loading data...');
 await loadMasterData();
 await loadUsers();
-debugLog('Initialization complete');
 } catch(e) {
-console.error('FATAL ERROR in initialization:', e);
-debugLog('FATAL ERROR: ' + e.message);
-showToast('Error loading page: ' + e.message, 'fa-solid fa-triangle-exclamation');
+console.error('Initialization error:', e);
 }
 });
 </script>
