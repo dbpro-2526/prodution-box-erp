@@ -595,14 +595,32 @@ async function onStateChange() {
     }
 }
 
+function getHubInfo(name) {
+    if (!name || !allHubs.length) return null;
+    for (var i = 0; i < allHubs.length; i++) {
+        if (allHubs[i].name === name || allHubs[i].hubName === name) return allHubs[i];
+    }
+    return null;
+}
+
+function inScope(e) {
+    if (!currentUser || ["Super Admin","Admin"].indexOf(currentUser.role) !== -1) return true;
+    if (currentUser.division) return e.division === currentUser.division || (getHubInfo(e.hub || e.hubName) || {}).division === currentUser.division;
+    if (currentUser.state) return e.state === currentUser.state || (getHubInfo(e.hub || e.hubName) || {}).state === currentUser.state;
+    if (currentUser.region) return e.region === currentUser.region || (getHubInfo(e.hub || e.hubName) || {}).region === currentUser.region;
+    var h = currentUser.hub || currentUser.warehouse;
+    if (h) return e.hub === h || e.hubName === h;
+    return false;
+}
+
 async function loadHistory() {
     try {
         var query = db.collection("demands");
-        if (currentUser && currentUser.division && currentUser.role !== "Super Admin" && currentUser.role !== "Admin") {
-            query = query.where("division", "==", currentUser.division);
+        if (currentUser && ["Regional Manager","Regional Office","State Manager","State Office","Division Manager"].indexOf(currentUser.role) !== -1) {
+            if (currentUser.division) query = query.where("division", "==", currentUser.division);
         }
         var snap = await query.orderBy("date", "desc").limit(200).get();
-        allEntries = snap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
+        allEntries = snap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }).filter(inScope);
         applyFilters();
     } catch(e) {
         console.error("Error loading demands", e);
@@ -612,8 +630,7 @@ async function loadHistory() {
             var docs = snap.docs;
             for (var i = 0; i < docs.length; i++) {
                 var data = docs[i].data();
-                if (currentUser && currentUser.division && currentUser.role !== "Super Admin" && currentUser.role !== "Admin" && data.division !== currentUser.division) continue;
-                allEntries.push(Object.assign({id: docs[i].id}, data));
+                if (inScope(data)) allEntries.push(Object.assign({id: docs[i].id}, data));
             }
             allEntries.sort(function(a, b){ return (b.date || "").localeCompare(a.date || "") });
             applyFilters();
