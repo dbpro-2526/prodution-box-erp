@@ -18,7 +18,7 @@ body{background:var(--bg);color:var(--text-dark);display:flex;min-height:100vh;o
 .sidebar{width:240px;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:1000;transition:transform var(--transition)}
 .sidebar-brand{padding:18px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.1)}
 .sidebar-brand img{width:36px;height:36px;border-radius:8px}
-.sidebar-brand h2{font-size:13px;font-weight:600;color:#Fff;line-height:1.3}
+.sidebar-brand h2{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
 .sidebar-menu{padding:12px 10px;display:flex;flex-direction:column;gap:2px;flex-grow:1;overflow-y:auto}
 .menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;color:rgba(255,255,255,0.7);text-decoration:none;border-radius:var(--radius-sm);font-weight:500;font-size:13px;transition:all var(--transition);cursor:pointer}
 .menu-item i{width:18px;text-align:center;font-size:14px}
@@ -440,11 +440,32 @@ async function onStateChange() {
     }
 }
 
+function getHubInfo(name) {
+    if (!name || !allHubs.length) return null;
+    for (var i = 0; i < allHubs.length; i++) {
+        if (allHubs[i].name === name || allHubs[i].hubName === name) return allHubs[i];
+    }
+    return null;
+}
+
+function inScope(e) {
+    if (!currentUser || ["Super Admin","Admin"].indexOf(currentUser.role) !== -1) return true;
+    if (currentUser.division) return e.division === currentUser.division || (getHubInfo(e.hub || e.hubName) || {}).division === currentUser.division;
+    if (currentUser.state) return e.state === currentUser.state || (getHubInfo(e.hub || e.hubName) || {}).state === currentUser.state;
+    if (currentUser.region) return e.region === currentUser.region || (getHubInfo(e.hub || e.hubName) || {}).region === currentUser.region;
+    var h = currentUser.hub || currentUser.warehouse;
+    if (h) return e.hub === h || e.hubName === h;
+    return false;
+}
+
 async function loadHistory() {
     try {
         var query = db.collection("stock_ledger").where("type", "==", "OUT");
+        if (currentUser && ["Regional Manager","Regional Office","State Manager","State Office","Division Manager"].indexOf(currentUser.role) !== -1) {
+            if (currentUser.division) query = query.where("division", "==", currentUser.division);
+        }
         var snap = await query.orderBy("date", "desc").limit(200).get();
-        allEntries = snap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) });
+        allEntries = snap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }).filter(inScope);
         applyFilters();
     } catch(e) {
         console.error("Error loading history", e);
@@ -454,7 +475,7 @@ async function loadHistory() {
             var docs = snap.docs;
             for (var i = 0; i < docs.length; i++) {
                 var data = docs[i].data();
-                if (data && (data.type || "").toUpperCase() === "OUT") {
+                if (data && (data.type || "").toUpperCase() === "OUT" && inScope(data)) {
                     allEntries.push(Object.assign({id: docs[i].id}, data));
                 }
             }
