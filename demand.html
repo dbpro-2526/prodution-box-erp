@@ -892,8 +892,20 @@ function renderHistory() {
         if (st === "Rejected" && e.rejectionReason) {
             statusHtml += '<div style="font-size:10px;color:#dc2626;margin-top:2px;line-height:1.3">' + esc(e.rejectionReason) + '</div>';
         }
-        tb.innerHTML += "<tr><td>" + esc(e.date || "-") + '</td><td>' + itemsHtml + '</td><td>' + esc(e.priority || "-") + '</td><td>' + esc(e.requestingEntity || "-") + '</td><td>' + esc(e.division || "-") + '</td><td>' + esc(e.hub || e.hubName || "-") + '</td><td>' + statusHtml + '</td><td>' + esc(e.createdBy || "-") + '</td><td>' + attachHtml + '</td><td style="white-space:nowrap">' + actionsHtml + "</td></tr>";
+        tb.innerHTML += "<tr><td>" + esc(e.date || "-") + '</td><td>' + itemsHtml + '</td><td>' + esc(e.priority || "-") + '</td><td>' + esc(e.requestingEntity || "-") + '</td><td>' + esc(e.division || "-") + '</td><td>' + esc(e.hub || e.hubName || "-") + '</td><td>' + statusHtml + '</td><td><div>' + (esc(e.createdBy) || "-") + '</div>' + (fmtTime(e.createdAt) ? '<div style="font-size:10px;color:var(--text-muted);line-height:1.2">' + fmtTime(e.createdAt) + '</div>' : "") + '</td><td>' + attachHtml + '</td><td style="white-space:nowrap">' + actionsHtml + "</td></tr>";
     }
+}
+
+function fmtTime(ts) {
+    if (!ts) return "";
+    var d = ts.toDate ? ts.toDate() : new Date(ts);
+    if (isNaN(d.getTime())) return "";
+    var dd = String(d.getDate()).padStart(2,"0");
+    var mm = String(d.getMonth()+1).padStart(2,"0");
+    var yyyy = d.getFullYear();
+    var hh = String(d.getHours()).padStart(2,"0");
+    var mi = String(d.getMinutes()).padStart(2,"0");
+    return dd + "/" + mm + "/" + yyyy + " " + hh + ":" + mi;
 }
 
 function esc(s) {
