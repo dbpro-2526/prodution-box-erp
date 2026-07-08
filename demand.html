@@ -653,13 +653,14 @@ function canDispatch(entry) {
 }
 
 function canReceive(entry) {
-    if (!currentUser) return false;
+    if (!currentUser) { console.warn("canReceive: no user"); return false; }
     if (["Super Admin", "Admin"].indexOf(currentUser.role) !== -1) return true;
     var st = entry.status || "Pending";
     if (st !== "Dispatched") return false;
-    var userDiv = currentUser.division || "";
-    var userDivs = currentUser.divisions || [];
-    if (entry.division && (entry.division === userDiv || userDivs.indexOf(entry.division) !== -1)) return true;
+    console.log("canReceive debug:", { entryDiv: entry.division, userDiv: currentUser.division, entryRegion: entry.region, userRegion: currentUser.region, entryState: entry.state, userState: currentUser.state });
+    if (entry.division && currentUser.division && entry.division === currentUser.division) return true;
+    if (!entry.division && entry.region && currentUser.region && entry.region === currentUser.region) return true;
+    if (!entry.division && entry.state && currentUser.state && entry.state === currentUser.state) return true;
     return false;
 }
 
