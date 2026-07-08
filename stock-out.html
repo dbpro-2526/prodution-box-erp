@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Stock OUT - Donation Box Inventory</title>
+<title>Stock IN - Donation Box Inventory</title>
 <link rel="icon" href="dblogo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -115,7 +115,7 @@ tr:hover td{background:#fafcff}
 
 <div class="main-content">
 <div class="top-bar">
-<div class="top-bar-left"><h1>Stock OUT</h1></div>
+<div class="top-bar-left"><h1>Stock IN</h1></div>
 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
 <div class="user-info">
 <div class="avatar" id="userAvatar">U</div>
@@ -131,9 +131,9 @@ tr:hover td{background:#fafcff}
 
 <div class="dash-section">
 <div class="section-header">
-<h2><i class="fa-solid fa-clock-rotate-left"></i> Stock OUT History</h2>
+<h2><i class="fa-solid fa-clock-rotate-left"></i> Stock IN History</h2>
 <div style="display:flex;align-items:center;gap:8px">
-<button class="btn-action" onclick="document.getElementById('addEntryBtn').click()" style="font-size:12px;padding:6px 14px"><i class="fa-solid fa-plus"></i> Add Stock OUT</button>
+<button class="btn-action" onclick="document.getElementById('addEntryBtn').click()" style="font-size:12px;padding:6px 14px"><i class="fa-solid fa-plus"></i> Add Stock IN</button>
 <button class="btn-action" onclick="exportExcel()" style="font-size:12px;padding:6px 14px;background:#059669;color:#fff"><i class="fa-solid fa-file-excel"></i> Excel</button>
 <span style="font-size:11px;color:var(--text-muted)" id="historyCount">0 entries</span>
 </div>
@@ -144,7 +144,7 @@ tr:hover td{background:#fafcff}
 <div class="table-wrap">
 <table>
 <thead>
-                        <tr><th>Date</th><th>Item</th><th>Qty</th><th>Unit</th><th>Recipient</th><th>Purpose</th><th>Division</th><th>Hub</th><th>Entered By</th><th>Actions</th></tr>
+                        <tr><th>Date</th><th>Item</th><th>Qty</th><th>Unit</th><th>Source</th><th>Division</th><th>Hub</th><th>Entered By</th><th>Notes</th><th>Actions</th></tr>
                 </thead>
                 <tbody id="historyBody"><tr><td colspan="10"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody>
 </table>
@@ -152,18 +152,18 @@ tr:hover td{background:#fafcff}
 </div>
 
 <div class="footer-text">Donation Box Inventory | &copy; 2026</div>
-<button class="float-add-btn" id="addEntryBtn" title="Add Stock OUT Entry"><i class="fa-solid fa-plus"></i></button>
+<button class="float-add-btn" id="addEntryBtn" title="Add Stock IN Entry"><i class="fa-solid fa-plus"></i></button>
 </div>
 
 <div class="modal-overlay" id="entryModal">
 <div class="modal-container">
 <div class="modal-header">
-<h2><i class="fa-solid fa-arrow-up-long"></i> New Stock OUT Entry</h2>
+<h2><i class="fa-solid fa-arrow-down-long"></i> New Stock IN Entry</h2>
 <button class="modal-close" id="modalCloseBtn" type="button"><i class="fa-solid fa-xmark"></i></button>
 </div>
 <div class="modal-body">
 <div class="form-card">
-<form id="stockOutForm" autocomplete="off">
+<form id="stockInForm" autocomplete="off">
 <div class="form-grid">
 <div class="form-group">
 <label>Date</label>
@@ -210,12 +210,8 @@ tr:hover td{background:#fafcff}
 <span class="lock-badge" id="lockDivision"></span>
 </div>
 <div class="form-group">
-<label>Recipient</label>
-<input type="text" id="fieldRecipient" placeholder="Who received the items?">
-</div>
-<div class="form-group">
-<label>Purpose</label>
-<input type="text" id="fieldPurpose" placeholder="Reason for stock out">
+<label>Source / Supplier</label>
+<input type="text" id="fieldSource" placeholder="e.g. Donor, Supplier name">
 </div>
 <div class="form-group">
 <label>Hub / Warehouse</label>
@@ -226,7 +222,7 @@ tr:hover td{background:#fafcff}
 <label>Notes</label>
 <textarea id="fieldNotes" placeholder="Optional notes..."></textarea>
 </div>
-<button type="submit" class="btn-submit" id="submitBtn"><i class="fa-solid fa-floppy-disk"></i> Save Stock OUT</button>
+<button type="submit" class="btn-submit" id="submitBtn"><i class="fa-solid fa-floppy-disk"></i> Save Stock IN</button>
 </div>
 </form>
 </div>
@@ -316,8 +312,8 @@ function buildSidebar(role) {
     if (["Super Admin", "Admin", "Regional Manager", "Regional Office", "State Manager", "State Office"].indexOf(role) !== -1) {
         items.push({ icon: "fa-solid fa-warehouse", label: "Warehouse", href: "hubs.html", active: false });
     }
-    items.push({ icon: "fa-solid fa-arrow-down-long", label: "Stock IN", href: "stock-in.html", active: false });
-    items.push({ icon: "fa-solid fa-arrow-up-long", label: "Stock OUT", href: "stock-out.html", active: true });
+    items.push({ icon: "fa-solid fa-arrow-down-long", label: "Stock IN", href: "stock-in.html", active: true });
+    items.push({ icon: "fa-solid fa-arrow-up-long", label: "Stock OUT", href: "stock-out.html", active: false });
     items.push({ icon: "fa-solid fa-file-signature", label: "Demand", href: "demand.html", active: false });
     var html = "";
     for (var i = 0; i < items.length; i++) {
@@ -460,7 +456,7 @@ function inScope(e) {
 
 async function loadHistory() {
     try {
-        var query = db.collection("stock_ledger").where("type", "==", "OUT");
+        var query = db.collection("stock_ledger").where("type", "==", "IN");
         if (currentUser && ["Regional Manager","Regional Office","State Manager","State Office","Division Manager"].indexOf(currentUser.role) !== -1) {
             if (currentUser.division) query = query.where("division", "==", currentUser.division);
         }
@@ -475,14 +471,14 @@ async function loadHistory() {
             var docs = snap.docs;
             for (var i = 0; i < docs.length; i++) {
                 var data = docs[i].data();
-                if (data && (data.type || "").toUpperCase() === "OUT" && inScope(data)) {
+                if (data && (data.type || "IN").toUpperCase() === "IN" && inScope(data)) {
                     allEntries.push(Object.assign({id: docs[i].id}, data));
                 }
             }
             allEntries.sort(function(a, b){ return (b.date || "").localeCompare(a.date || "") });
             applyFilters();
         } catch(e2) {
-            console.error("Fallback error", e2);
+            console.error("Fallback load error", e2);
             document.getElementById("historyBody").innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Error loading history</p></div></td></tr>';
         }
     }
@@ -500,7 +496,7 @@ function canDelete(entry) {
 }
 
 async function deleteEntry(id) {
-    if (!confirm("Delete this stock OUT entry permanently?")) return;
+    if (!confirm("Delete this stock IN entry permanently?")) return;
     try {
         await db.collection("stock_ledger").doc(id).delete();
         showToast("Entry deleted!", "success");
@@ -517,13 +513,12 @@ function editEntry(id) {
     document.getElementById("fieldItemName").value = entry.itemName || "";
     if (entry.unit) document.getElementById("fieldUnit").value = entry.unit;
     document.getElementById("fieldQuantity").value = entry.quantity || "";
-    document.getElementById("fieldRecipient").value = entry.recipient || "";
-    document.getElementById("fieldPurpose").value = entry.purpose || "";
+    document.getElementById("fieldSource").value = entry.source || entry.supplier || "";
     document.getElementById("fieldNotes").value = entry.notes || "";
     if (!document.getElementById("fieldRegion").disabled && entry.region) document.getElementById("fieldRegion").value = entry.region;
     if (!document.getElementById("fieldHub").disabled && entry.hub) document.getElementById("fieldHub").value = entry.hub || entry.hubName || "";
     if (entry.region) { onRegionChange(); setTimeout(function(){ if (!document.getElementById("fieldState").disabled && entry.state) document.getElementById("fieldState").value = entry.state; if (entry.state) { onStateChange(); setTimeout(function(){ if (!document.getElementById("fieldDivision").disabled && entry.division) document.getElementById("fieldDivision").value = entry.division; }, 300); } }, 300); }
-    document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Update Stock OUT';
+    document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Update Stock IN';
     openModal();
 }
 
@@ -546,7 +541,7 @@ function renderHistory() {
     document.getElementById("historyCount").textContent = list.length + " entries";
     tb.innerHTML = "";
     if (!list.length) {
-        tb.innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>No stock OUT entries yet.</p></div></td></tr>';
+        tb.innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>No stock IN entries yet.</p></div></td></tr>';
         return;
     }
     for (var i = 0; i < list.length; i++) {
@@ -554,21 +549,21 @@ function renderHistory() {
         var editBtn = canEdit(e) ? '<button class="action-btn edit" onclick="editEntry(\'' + escAttr(e.id) + '\')"><i class="fa-solid fa-pen-to-square"></i></button>' : "";
         var delBtn = canDelete(e) ? '<button class="action-btn delete" onclick="deleteEntry(\'' + escAttr(e.id) + '\')"><i class="fa-solid fa-trash-can"></i></button>' : "";
         var actHtml = (editBtn || delBtn) ? '<span style="display:inline-flex;gap:4px">' + editBtn + delBtn + '</span>' : "-";
-        tb.innerHTML += "<tr><td>" + esc(e.date || "-") + '</td><td><strong>' + esc(e.itemName || "-") + '</strong></td><td style="font-weight:600;color:#e11d48">' + (e.quantity || 0) + '</td><td>' + esc(e.unit || "-") + '</td><td>' + esc(e.recipient || "-") + '</td><td>' + esc(e.purpose || "-") + '</td><td>' + esc(e.division || "-") + '</td><td>' + esc(e.hub || e.hubName || "-") + '</td><td><div>' + (esc(e.createdBy) || "-") + '</div>' + (fmtTime(e.createdAt) ? '<div style="font-size:10px;color:var(--text-muted);line-height:1.2">' + fmtTime(e.createdAt) + '</div>' : "") + '</td><td>' + actHtml + "</td></tr>";
+        tb.innerHTML += "<tr><td>" + esc(e.date || "-") + '</td><td><strong>' + esc(e.itemName || "-") + '</strong></td><td style="font-weight:600;color:#059669">' + (e.quantity || 0) + '</td><td>' + esc(e.unit || "-") + '</td><td>' + esc(e.source || e.supplier || "-") + '</td><td>' + esc(e.division || "-") + '</td><td>' + esc(e.hub || e.hubName || "-") + '</td><td><div>' + (esc(e.createdBy) || "-") + '</div>' + (fmtTime(e.createdAt) ? '<div style="font-size:10px;color:var(--text-muted);line-height:1.2">' + fmtTime(e.createdAt) + '</div>' : "") + '</td><td>' + esc(e.notes || "-") + '</td><td>' + actHtml + "</td></tr>";
     }
 }
 
 function exportExcel() {
     if (!allEntries.length) { showToast("No data to export", "error"); return; }
-    var wsData = [["Date","Item","Qty","Unit","Recipient","Purpose","Division","Hub","Entered By"]];
+    var wsData = [["Date","Item","Qty","Unit","Source","Division","Hub","Entered By","Notes"]];
     for (var i = 0; i < allEntries.length; i++) {
         var e = allEntries[i];
-        wsData.push([e.date||"-", e.itemName||"-", e.quantity||0, e.unit||"-", e.recipient||"-", e.purpose||"-", e.division||"-", e.hub||e.hubName||"-", e.createdBy||"-"]);
+        wsData.push([e.date||"-", e.itemName||"-", e.quantity||0, e.unit||"-", e.source||e.supplier||"-", e.division||"-", e.hub||e.hubName||"-", e.createdBy||"-", e.notes||"-"]);
     }
     var wb = XLSX.utils.book_new();
     var ws = XLSX.utils.aoa_to_sheet(wsData);
-    XLSX.utils.book_append_sheet(wb, ws, "StockOUT");
-    XLSX.writeFile(wb, "stock_out_export.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "StockIN");
+    XLSX.writeFile(wb, "stock_in_export.xlsx");
 }
 
 function fmtTime(ts) {
@@ -603,7 +598,7 @@ function closeModal() {
     document.body.style.overflow = "";
     if (editId) {
         editId = null;
-        document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Stock OUT';
+        document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Stock IN';
     }
 }
 
@@ -653,7 +648,7 @@ async function initForm() {
     await loadHistory();
 }
 
-document.getElementById("stockOutForm").addEventListener("submit", async function(e) {
+document.getElementById("stockInForm").addEventListener("submit", async function(e) {
     e.preventDefault();
     if (isSubmitting) return;
     var itemName = document.getElementById("fieldItemName").value.trim();
@@ -683,11 +678,10 @@ document.getElementById("stockOutForm").addEventListener("submit", async functio
             region: document.getElementById("fieldRegion").value || "",
             state: document.getElementById("fieldState").value || "",
             division: document.getElementById("fieldDivision").value || "",
-            recipient: document.getElementById("fieldRecipient").value.trim() || "",
-            purpose: document.getElementById("fieldPurpose").value.trim() || "",
+            source: document.getElementById("fieldSource").value.trim() || "",
             hub: document.getElementById("fieldHub").value || "",
             notes: document.getElementById("fieldNotes").value.trim() || "",
-            type: "OUT",
+            type: "IN",
             createdBy: (currentUser && currentUser.fullName) || "Unknown",
             role: (currentUser && currentUser.role) || ""
         };
@@ -695,20 +689,19 @@ document.getElementById("stockOutForm").addEventListener("submit", async functio
             data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
             data.updatedBy = (currentUser && currentUser.fullName) || "Unknown";
             await db.collection("stock_ledger").doc(editId).update(data);
-            showToast("Stock OUT updated!", "success");
+            showToast("Stock IN updated!", "success");
             editId = null;
-            document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Stock OUT';
+            document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Stock IN';
         } else {
             data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
             await db.collection("stock_ledger").add(data);
-            showToast("Stock OUT saved!", "success");
+            showToast("Stock IN saved!", "success");
         }
 
         document.getElementById("fieldItemName").value = "";
         document.getElementById("fieldQuantity").value = "";
         document.getElementById("fieldUnit").value = "Piece";
-        document.getElementById("fieldRecipient").value = "";
-        document.getElementById("fieldPurpose").value = "";
+        document.getElementById("fieldSource").value = "";
         document.getElementById("fieldNotes").value = "";
         if (!document.getElementById("fieldRegion").disabled) {
             document.getElementById("fieldRegion").value = "";
@@ -726,7 +719,7 @@ document.getElementById("stockOutForm").addEventListener("submit", async functio
     } finally {
         isSubmitting = false;
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Stock OUT';
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Stock IN';
     }
 });
 
@@ -750,12 +743,11 @@ window.addEventListener("DOMContentLoaded", async function() {
 
 document.getElementById("addEntryBtn").addEventListener("click", function() {
     editId = null;
-    document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Stock OUT';
+    document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Stock IN';
     document.getElementById("fieldItemName").value = "";
     document.getElementById("fieldQuantity").value = "";
     document.getElementById("fieldUnit").value = "Piece";
-    document.getElementById("fieldRecipient").value = "";
-    document.getElementById("fieldPurpose").value = "";
+    document.getElementById("fieldSource").value = "";
     document.getElementById("fieldNotes").value = "";
     document.getElementById("fieldDate").value = new Date().toISOString().split("T")[0];
     document.getElementById("fieldItemName").classList.remove("error");
