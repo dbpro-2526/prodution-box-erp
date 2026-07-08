@@ -26,7 +26,7 @@ body{background:var(--bg);color:var(--text-dark);display:flex;min-height:100vh;o
 .btn-logout:hover{background:rgba(239,68,68,0.35);color:#fff}
 .hamburger{display:none;position:fixed;top:10px;left:10px;z-index:1001;width:38px;height:38px;border-radius:10px;background:var(--sidebar-bg);color:#fff;border:none;font-size:16px;cursor:pointer;align-items:center;justify-content:center}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;opacity:0;transition:opacity var(--transition)}
-.sidebar-overlay.show{opacity:1}
+.sidebar-overlay.show{display:block;opacity:1}
 .main-content{margin-left:240px;width:calc(100% - 240px);padding:20px 24px;min-height:100vh}
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
 .top-bar-left h1{font-size:20px;font-weight:700;color:var(--primary)}
@@ -92,8 +92,8 @@ tr:hover td{background:#fafcff}
 @media(max-width:1024px){.main-content{padding:16px 18px}}
 @media(max-width:768px){
 .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.hamburger{display:flex}.sidebar-overlay{display:block}
-.main-content{margin-left:0;width:100%;padding:60px 12px 16px}.top-bar{flex-direction:column}.top-bar-left h1{font-size:17px}
-.form-grid{grid-template-columns:1fr}.dash-section{padding:12px}table{min-width:600px}.toast{left:12px;right:12px;bottom:12px;max-width:none}}
+.main-content{margin-left:0;width:100%;padding:60px 12px 16px}.top-bar{flex-direction:column;gap:6px}.top-bar-left h1{font-size:17px}
+.form-grid{grid-template-columns:1fr}.dash-section{padding:12px}table{min-width:600px}th,td{padding:6px 6px;font-size:11px}.action-btn{padding:3px 6px;font-size:10px}.toast{left:12px;right:12px;bottom:12px;max-width:none}.section-header{flex-direction:column;align-items:stretch;gap:6px}.section-header h2{font-size:14px}.float-add-btn{top:60px;right:12px;width:40px;height:40px;font-size:16px}.modal{padding:14px 16px}.modal h2{font-size:14px}}
 @media(max-width:480px){.table-toolbar{flex-direction:column}.table-toolbar .search-wrap{min-width:100%}.table-toolbar select{width:100%}.form-actions{flex-direction:column}.form-actions button{width:100%}}
 </style>
 </head>
