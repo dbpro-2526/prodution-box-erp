@@ -330,5 +330,8 @@ await loadItems();
 } catch(e) { console.error(e); showToast('Error: ' + e.message, 'fa-solid fa-triangle-exclamation'); }
 });
 </script>
+    <script>
+document.head.insertAdjacentHTML('beforeend','<style>@media(max-width:768px){.sidebar-overlay{display:none!important}}</style>');
+</script>
 </body>
 </html>
