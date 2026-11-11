@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Box Department ERP | Login</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f4f7fe 0%, #eef2f6 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            width: 430px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+            padding: 40px 35px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            width: 85px;
+            height: 85px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 700;
+            color: #0F4C81;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13.5px;
+            margin-top: 6px;
+            margin-bottom: 30px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        .input-group input {
+            width: 100%;
+            height: 48px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding-left: 15px;
+            padding-right: 45px;
+            font-size: 14.5px;
+            outline: none;
+            transition: all .3s ease;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+
+        .input-group input:focus {
+            border-color: #2563EB;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+        }
+
+        .password-box {
+            position: relative;
+        }
+
+        .password-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #64748b;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+        
+        .password-box i:hover {
+            color: #2563EB;
+        }
+
+        .remember {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 13.5px;
+            color: #64748b;
+        }
+
+        .remember label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .remember a {
+            color: #2563EB;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .remember a:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 48px;
+            background: #2563EB;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background .2s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+            color: #2563EB;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .error {
+            display: none;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fee2e2;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13.5px;
+        }
+
+        .success {
+            display: none;
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #dcfce7;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13.5px;
+        }
+
+        .fp-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 76, 129, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            z-index: 9999;
+        }
+        .fp-overlay.show { display: flex; }
+        .fp-box {
+            background: #fff;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 16px;
+            padding: 24px 22px;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+            position: relative;
+            animation: fpIn 0.2s ease;
+        }
+        @keyframes fpIn { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .fp-box h3 { font-size: 17px; color: #0F4C81; margin-bottom: 4px; }
+        .fp-box p.fp-sub { font-size: 12px; color: #64748b; margin-bottom: 16px; }
+        .fp-box label { display: block; font-size: 12px; font-weight: 600; color: #334155; margin: 10px 0 5px; }
+        .fp-box input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+        .fp-box input:focus { border-color: #2563EB; }
+        .fp-msg { font-size: 12px; margin-top: 10px; display: none; padding: 9px 11px; border-radius: 8px; }
+        .fp-msg.err { display: block; background: #fef2f2; color: #b91c1c; }
+        .fp-msg.ok { display: block; background: #f0fdf4; color: #166534; }
+        .fp-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .fp-actions button {
+            flex: 1;
+            padding: 11px;
+            border-radius: 9px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .fp-cancel { background: #eef2f7; color: #334155; }
+        .fp-save { background: #2563EB; color: #fff; }
+        .fp-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            border: none;
+            background: #eef2f7;
+            color: #64748b;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <div class="logo">
+      <img src="dblogo.png" alt="Logo">
+    </div>
+
+    <div class="title">Donation Box ERP</div>
+    <div class="subtitle">Donation Box Department<br>Inventory & Warehouse Management</div>
+
+    <div id="error" class="error"></div>
+    <div id="success" class="success"></div>
+
+    <form id="loginForm">
+        <div class="input-group">
+            <label>Employee Code</label>
+            <input type="text" id="employeeCode" placeholder="Enter Employee Code" required>
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <div class="password-box">
+                <input type="password" id="password" placeholder="Enter Password" required>
+                <i class="fa-solid fa-eye" id="togglePassword"></i>
+            </div>
+        </div>
+
+        <div class="remember">
+            <label>
+                <input type="checkbox" id="remember"> Remember Me
+            </label>
+            <a href="#" id="forgotLink">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="login-btn">LOGIN</button>
+
+        <div class="loading" id="loading">Please Wait...</div>
+    </form>
+
+    <div class="footer">Version 1.0.0</div>
+</div>
+
+<div class="fp-overlay" id="forgotOverlay">
+    <div class="fp-box">
+        <button type="button" class="fp-close" id="fpClose"><i class="fa-solid fa-xmark"></i></button>
+        <h3>Reset Password</h3>
+        <p class="fp-sub">Employee Code aur registered email match honge to naya password set ho jayega. Match na ho to reset nahi hoga.</p>
+        <label>Employee Code</label>
+        <input type="text" id="fpEmpCode" placeholder="66389" autocomplete="off">
+        <label>Registered Email</label>
+        <input type="email" id="fpEmail" placeholder="you@example.com" autocomplete="off">
+        <label>New Password</label>
+        <input type="password" id="fpNewPassword" placeholder="Kam se kam 6 characters" autocomplete="new-password">
+        <label>Confirm New Password</label>
+        <input type="password" id="fpConfirmPassword" placeholder="Dobara likhein" autocomplete="new-password">
+        <div class="fp-msg" id="fpMsg"></div>
+        <div class="fp-actions">
+            <button type="button" class="fp-cancel" id="fpCancelBtn">Cancel</button>
+            <button type="button" class="fp-save" id="fpSaveBtn">Reset Password</button>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="db-compat.js"></script>
+
+<script>
+// Aapki provided Firebase Configuration
+// Supabase par shift ho chuka hai - purana Firebase config hata diya gaya hai.
+const db = firebase.firestore();
+
+const loginForm = document.getElementById("loginForm");
+const togglePassword = document.getElementById("togglePassword");
+const passwordInput = document.getElementById("password");
+const loading = document.getElementById("loading");
+const error = document.getElementById("error");
+const success = document.getElementById("success");
+
+// Password Show/Hide Feature
+togglePassword.addEventListener("click", function () {
+    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
+    
+    // Icon toggling
+    if (type === "password") {
+        this.classList.remove("fa-eye-slash");
+        this.classList.add("fa-eye");
+    } else {
+        this.classList.remove("fa-eye");
+        this.classList.add("fa-eye-slash");
+    }
+});
+
+// Forgot Password -> direct reset (Employee Code + Email match hone par)
+(function () {
+    var overlay = document.getElementById("forgotOverlay");
+    var msg = document.getElementById("fpMsg");
+    function openFp() {
+        ["fpEmpCode", "fpEmail", "fpNewPassword", "fpConfirmPassword"].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.value = "";
+        });
+        msg.className = "fp-msg";
+        msg.innerText = "";
+        overlay.classList.add("show");
+        setTimeout(function () { document.getElementById("fpEmpCode").focus(); }, 60);
+    }
+    function closeFp() { overlay.classList.remove("show"); }
+    function showMsg(text, ok) {
+        msg.innerText = text;
+        msg.className = "fp-msg " + (ok ? "ok" : "err");
+    }
+    document.getElementById("forgotLink").addEventListener("click", function (e) { e.preventDefault(); openFp(); });
+    document.getElementById("fpClose").addEventListener("click", closeFp);
+    document.getElementById("fpCancelBtn").addEventListener("click", closeFp);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) closeFp(); });
+
+    document.getElementById("fpSaveBtn").addEventListener("click", async function () {
+        var btn = this;
+        var code = document.getElementById("fpEmpCode").value.trim();
+        var email = document.getElementById("fpEmail").value.trim().toLowerCase();
+        var p1 = document.getElementById("fpNewPassword").value;
+        var p2 = document.getElementById("fpConfirmPassword").value;
+        if (!code) { showMsg("Employee Code daalein.", false); return; }
+        if (!email || email.indexOf("@") === -1) { showMsg("Registered email daalein.", false); return; }
+        if (!p1 || p1.length < 6) { showMsg("Naya password kam se kam 6 characters ka ho.", false); return; }
+        if (p1 !== p2) { showMsg("Dono password same nahi hain.", false); return; }
+        if (!window.sb) { showMsg("Supabase config load nahi hua. Admin se contact karein.", false); return; }
+        btn.disabled = true; btn.innerText = "Resetting...";
+        try {
+            var res = await window.sb.functions.invoke("reset-password", {
+                body: { employeeCode: code, email: email, newPassword: p1 }
+            });
+            if (res.error) throw res.error;
+            var data = res.data || {};
+            if (!data.ok) {
+                showMsg(data.error || "Employee Code ya Email match nahi hua. Password reset nahi hua.", false);
+                return;
+            }
+            showMsg("Password reset ho gaya! Ab isi Employee Code se login karein.", true);
+            setTimeout(function () {
+                closeFp();
+                document.getElementById("employeeCode").value = code;
+                document.getElementById("password").value = "";
+                document.getElementById("password").focus();
+            }, 1400);
+        } catch (err) {
+            var m = String((err && err.message) || err || "Unknown");
+            if (/not found|404|Failed to send a request|fetch|network/i.test(m)) {
+                m = "Reset service deploy nahi hua. Admin se password reset karwayen.";
+            }
+            showMsg("Password reset nahi hua: " + m, false);
+        } finally {
+            btn.disabled = false; btn.innerText = "Reset Password";
+        }
+    });
+})();
+
+// ---------- Login ----------
+const AUTH_DOMAIN = (typeof window !== "undefined" && window.SUPABASE_AUTH_DOMAIN) || "donationbox.app";
+
+function authEmailFor(code) {
+    return String(code || "").trim().toLowerCase() + "@" + AUTH_DOMAIN;
+}
+
+function saveSessionAndGo(uid, u, typedCode, authMode) {
+    localStorage.setItem("appAuthMode", authMode || "firebase");
+    localStorage.setItem("userSession", JSON.stringify({
+        uid: uid || "",
+        employeeCode: u.employeeCode || typedCode,
+        fullName: u.fullName || "",
+        mobile: u.mobile || "",
+        email: u.email || "",
+        photo: u.photo || "",
+        role: u.role || "",
+        department: u.department || "",
+        designation: u.designation || "",
+        region: u.region || "",
+        state: u.state || "",
+        division: u.division || "",
+        hub: u.hub || u.warehouse || "",
+        warehouse: u.warehouse || u.hub || "",
+        status: u.status || ""
+    }));
+    localStorage.setItem("userRole", u.role || "");
+    localStorage.setItem("userName", u.fullName || "");
+    localStorage.setItem("employeeCode", u.employeeCode || typedCode);
+    localStorage.setItem("loginStatus", "true");
+    sessionStorage.removeItem("appSessionSynced");
+    success.style.display = "block";
+    success.innerHTML = `Welcome ${u.role || ""}<br>${u.fullName || ""}`;
+    loading.style.display = "none";
+    setTimeout(function () { window.location.href = "dashboard.html"; }, 900);
+}
+
+function showLoginError(text) {
+    loading.style.display = "none";
+    error.style.display = "block";
+    error.innerHTML = text;
+}
+
+// Employee Code -> Auth email.
+// 1) users table me jis email se login account bana tha (authEmail) wo milta hai.
+// 2) Nahi mila to Employee Code se internal email (e.g. 66389@donationbox.app).
+async function resolveAuthEmail(codeOrEmail) {
+    var v = String(codeOrEmail || "").trim();
+    if (!v) return "";
+    if (v.indexOf("@") !== -1) return v.toLowerCase();
+    try {
+        var r = await window.sb.rpc("app_login_email", { p_code: v });
+        if (!r.error && r.data) return String(r.data).toLowerCase();
+    } catch (e) {}
+    return authEmailFor(v);
+}
+
+loginForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    error.style.display = "none";
+    success.style.display = "none";
+    loading.style.display = "block";
+
+    const empCode = document.getElementById("employeeCode").value.trim();
+    const pass = passwordInput.value;
+    if (!empCode || !pass) { showLoginError("Employee Code aur Password dono daalein."); return; }
+    if (!window.sb) { showLoginError("Supabase config load nahi hua. Admin se contact karein."); return; }
+
+    try {
+        const email = await resolveAuthEmail(empCode);
+        const res = await window.sb.auth.signInWithPassword({ email: email, password: pass });
+        if (res.error) throw res.error;
+
+        const uid = res.data.user.id;
+        const profile = await db.collection("users").doc(uid).get();
+        if (!profile.exists) {
+            await window.sb.auth.signOut();
+            showLoginError("Account profile nahi mili. Admin se contact karein.");
+            return;
+        }
+        const userData = profile.data();
+        if (userData.status !== "Active" && userData.status !== "active") {
+            await window.sb.auth.signOut();
+            showLoginError("Your account is inactive. Contact Admin.");
+            return;
+        }
+        saveSessionAndGo(uid, userData, empCode, "supabase");
+    } catch (err) {
+        const msg = String((err && err.message) || "");
+        const status = err && err.status;
+        if (status === 400 || /invalid login credentials/i.test(msg)) {
+            showLoginError("Incorrect Employee Code or Password!");
+        } else if (/email not confirmed/i.test(msg)) {
+            showLoginError("Email confirm nahi hua. Admin se contact karein.");
+        } else if (/rate limit|too many/i.test(msg)) {
+            showLoginError("Bahut zyada attempts. Thodi der baad try karein.");
+        } else if (/fetch|network/i.test(msg)) {
+            showLoginError("Network error. Internet check karein.");
+        } else {
+            showLoginError("Login failed: " + (msg || "Unknown"));
+        }
+    }
+});
+
+// Enter key submit handling
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !document.getElementById("forgotOverlay").classList.contains("show")) {
+        loginForm.requestSubmit();
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Warehouse & Hubs | Donation Box Inventory</title>
+<link rel="icon" href="dblogo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
+:root{--primary:#0F4C81;--accent:#2563EB;--bg:#f0f4f9;--sidebar-bg:#0F4C81;--text-dark:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--shadow:0 2px 12px rgba(0,0,0,0.06);--radius:14px;--radius-sm:10px;--transition:0.3s ease}
+body{background:var(--bg);color:var(--text-dark);display:flex;min-height:100vh;overflow-x:hidden}
+.sidebar{width:240px;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:1000;transition:transform var(--transition)}
+.sidebar-brand{padding:18px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar-brand img{width:36px;height:36px;border-radius:8px}
+.sidebar-brand h2{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
+.sidebar-menu{padding:12px 10px;display:flex;flex-direction:column;gap:2px;flex-grow:1;overflow-y:auto}
+.menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;color:rgba(255,255,255,0.7);text-decoration:none;border-radius:var(--radius-sm);font-weight:500;font-size:13px;transition:all var(--transition);cursor:pointer}
+.menu-item i{width:18px;text-align:center;font-size:14px}
+.menu-item:hover{background:rgba(255,255,255,0.12);color:#fff}
+.menu-item.active{background:rgba(255,255,255,0.18);color:#fff;font-weight:600}
+.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,0.1)}
+.btn-logout{width:100%;padding:10px;background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-sm);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px}
+.btn-logout:hover{background:rgba(239,68,68,0.35);color:#fff}
+.hamburger{display:none;position:fixed;top:10px;left:10px;z-index:1001;width:38px;height:38px;border-radius:10px;background:var(--sidebar-bg);color:#fff;border:none;font-size:16px;cursor:pointer;align-items:center;justify-content:center}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;opacity:0;transition:opacity var(--transition)}
+.sidebar-overlay.show{display:block;opacity:1}
+.main-content{margin-left:240px;width:calc(100% - 240px);padding:20px 24px;min-height:100vh}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.top-bar-left h1{font-size:20px;font-weight:700;color:var(--primary)}
+.user-info{display:flex;align-items:center;gap:10px;background:#fff;padding:6px 16px 6px 10px;border-radius:30px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.user-info .avatar{width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.user-info .name{font-size:13px;font-weight:600}
+.user-info .desig{font-size:11px;color:var(--text-muted);background:#f1f5f9;padding:1px 8px;border-radius:8px}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--primary);color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.15);font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;z-index:3000;transform:translateY(80px);opacity:0;transition:var(--transition);max-width:340px}
+.toast.show{transform:translateY(0);opacity:1}
+
+.tab-nav{display:flex;gap:4px;margin-bottom:18px;background:#fff;border-radius:var(--radius);padding:4px;border:1px solid var(--border);box-shadow:var(--shadow);flex-wrap:wrap}
+.tab-btn{padding:8px 18px;border:none;background:transparent;border-radius:var(--radius-sm);font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all var(--transition)}
+.tab-btn:hover{color:var(--text-dark);background:#f1f5f9}
+.tab-btn.active{background:var(--primary);color:#fff;font-weight:600}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.form-card{background:#fff;padding:18px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:16px}
+.form-card h3{font-size:14px;font-weight:600;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px}
+.form-row.one{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:3px}
+.form-group label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px}
+.form-group input,.form-group select,.form-group textarea{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff;transition:border-color var(--transition);width:100%}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:60px}
+.form-group input:disabled,.form-group select:disabled{background:#f1f5f9;cursor:not-allowed;opacity:0.7}
+.form-actions{display:flex;gap:8px;align-items:center;margin-top:4px}
+.btn-primary{padding:8px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background var(--transition)}
+.btn-primary:hover{background:#1d4ed8}
+.btn-cancel{padding:8px 18px;background:#f1f5f9;color:var(--text-dark);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;display:none;transition:all var(--transition)}
+.btn-cancel:hover{background:#e2e8f0}
+.btn-sm{padding:5px 10px;border:none;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all var(--transition)}
+.btn-sm i{font-size:11px}
+.btn-edit{background:#dbeafe;color:#2563eb}
+.btn-edit:hover{background:#bfdbfe}
+.btn-delete{background:#fee2e2;color:#dc2626}
+.btn-delete:hover{background:#fecaca}
+.action-cell{display:flex;gap:4px}
+.filter-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px;background:#f8fafc;padding:10px;border:1px solid var(--border);border-radius:10px}
+.filter-bar select,.filter-bar input{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:#fff;outline:none;width:100%;font-family:"Poppins",sans-serif;color:var(--text-dark)}
+.filter-bar select:focus,.filter-bar input:focus{border-color:var(--accent)}
+.scope-note{font-size:11px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:7px 10px;border-radius:8px;margin-bottom:10px;display:none}
+.readonly-note{font-size:11px;color:var(--text-muted);font-style:italic}
+
+.dash-section{background:#fff;padding:18px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:16px}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.section-header h2{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.section-header h2 i{color:var(--accent)}
+.table-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th{background:#f8fafc;padding:10px 12px;color:var(--text-muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafcff}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty-state i{font-size:36px;margin-bottom:10px;opacity:0.3}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:500}
+.badge-active{background:#d1fae5;color:#059669}
+.badge-inactive{background:#fee2e2;color:#dc2626}
+.footer-text{text-align:center;padding:20px 0 8px;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);margin-top:20px}
+@media(max-width:1024px){.main-content{padding:16px 18px}}
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.hamburger{display:flex}.sidebar-overlay{display:block}
+.main-content{margin-left:0;width:100%;padding:60px 12px 16px}.top-bar{flex-direction:column;gap:6px}
+table{min-width:550px}th,td{padding:6px 6px;font-size:11px}.toast{left:12px;right:12px;bottom:12px;max-width:none}
+.form-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.dash-section{padding:12px}.section-header{flex-direction:column;align-items:stretch;gap:6px}.section-header h2{font-size:14px}.action-cell{flex-wrap:wrap}}
+@media(max-width:480px){.tab-btn{padding:6px 10px;font-size:11px}.form-card{padding:12px}}
+</style>
+<script src="scope-query.js"></script>
+<script src="auth-guard.js"></script>
+</head>
+<body>
+<button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="sidebar" id="sidebar">
+<div class="sidebar-brand"><img src="dblogo.png" alt="Logo"><h2>Donation Box Inventory</h2></div>
+<div class="sidebar-menu" id="dynamicSidebarMenu"><div class="menu-item active"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+<div class="sidebar-footer"><button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></div>
+</div>
+
+<div class="main-content">
+<div class="top-bar">
+<div class="top-bar-left"><h1>Warehouse & Hubs Setup</h1></div>
+<div class="user-info">
+<div class="avatar" id="userAvatar">U</div>
+<span class="name" id="adminName">Loading...</span>
+<span class="desig" id="userRoleBadge">&mdash;</span>
+</div>
+</div>
+
+<div class="tab-nav" id="tabNav">
+<button class="tab-btn active" data-tab="regions"><i class="fa-solid fa-globe"></i> Regions</button>
+<button class="tab-btn" data-tab="states"><i class="fa-solid fa-map"></i> States</button>
+<button class="tab-btn" data-tab="divisions"><i class="fa-solid fa-diagram-project"></i> Divisions</button>
+<button class="tab-btn" data-tab="hubs"><i class="fa-solid fa-warehouse"></i> Warehouses / Hubs</button>
+</div>
+<div class="scope-note" id="scopeNote"></div>
+
+<div class="tab-panel active" id="tabRegions">
+<div class="form-card" id="regionFormCard">
+<h3><i class="fa-solid fa-plus-circle"></i> <span id="regionFormTitle">Add Region</span></h3>
+<div class="form-row one">
+<div class="form-group"><label>Region Name</label><input type="text" id="regionName" placeholder="Enter region name"></div>
+</div>
+<div class="form-actions">
+<button class="btn-primary" id="btnSaveRegion"><i class="fa-solid fa-floppy-disk"></i> <span id="btnRegionLabel">Add Region</span></button>
+<button class="btn-cancel" id="btnCancelRegion">Cancel</button>
+</div>
+</div>
+<div class="dash-section">
+<div class="section-header"><h2><i class="fa-solid fa-list"></i> All Regions</h2><span style="font-size:11px;color:var(--text-muted)" id="regionCount">0 entries</span></div>
+<div class="filter-bar"><input type="text" id="searchRegions" placeholder="Search region..." oninput="applyFilters()"></div>
+<div class="table-wrap"><table><thead><tr><th>S.No</th><th>Region Name</th><th>Actions</th></tr></thead><tbody id="regionTableBody"><tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody></table></div>
+</div>
+</div>
+
+<div class="tab-panel" id="tabStates">
+<div class="form-card" id="stateFormCard">
+<h3><i class="fa-solid fa-plus-circle"></i> <span id="stateFormTitle">Add State</span></h3>
+<div class="form-row">
+<div class="form-group"><label>Region</label><select id="stateRegion"><option value="">Select Region</option></select></div>
+<div class="form-group"><label>State Name</label><input type="text" id="stateName" placeholder="Enter state name"></div>
+</div>
+<div class="form-actions">
+<button class="btn-primary" id="btnSaveState"><i class="fa-solid fa-floppy-disk"></i> <span id="btnStateLabel">Add State</span></button>
+<button class="btn-cancel" id="btnCancelState">Cancel</button>
+</div>
+</div>
+<div class="dash-section">
+<div class="section-header"><h2><i class="fa-solid fa-list"></i> All States</h2><span style="font-size:11px;color:var(--text-muted)" id="stateCount">0 entries</span></div>
+<div class="filter-bar"><select id="filterStateRegion" onchange="applyFilters()"><option value="">All Regions</option></select><input type="text" id="searchStates" placeholder="Search state..." oninput="applyFilters()"></div>
+<div class="table-wrap"><table><thead><tr><th>S.No</th><th>Region</th><th>State Name</th><th>Actions</th></tr></thead><tbody id="stateTableBody"><tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody></table></div>
+</div>
+</div>
+
+<div class="tab-panel" id="tabDivisions">
+<div class="form-card" id="divisionFormCard">
+<h3><i class="fa-solid fa-plus-circle"></i> <span id="divisionFormTitle">Add Division</span></h3>
+<div class="form-row">
+<div class="form-group"><label>Region</label><select id="divRegion"><option value="">Select Region</option></select></div>
+<div class="form-group"><label>State</label><select id="divState"><option value="">Select State</option></select></div>
+<div class="form-group"><label>Division Name</label><input type="text" id="divName" placeholder="Enter division name"></div>
+</div>
+<div class="form-actions">
+<button class="btn-primary" id="btnSaveDivision"><i class="fa-solid fa-floppy-disk"></i> <span id="btnDivisionLabel">Add Division</span></button>
+<button class="btn-cancel" id="btnCancelDivision">Cancel</button>
+</div>
+</div>
+<div class="dash-section">
+<div class="section-header"><h2><i class="fa-solid fa-list"></i> All Divisions</h2><span style="font-size:11px;color:var(--text-muted)" id="divisionCount">0 entries</span></div>
+<div class="filter-bar"><select id="filterDivRegion" onchange="onDivFilterRegionChange()"><option value="">All Regions</option></select><select id="filterDivState" onchange="applyFilters()"><option value="">All States</option></select><input type="text" id="searchDivisions" placeholder="Search division..." oninput="applyFilters()"></div>
+<div class="table-wrap"><table><thead><tr><th>S.No</th><th>Region</th><th>State</th><th>Division Name</th><th>Actions</th></tr></thead><tbody id="divisionTableBody"><tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody></table></div>
+</div>
+</div>
+
+<div class="tab-panel" id="tabHubs">
+<div class="form-card" id="hubFormCard">
+<h3><i class="fa-solid fa-plus-circle"></i> <span id="hubFormTitle">Add Warehouse / Hub</span></h3>
+<div class="form-row">
+<div class="form-group"><label>Hub Name <span style="color:#dc2626">*</span></label><input type="text" id="hubName" placeholder="Enter hub name"></div>
+<div class="form-group"><label>Hub Code <span style="color:#dc2626">*</span></label><input type="text" id="hubCode" placeholder="Unique code"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Region</label><select id="hubRegion"><option value="">Select Region</option></select></div>
+<div class="form-group"><label>State</label><select id="hubState"><option value="">Select State</option></select></div>
+<div class="form-group"><label>Division</label><select id="hubDivision"><option value="">Select Division</option></select></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Address</label><textarea id="hubAddress" placeholder="Enter address"></textarea></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Incharge Name</label><input type="text" id="hubIncharge" placeholder="Incharge name"></div>
+<div class="form-group"><label>Phone</label><input type="text" id="hubPhone" placeholder="Phone number"></div>
+<div class="form-group"><label>Capacity</label><input type="number" id="hubCapacity" placeholder="Capacity"></div>
+<div class="form-group"><label>Status</label><select id="hubStatus"><option value="Active">Active</option><option value="Inactive">Inactive</option></select></div>
+</div>
+<div class="form-actions">
+<button class="btn-primary" id="btnSaveHub"><i class="fa-solid fa-floppy-disk"></i> <span id="btnHubLabel">Add Hub</span></button>
+<button class="btn-cancel" id="btnCancelHub">Cancel</button>
+</div>
+</div>
+<div class="dash-section">
+<div class="section-header"><h2><i class="fa-solid fa-list"></i> All Warehouses / Hubs</h2><span style="font-size:11px;color:var(--text-muted)" id="hubCount">0 entries</span><button class="btn-action" onclick="exportExcel()" style="font-size:12px;padding:6px 14px;background:#059669;color:#fff"><i class="fa-solid fa-file-excel"></i> Excel</button></div>
+    <div class="filter-bar">
+<select id="filterHubRegion" onchange="onHubFilterRegionChange()"><option value="">All Regions</option></select>
+<select id="filterHubState" onchange="onHubFilterStateChange()"><option value="">All States</option></select>
+<select id="filterHubDivision" onchange="applyFilters()"><option value="">All Divisions</option></select>
+<input type="text" id="filterSearch" placeholder="Search hub, code, incharge..." oninput="applyFilters()">
+</div>
+<div class="table-wrap"><table><thead><tr><th>S.No</th><th>Code</th><th>Name</th><th>Region</th><th>State</th><th>Division</th><th>Incharge</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead><tbody id="hubTableBody"><tr><td colspan="10"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody></table></div>
+</div>
+</div>
+
+<div class="footer-text">Donation Box Inventory | &copy; 2026</div>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastMsg">Done</span></div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="db-compat.js"></script>
+<script>
+// Supabase par shift ho chuka hai - purana Firebase config hata diya gaya hai.
+const db=firebase.firestore();
+
+const ALLOWED_ROLES=["Super Admin","Admin","Regional Manager","Regional Office","State Manager","State Office","Division Manager"];
+
+// Role-wise create/edit permission. Region-level users can NOT create regions,
+// State-level users can NOT create regions/states, Division Manager only manages hubs.
+const MANAGE_ROLES={
+region:["Super Admin","Admin"],
+state:["Super Admin","Admin","Regional Manager","Regional Office"],
+division:["Super Admin","Admin","Regional Manager","Regional Office","State Manager","State Office"],
+hub:["Super Admin","Admin","Regional Manager","Regional Office","State Manager","State Office","Division Manager"]
+};
+
+function canManage(level){return !!currentUser&&(MANAGE_ROLES[level]||[]).indexOf(currentUser.role)!==-1}
+function isFullAccess(){return !!currentUser&&["Super Admin","Admin"].indexOf(currentUser.role)!==-1}
+
+function showToast(msg,icon){const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=msg;t.querySelector("i").className=icon||"fa-solid fa-check-circle";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500)}
+function getInitials(n){return n?n.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2):"U"}
+
+let currentUser=null;
+let allRegions=[],allStates=[],allDivisions=[],allHubs=[];
+let editRegionId=null,editStateId=null,editDivisionId=null,editHubId=null;
+let regionNameMap={};
+let stateNameMap={};
+
+document.getElementById("hamburgerBtn").addEventListener("click",()=>{document.getElementById("sidebar").classList.toggle("open");document.getElementById("sidebarOverlay").classList.toggle("show")});
+document.getElementById("sidebarOverlay").addEventListener("click",()=>{document.getElementById("sidebar").classList.remove("open");document.getElementById("sidebarOverlay").classList.remove("show")});
+document.getElementById("logoutBtn").addEventListener("click",()=>{if(window.appLogout){window.appLogout();return;}localStorage.removeItem("userSession");window.location.replace("login.html")});
+
+function getScopeFilter(){
+if(!currentUser)return null;
+if(isFullAccess())return null;
+if(["Regional Manager","Regional Office"].indexOf(currentUser.role)!==-1)return{type:"region",region:currentUser.region||"",state:"",division:""};
+if(["State Manager","State Office"].indexOf(currentUser.role)!==-1)return{type:"state",region:currentUser.region||"",state:currentUser.state||"",division:""};
+if(currentUser.role==="Division Manager")return{type:"division",region:currentUser.region||"",state:currentUser.state||"",division:currentUser.division||""};
+return{type:"unknown",region:currentUser.region||"",state:currentUser.state||"",division:currentUser.division||""};
+}
+
+function regionInScope(r){
+const sc=getScopeFilter();if(!sc)return true;
+return !!sc.region&&r.name===sc.region;
+}
+
+function stateInScope(s){
+const sc=getScopeFilter();if(!sc)return true;
+if(sc.type==="region")return !!sc.region&&s.regionName===sc.region;
+if(sc.type==="state")return !!sc.state&&s.name===sc.state;
+if(sc.type==="division"){
+const d=allDivisions.find(function(x){return x.name===sc.division&&(!sc.state||x.stateName===sc.state)});
+return !!d&&s.id===d.stateId;
+}
+return false;
+}
+
+function divisionInScope(d){
+const sc=getScopeFilter();if(!sc)return true;
+if(sc.type==="region")return !!sc.region&&d.regionName===sc.region;
+if(sc.type==="state")return !!sc.state&&d.stateName===sc.state;
+if(sc.type==="division")return !!sc.division&&d.name===sc.division&&(!sc.state||d.stateName===sc.state);
+return false;
+}
+
+function hubInScope(h){
+const sc=getScopeFilter();if(!sc)return true;
+if(sc.type==="region")return !!sc.region&&h.region===sc.region;
+if(sc.type==="state")return !!sc.state&&h.state===sc.state;
+if(sc.type==="division")return !!sc.division&&h.division===sc.division;
+return false;
+}
+
+function deny(msg){showToast(msg||"You don't have permission for this action","fa-solid fa-triangle-exclamation");return false}
+
+function setupSidebar(user){
+const menu=document.getElementById("dynamicSidebarMenu");
+function mi(icon,label,href,act){return "<a"+(href?' href="'+href+'"':"")+' class="menu-item'+(act?" active":"")+'"><i class="'+icon+'"></i> '+label+"</a>"}
+let items="";
+items+=mi("fa-solid fa-chart-pie","Dashboard","dashboard.html");
+if(user.role==="Super Admin")items+=mi("fa-solid fa-users-gear","Users","users.html");
+const warehouseRoles=["Super Admin","Admin","Regional Manager","Regional Office","State Manager","State Office","Division Manager"];
+if(warehouseRoles.includes(user.role))items+=mi("fa-solid fa-warehouse","Warehouse","hubs.html",true);
+items+=mi("fa-solid fa-arrow-down-long","Stock IN","stock-in.html");
+items+=mi("fa-solid fa-arrow-up-long","Stock OUT","stock-out.html");
+items+=mi("fa-solid fa-file-signature","Demand","demand.html");
+menu.innerHTML=items;
+}
+
+window.addEventListener("DOMContentLoaded",async()=>{
+const user=JSON.parse(localStorage.getItem("userSession"));
+if(!user||!user.role){showToast("Session invalid! Redirecting...");setTimeout(()=>window.location.href="login.html",1200);return}
+if(!ALLOWED_ROLES.includes(user.role)){window.location.href="dashboard.html";return}
+currentUser=user;
+document.getElementById("userAvatar").textContent=getInitials(user.fullName);
+document.getElementById("adminName").innerText=user.fullName||"User";
+document.getElementById("userRoleBadge").innerText=user.role||"-";
+setupSidebar(user);
+setupTabsForRole();
+renderScopeNote();
+await loadAllData();
+populateFormDropdowns();
+populateFilterControls();
+setupTabNav();
+setupFormHandlers();
+setupCascadeListeners();
+applyFilters();
+});
+
+async function loadAllData(){
+try{
+const regSnap=await db.collection("regions").orderBy("name","asc").get();
+allRegions=[];regSnap.forEach(d=>{allRegions.push(Object.assign({id:d.id},d.data()))});
+regionNameMap={};allRegions.forEach(r=>{regionNameMap[r.id]=r.name;regionNameMap[r.name]=r.id});
+const stateSnap=await db.collection("states").orderBy("name","asc").get();
+allStates=[];stateSnap.forEach(d=>{
+var s=Object.assign({id:d.id},d.data());
+s.regionName=regionNameMap[s.regionId]||s.regionName||s.region||"";
+allStates.push(s);
+});
+stateNameMap={};allStates.forEach(s=>{stateNameMap[s.id]=s.name;stateNameMap[s.name]=s.id});
+const divSnap=await db.collection("divisions").orderBy("name","asc").get();
+allDivisions=[];divSnap.forEach(d=>{
+var dv=Object.assign({id:d.id},d.data());
+dv.regionName=regionNameMap[dv.regionId]||dv.regionName||dv.region||"";
+dv.stateName=stateNameMap[dv.stateId]||dv.stateName||dv.state||"";
+allDivisions.push(dv);
+});
+const hubSnap=await db.collection("hubs").orderBy("name","asc").get();
+allHubs=[];hubSnap.forEach(d=>{
+var h=Object.assign({id:d.id},d.data());
+h.region=h.region||h.regionName||"";
+h.state=h.state||h.stateName||"";
+h.division=h.division||h.divisionName||"";
+allHubs.push(h);
+});
+}catch(e){console.error("Load error:",e);showToast("Failed to load data","fa-solid fa-triangle-exclamation")}
+}
+
+function renderAll(){
+renderRegions();
+renderStates();
+renderDivisions();
+renderHubs();
+}
+
+function filterVal(id){var el=document.getElementById(id);return el?el.value:""}
+function textMatch(obj,q,fields){
+if(!q)return true;
+for(var i=0;i<fields.length;i++){var v=obj[fields[i]];if(v!==undefined&&v!==null&&String(v).toLowerCase().indexOf(q)!==-1)return true}
+return false;
+}
+
+function renderRegions(){
+const q=(filterVal("searchRegions")||"").toLowerCase().trim();
+let data=allRegions.filter(regionInScope);
+if(q)data=data.filter(function(r){return textMatch(r,q,["name"])});
+const can=canManage("region");
+const tb=document.getElementById("regionTableBody");
+document.getElementById("regionCount").innerText=data.length+" entries";
+tb.innerHTML="";
+if(!data.length){tb.innerHTML='<tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-database"></i><p>No regions found.</p></div></td></tr>';return}
+data.forEach((r,i)=>{
+const actions=can?'<div class="action-cell"><button class="btn-sm btn-edit" data-id="'+r.id+'" data-name="'+escHtml(r.name)+'" onclick="editRegion(this)"><i class="fa-solid fa-pen"></i> Edit</button><button class="btn-sm btn-delete" onclick="deleteRegion(\''+r.id+'\',\''+escAttr(r.name)+'\')"><i class="fa-solid fa-trash"></i> Delete</button></div>':'<span class="readonly-note">Read only</span>';
+tb.innerHTML+="<tr><td>"+(i+1)+'</td><td>'+escHtml(r.name)+'</td><td>'+actions+'</td></tr>';
+})
+}
+
+function renderStates(){
+const q=(filterVal("searchStates")||"").toLowerCase().trim();
+const regionF=filterVal("filterStateRegion");
+let data=allStates.filter(stateInScope);
+if(regionF)data=data.filter(function(s){return s.regionName===regionF});
+if(q)data=data.filter(function(s){return textMatch(s,q,["name","regionName"])});
+const can=canManage("state");
+const tb=document.getElementById("stateTableBody");
+document.getElementById("stateCount").innerText=data.length+" entries";
+tb.innerHTML="";
+if(!data.length){tb.innerHTML='<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-database"></i><p>No states found.</p></div></td></tr>';return}
+data.forEach((s,i)=>{
+const actions=can?'<div class="action-cell"><button class="btn-sm btn-edit" data-id="'+s.id+'" data-name="'+escHtml(s.name)+'" data-regionid="'+(s.regionId||"")+'" onclick="editState(this)"><i class="fa-solid fa-pen"></i> Edit</button><button class="btn-sm btn-delete" onclick="deleteState(\''+s.id+'\',\''+escAttr(s.name)+'\')"><i class="fa-solid fa-trash"></i> Delete</button></div>':'<span class="readonly-note">Read only</span>';
+tb.innerHTML+="<tr><td>"+(i+1)+'</td><td>'+escHtml(s.regionName||"-")+'</td><td>'+escHtml(s.name)+'</td><td>'+actions+'</td></tr>';
+})
+}
+
+function renderDivisions(){
+const q=(filterVal("searchDivisions")||"").toLowerCase().trim();
+const regionF=filterVal("filterDivRegion");
+const stateF=filterVal("filterDivState");
+let data=allDivisions.filter(divisionInScope);
+if(regionF)data=data.filter(function(d){return d.regionName===regionF});
+if(stateF)data=data.filter(function(d){return d.stateName===stateF});
+if(q)data=data.filter(function(d){return textMatch(d,q,["name","regionName","stateName"])});
+const can=canManage("division");
+const tb=document.getElementById("divisionTableBody");
+document.getElementById("divisionCount").innerText=data.length+" entries";
+tb.innerHTML="";
+if(!data.length){tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-database"></i><p>No divisions found.</p></div></td></tr>';return}
+data.forEach((d,i)=>{
+const actions=can?'<div class="action-cell"><button class="btn-sm btn-edit" data-id="'+d.id+'" data-name="'+escHtml(d.name)+'" data-regionid="'+(d.regionId||"")+'" data-stateid="'+(d.stateId||"")+'" onclick="editDivision(this)"><i class="fa-solid fa-pen"></i> Edit</button><button class="btn-sm btn-delete" onclick="deleteDivision(\''+d.id+'\',\''+escAttr(d.name)+'\')"><i class="fa-solid fa-trash"></i> Delete</button></div>':'<span class="readonly-note">Read only</span>';
+tb.innerHTML+="<tr><td>"+(i+1)+'</td><td>'+escHtml(d.regionName||"-")+'</td><td>'+escHtml(d.stateName||"-")+'</td><td>'+escHtml(d.name)+'</td><td>'+actions+'</td></tr>';
+})
+}
+
+function renderHubs(){
+const q=(filterVal("filterSearch")||"").toLowerCase().trim();
+const regionF=filterVal("filterHubRegion");
+const stateF=filterVal("filterHubState");
+const divisionF=filterVal("filterHubDivision");
+let data=allHubs.filter(hubInScope);
+if(regionF)data=data.filter(function(h){return h.region===regionF});
+if(stateF)data=data.filter(function(h){return h.state===stateF});
+if(divisionF)data=data.filter(function(h){return h.division===divisionF});
+if(q)data=data.filter(function(h){return textMatch(h,q,["name","code","region","state","division","incharge","phone","status"])});
+const can=canManage("hub");
+const tb=document.getElementById("hubTableBody");
+document.getElementById("hubCount").innerText=data.length+" entries";
+tb.innerHTML="";
+if(!data.length){tb.innerHTML='<tr><td colspan="10"><div class="empty-state"><i class="fa-solid fa-database"></i><p>No hubs found.</p></div></td></tr>';return}
+data.forEach((h,i)=>{
+const statusBadge=h.status==="Active"?'<span class="badge badge-active">Active</span>':'<span class="badge badge-inactive">Inactive</span>';
+const actions=can?'<div class="action-cell"><button class="btn-sm btn-edit" data-id="'+h.id+'" onclick="editHub(this)"><i class="fa-solid fa-pen"></i> Edit</button><button class="btn-sm btn-delete" onclick="deleteHub(\''+h.id+'\',\''+escAttr(h.name)+'\')"><i class="fa-solid fa-trash"></i> Delete</button></div>':'<span class="readonly-note">Read only</span>';
+tb.innerHTML+="<tr><td>"+(i+1)+'</td><td>'+escHtml(h.code||"-")+'</td><td>'+escHtml(h.name)+'</td><td>'+escHtml(h.region||"-")+'</td><td>'+escHtml(h.state||"-")+'</td><td>'+escHtml(h.division||"-")+'</td><td>'+escHtml(h.incharge||"-")+'</td><td>'+escHtml(h.phone||"-")+'</td><td>'+statusBadge+'</td><td>'+actions+'</td></tr>';
+})
+}
+
+function applyFilters(){renderAll()}
+
+function escHtml(s){if(!s)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function escAttr(s){if(!s)return"";return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,"&quot;")}
+
+function activateTab(name){
+document.querySelectorAll(".tab-btn").forEach(function(b){b.classList.remove("active")});
+document.querySelectorAll(".tab-panel").forEach(function(p){p.classList.remove("active")});
+const btn=document.querySelector('.tab-btn[data-tab="'+name+'"]');
+if(btn)btn.classList.add("active");
+const panel=document.getElementById("tab"+name.charAt(0).toUpperCase()+name.slice(1));
+if(panel)panel.classList.add("active");
+}
+
+function setupTabsForRole(){
+const map={regions:"region",states:"state",divisions:"division",hubs:"hub"};
+let first=null;
+Object.keys(map).forEach(function(name){
+const btn=document.querySelector('.tab-btn[data-tab="'+name+'"]');
+const allowed=canManage(map[name]);
+if(btn)btn.style.display=allowed?"":"none";
+if(allowed&&!first)first=name;
+});
+if(first)activateTab(first);
+}
+
+function renderScopeNote(){
+const sc=getScopeFilter();
+const el=document.getElementById("scopeNote");
+if(!el)return;
+if(!sc){el.style.display="none";return}
+let txt="";
+if(sc.type==="region")txt="Your area: Region "+sc.region+" — you can add/edit States, Divisions and Hubs in this region.";
+else if(sc.type==="state")txt="Your area: State "+sc.state+" — you can add/edit Divisions and Hubs in this state.";
+else if(sc.type==="division")txt="Your area: Division "+sc.division+" — you can add/edit Hubs in this division.";
+else txt="No area is assigned to your account. Please contact the administrator.";
+el.textContent=txt;el.style.display="block";
+}
+
+function setupTabNav(){
+document.querySelectorAll(".tab-btn").forEach(function(btn){
+btn.addEventListener("click",function(){
+activateTab(this.dataset.tab);
+});
+});
+}
+
+function populateSelect(id,items,valField,labelField,selectedVal){const sel=document.getElementById(id);sel.innerHTML='<option value="">Select</option>';items.forEach(item=>{const v=item[valField];const l=item[labelField];const o=document.createElement("option");o.value=v;o.textContent=l;if(selectedVal&&v==selectedVal)o.selected=true;sel.appendChild(o)})}
+
+function setLockedSelect(selectId,value,label){
+const sel=document.getElementById(selectId);if(!sel)return;
+sel.innerHTML="";
+const o=document.createElement("option");
+o.value=value||"";o.textContent=label||value||"Not assigned";
+sel.appendChild(o);sel.value=value||"";sel.disabled=true;
+}
+function unlockSelect(selectId){const sel=document.getElementById(selectId);if(sel)sel.disabled=false}
+
+function populateRegionsDropdown(selectId,selectedId){
+const sc=getScopeFilter();
+const sel=document.getElementById(selectId);
+if(sc){
+const reg=allRegions.find(function(r){return r.name===sc.region});
+setLockedSelect(selectId,reg?reg.id:"",reg?reg.name:(sc.region||"Not assigned"));
+return;
+}
+unlockSelect(selectId);
+sel.innerHTML='<option value="">Select Region</option>';
+allRegions.forEach(r=>{const o=document.createElement("option");o.value=r.id;o.textContent=r.name;if(selectedId&&r.id===selectedId)o.selected=true;sel.appendChild(o)})
+}
+
+function populateStatesDropdown(selectId,regionId,selectedId){
+const sc=getScopeFilter();
+if(sc&&sc.type==="state"){
+const st=allStates.find(function(s){return s.name===sc.state});
+setLockedSelect(selectId,st?st.id:"",st?st.name:(sc.state||"Not assigned"));
+return;
+}
+unlockSelect(selectId);
+const sel=document.getElementById(selectId);
+sel.innerHTML='<option value="">Select State</option>';
+if(!regionId)return;
+const filtered=allStates.filter(s=>s.regionId===regionId);
+filtered.forEach(s=>{const o=document.createElement("option");o.value=s.id;o.textContent=s.name;if(selectedId&&s.id===selectedId)o.selected=true;sel.appendChild(o)})
+}
+
+function populateDivisionsDropdown(selectId,stateId,selectedId){
+const sc=getScopeFilter();
+if(sc&&sc.type==="division"){
+const d=allDivisions.find(function(x){return x.name===sc.division&&(!sc.state||x.stateName===sc.state)});
+setLockedSelect(selectId,d?d.id:"",d?d.name:(sc.division||"Not assigned"));
+return;
+}
+unlockSelect(selectId);
+const sel=document.getElementById(selectId);
+sel.innerHTML='<option value="">Select Division</option>';
+if(!stateId)return;
+const filtered=allDivisions.filter(d=>d.stateId===stateId);
+filtered.forEach(d=>{const o=document.createElement("option");o.value=d.id;o.textContent=d.name;if(selectedId&&d.id===selectedId)o.selected=true;sel.appendChild(o)})
+}
+
+function populateHubRegions(selId,selectedName){
+const sc=getScopeFilter();
+if(sc&&sc.region){setLockedSelect(selId,sc.region,sc.region);return}
+unlockSelect(selId);
+const sel=document.getElementById(selId);
+sel.innerHTML='<option value="">Select Region</option>';
+allRegions.forEach(r=>{const o=document.createElement("option");o.value=r.name;o.textContent=r.name;if(selectedName&&r.name===selectedName)o.selected=true;sel.appendChild(o)})
+}
+
+function populateHubStates(selId,regionName,selectedName){
+const sc=getScopeFilter();
+if(sc&&(sc.type==="state"||sc.type==="division")&&sc.state){setLockedSelect(selId,sc.state,sc.state);return}
+unlockSelect(selId);
+const sel=document.getElementById(selId);
+sel.innerHTML='<option value="">Select State</option>';
+if(!regionName)return;
+const reg=allRegions.find(r=>r.name===regionName);
+if(!reg)return;
+const filtered=allStates.filter(s=>s.regionId===reg.id);
+filtered.forEach(s=>{const o=document.createElement("option");o.value=s.name;o.textContent=s.name;if(selectedName&&s.name===selectedName)o.selected=true;sel.appendChild(o)})
+}
+
+function populateHubDivisions(selId,stateName,selectedName){
+const sc=getScopeFilter();
+if(sc&&sc.type==="division"){setLockedSelect(selId,sc.division,sc.division);return}
+unlockSelect(selId);
+const sel=document.getElementById(selId);
+sel.innerHTML='<option value="">Select Division</option>';
+if(!stateName)return;
+const st=allStates.find(s=>s.name===stateName);
+if(!st)return;
+const filtered=allDivisions.filter(d=>d.stateId===st.id);
+filtered.forEach(d=>{const o=document.createElement("option");o.value=d.name;o.textContent=d.name;if(selectedName&&d.name===selectedName)o.selected=true;sel.appendChild(o)})
+}
+
+function setupCascadeListeners(){
+document.getElementById("divRegion").addEventListener("change",function(){
+const rid=this.value;
+populateStatesDropdown("divState",rid,null);
+});
+document.getElementById("hubRegion").addEventListener("change",function(){
+const rname=this.value;
+populateHubStates("hubState",rname,null);
+populateHubDivisions("hubDivision",null,null);
+});
+document.getElementById("hubState").addEventListener("change",function(){
+const sname=this.value;
+populateHubDivisions("hubDivision",sname,null);
+});
+}
+
+function setupFormHandlers(){
+document.getElementById("btnSaveRegion").addEventListener("click",saveRegion);
+document.getElementById("btnCancelRegion").addEventListener("click",cancelRegionEdit);
+document.getElementById("btnSaveState").addEventListener("click",saveState);
+document.getElementById("btnCancelState").addEventListener("click",cancelStateEdit);
+document.getElementById("btnSaveDivision").addEventListener("click",saveDivision);
+document.getElementById("btnCancelDivision").addEventListener("click",cancelDivisionEdit);
+document.getElementById("btnSaveHub").addEventListener("click",saveHub);
+document.getElementById("btnCancelHub").addEventListener("click",cancelHubEdit);
+}
+
+async function refreshData(){
+await loadAllData();
+populateFormDropdowns();
+populateFilterControls();
+applyFilters();
+}
+
+async function saveRegion(){
+if(!canManage("region"))return deny();
+const name=document.getElementById("regionName").value.trim();
+if(!name){showToast("Enter region name","fa-solid fa-triangle-exclamation");return}
+try{
+if(editRegionId){
+await db.collection("regions").doc(editRegionId).update({name});
+showToast("Region updated");
+}else{
+await db.collection("regions").add({name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+showToast("Region added");
+}
+document.getElementById("regionName").value="";
+cancelRegionEdit();
+await refreshData();
+}catch(e){console.error(e);showToast("Error saving region","fa-solid fa-triangle-exclamation")}
+}
+
+function editRegion(btn){
+if(!canManage("region"))return deny();
+editRegionId=btn.dataset.id;
+document.getElementById("regionName").value=btn.dataset.name;
+document.getElementById("regionFormTitle").innerText="Edit Region";
+document.getElementById("btnRegionLabel").innerText="Update Region";
+document.getElementById("btnCancelRegion").style.display="inline-flex";
+}
+
+function cancelRegionEdit(){
+editRegionId=null;
+document.getElementById("regionName").value="";
+document.getElementById("regionFormTitle").innerText="Add Region";
+document.getElementById("btnRegionLabel").innerText="Add Region";
+document.getElementById("btnCancelRegion").style.display="none";
+}
+
+async function deleteRegion(id,name){
+if(!canManage("region"))return deny();
+if(!confirm('Delete region "'+name+'" and all associated states, divisions, hubs?'))return;
+try{
+const regionName=regionNameMap[id]||name;
+const statesToDel=allStates.filter(s=>s.regionId===id);
+for(const s of statesToDel){
+const divsToDel=allDivisions.filter(d=>d.stateId===s.id);
+for(const d of divsToDel){
+const hubsToDel=allHubs.filter(h=>h.division===d.name&&h.state===s.name&&h.region===regionName);
+for(const h of hubsToDel)await db.collection("hubs").doc(h.id).delete();
+await db.collection("divisions").doc(d.id).delete();
+}
+await db.collection("states").doc(s.id).delete();
+}
+await db.collection("regions").doc(id).delete();
+showToast("Region deleted");
+await refreshData();
+}catch(e){console.error(e);showToast("Error deleting","fa-solid fa-triangle-exclamation")}
+}
+
+async function saveState(){
+if(!canManage("state"))return deny();
+const regionId=document.getElementById("stateRegion").value;
+const name=document.getElementById("stateName").value.trim();
+if(!regionId){showToast("Select a region","fa-solid fa-triangle-exclamation");return}
+if(!name){showToast("Enter state name","fa-solid fa-triangle-exclamation");return}
+const sc=getScopeFilter();
+if(sc){
+const ownReg=allRegions.find(function(r){return r.name===sc.region});
+if(!ownReg||regionId!==ownReg.id)return deny("You can only add/edit states in your assigned region");
+}
+try{
+const regionName=regionNameMap[regionId]||"";
+if(editStateId){
+await db.collection("states").doc(editStateId).update({name,regionId,regionName});
+showToast("State updated");
+}else{
+await db.collection("states").add({name,regionId,regionName,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+showToast("State added");
+}
+document.getElementById("stateName").value="";
+cancelStateEdit();
+await refreshData();
+}catch(e){console.error(e);showToast("Error saving state","fa-solid fa-triangle-exclamation")}
+}
+
+function editState(btn){
+if(!canManage("state"))return deny();
+const st=allStates.find(function(s){return s.id===btn.dataset.id});
+if(!st||!stateInScope(st))return deny("This state is outside your assigned area");
+editStateId=btn.dataset.id;
+document.getElementById("stateName").value=st.name||"";
+populateRegionsDropdown("stateRegion",st.regionId||"");
+document.getElementById("stateRegion").value=st.regionId||"";
+document.getElementById("stateFormTitle").innerText="Edit State";
+document.getElementById("btnStateLabel").innerText="Update State";
+document.getElementById("btnCancelState").style.display="inline-flex";
+}
+
+function cancelStateEdit(){
+editStateId=null;
+document.getElementById("stateName").value="";
+document.getElementById("stateFormTitle").innerText="Add State";
+document.getElementById("btnStateLabel").innerText="Add State";
+document.getElementById("btnCancelState").style.display="none";
+populateRegionsDropdown("stateRegion",null);
+}
+
+async function deleteState(id,name){
+if(!canManage("state"))return deny();
+const st=allStates.find(function(s){return s.id===id});
+if(!st||!stateInScope(st))return deny("This state is outside your assigned area");
+if(!confirm('Delete state "'+name+'" and all associated divisions, hubs?'))return;
+try{
+const divsToDel=allDivisions.filter(d=>d.stateId===id);
+for(const d of divsToDel){
+const hubsToDel=allHubs.filter(h=>h.division===d.name&&h.state===st.name);
+for(const h of hubsToDel)await db.collection("hubs").doc(h.id).delete();
+await db.collection("divisions").doc(d.id).delete();
+}
+await db.collection("states").doc(id).delete();
+showToast("State deleted");
+await refreshData();
+}catch(e){console.error(e);showToast("Error deleting","fa-solid fa-triangle-exclamation")}
+}
+
+async function saveDivision(){
+if(!canManage("division"))return deny();
+const regionId=document.getElementById("divRegion").value;
+const stateId=document.getElementById("divState").value;
+const name=document.getElementById("divName").value.trim();
+if(!regionId){showToast("Select a region","fa-solid fa-triangle-exclamation");return}
+if(!stateId){showToast("Select a state","fa-solid fa-triangle-exclamation");return}
+if(!name){showToast("Enter division name","fa-solid fa-triangle-exclamation");return}
+const sc=getScopeFilter();
+if(sc){
+const st=allStates.find(function(s){return s.id===stateId});
+if(!st)return deny("Select a valid state");
+if(sc.type==="region"){
+if(st.regionName!==sc.region)return deny("This state is outside your assigned region");
+}else if(sc.type==="state"){
+if(st.name!==sc.state)return deny("You can only add/edit divisions in your assigned state");
+}else{
+return deny("You don't have permission for this action");
+}
+}
+try{
+const regionName=regionNameMap[regionId]||"";
+const stateName=stateNameMap[stateId]||"";
+if(editDivisionId){
+await db.collection("divisions").doc(editDivisionId).update({name,regionId,stateId,regionName,stateName});
+showToast("Division updated");
+}else{
+await db.collection("divisions").add({name,regionId,stateId,regionName,stateName,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+showToast("Division added");
+}
+document.getElementById("divName").value="";
+cancelDivisionEdit();
+await refreshData();
+}catch(e){console.error(e);showToast("Error saving division","fa-solid fa-triangle-exclamation")}
+}
+
+function editDivision(btn){
+if(!canManage("division"))return deny();
+const dv=allDivisions.find(function(d){return d.id===btn.dataset.id});
+if(!dv||!divisionInScope(dv))return deny("This division is outside your assigned area");
+editDivisionId=btn.dataset.id;
+document.getElementById("divName").value=dv.name||"";
+populateRegionsDropdown("divRegion",dv.regionId||"");
+document.getElementById("divRegion").value=dv.regionId||"";
+populateStatesDropdown("divState",dv.regionId||"",dv.stateId||"");
+document.getElementById("divisionFormTitle").innerText="Edit Division";
+document.getElementById("btnDivisionLabel").innerText="Update Division";
+document.getElementById("btnCancelDivision").style.display="inline-flex";
+}
+
+function cancelDivisionEdit(){
+editDivisionId=null;
+document.getElementById("divName").value="";
+document.getElementById("divisionFormTitle").innerText="Add Division";
+document.getElementById("btnDivisionLabel").innerText="Add Division";
+document.getElementById("btnCancelDivision").style.display="none";
+populateRegionsDropdown("divRegion",null);
+populateStatesDropdown("divState",document.getElementById("divRegion").value,null);
+}
+
+async function deleteDivision(id,name){
+if(!canManage("division"))return deny();
+const dv=allDivisions.find(function(d){return d.id===id});
+if(!dv||!divisionInScope(dv))return deny("This division is outside your assigned area");
+if(!confirm('Delete division "'+name+'" and all associated hubs?'))return;
+try{
+const hubsToDel=allHubs.filter(h=>h.division===name&&h.state===dv.stateName);
+for(const h of hubsToDel)await db.collection("hubs").doc(h.id).delete();
+await db.collection("divisions").doc(id).delete();
+showToast("Division deleted");
+await refreshData();
+}catch(e){console.error(e);showToast("Error deleting","fa-solid fa-triangle-exclamation")}
+}
+
+async function saveHub(){
+if(!canManage("hub"))return deny();
+const name=document.getElementById("hubName").value.trim();
+const code=document.getElementById("hubCode").value.trim();
+const region=document.getElementById("hubRegion").value;
+const state=document.getElementById("hubState").value;
+const division=document.getElementById("hubDivision").value;
+const address=document.getElementById("hubAddress").value.trim();
+const incharge=document.getElementById("hubIncharge").value.trim();
+const phone=document.getElementById("hubPhone").value.trim();
+const capacity=document.getElementById("hubCapacity").value;
+const status=document.getElementById("hubStatus").value;
+if(!name){showToast("Enter hub name","fa-solid fa-triangle-exclamation");return}
+if(!code){showToast("Enter hub code","fa-solid fa-triangle-exclamation");return}
+if(!region){showToast("Select a region","fa-solid fa-triangle-exclamation");return}
+if(!state){showToast("Select a state","fa-solid fa-triangle-exclamation");return}
+if(!division){showToast("Select a division","fa-solid fa-triangle-exclamation");return}
+const sc=getScopeFilter();
+if(sc){
+if(sc.region&&region!==sc.region)return deny("You can only add/edit hubs in your assigned region");
+if(sc.type==="state"&&state!==sc.state)return deny("You can only add/edit hubs in your assigned state");
+if(sc.type==="division"&&division!==sc.division)return deny("You can only add/edit hubs in your assigned division");
+const st=allStates.find(function(s){return s.name===state});
+if(!st||(sc.region&&st.regionName!==sc.region))return deny("Selected state is outside your assigned area");
+}
+const dup=allHubs.find(function(h){return h.code===code&&h.id!==editHubId});
+if(dup){showToast("Hub code already exists","fa-solid fa-triangle-exclamation");return}
+try{
+const payload={name,code,region,state,division,address,incharge,phone,capacity:parseInt(capacity)||0,status,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+if(editHubId){
+await db.collection("hubs").doc(editHubId).update(payload);
+showToast("Hub updated");
+}else{
+await db.collection("hubs").add(payload);
+showToast("Hub added");
+}
+cancelHubEdit();
+await refreshData();
+}catch(e){console.error(e);showToast("Error saving hub","fa-solid fa-triangle-exclamation")}
+}
+
+function editHub(btn){
+if(!canManage("hub"))return deny();
+editHubId=btn.dataset.id;
+const hub=allHubs.find(h=>h.id===editHubId);
+if(!hub||!hubInScope(hub))return deny("This hub is outside your assigned area");
+document.getElementById("hubName").value=hub.name||"";
+document.getElementById("hubCode").value=hub.code||"";
+populateHubRegions("hubRegion",hub.region||"");
+populateHubStates("hubState",hub.region||"",hub.state||"");
+populateHubDivisions("hubDivision",hub.state||"",hub.division||"");
+document.getElementById("hubAddress").value=hub.address||"";
+document.getElementById("hubIncharge").value=hub.incharge||"";
+document.getElementById("hubPhone").value=hub.phone||"";
+document.getElementById("hubCapacity").value=hub.capacity||"";
+document.getElementById("hubStatus").value=hub.status||"Active";
+document.getElementById("hubFormTitle").innerText="Edit Warehouse / Hub";
+document.getElementById("btnHubLabel").innerText="Update Hub";
+document.getElementById("btnCancelHub").style.display="inline-flex";
+}
+
+function cancelHubEdit(){
+editHubId=null;
+document.getElementById("hubName").value="";
+document.getElementById("hubCode").value="";
+document.getElementById("hubAddress").value="";
+document.getElementById("hubIncharge").value="";
+document.getElementById("hubPhone").value="";
+document.getElementById("hubCapacity").value="";
+document.getElementById("hubStatus").value="Active";
+document.getElementById("hubFormTitle").innerText="Add Warehouse / Hub";
+document.getElementById("btnHubLabel").innerText="Add Hub";
+document.getElementById("btnCancelHub").style.display="none";
+populateFormDropdowns();
+}
+
+async function deleteHub(id,name){
+if(!canManage("hub"))return deny();
+const hub=allHubs.find(function(h){return h.id===id});
+if(!hub||!hubInScope(hub))return deny("This hub is outside your assigned area");
+if(!confirm('Delete hub "'+name+'"?'))return;
+try{
+await db.collection("hubs").doc(id).delete();
+showToast("Hub deleted");
+await refreshData();
+}catch(e){console.error(e);showToast("Error deleting","fa-solid fa-triangle-exclamation")}
+}
+
+function populateFormDropdowns(){
+populateRegionsDropdown("stateRegion",null);
+populateRegionsDropdown("divRegion",null);
+populateHubRegions("hubRegion",null);
+populateStatesDropdown("divState",document.getElementById("divRegion").value,null);
+populateHubStates("hubState",document.getElementById("hubRegion").value,null);
+populateHubDivisions("hubDivision",document.getElementById("hubState").value,null);
+}
+
+function uniqValues(arr){var out=[];arr.forEach(function(v){if(v&&out.indexOf(v)===-1)out.push(v)});return out.sort()}
+function fillFilterSelect(id,placeholder,values){
+const sel=document.getElementById(id);if(!sel)return;
+const current=sel.value;
+sel.innerHTML='<option value="">'+placeholder+'</option>';
+uniqValues(values).forEach(function(v){const o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o)});
+if(current&&values.indexOf(current)!==-1)sel.value=current;
+}
+function populateFilterControls(){
+const sc=getScopeFilter();
+const regionNames=uniqValues(allRegions.filter(regionInScope).map(function(r){return r.name}));
+fillFilterSelect("filterStateRegion","All Regions",regionNames);
+fillFilterSelect("filterDivRegion","All Regions",regionNames);
+fillFilterSelect("filterHubRegion","All Regions",regionNames);
+const stateNames=uniqValues(allStates.filter(stateInScope).map(function(s){return s.name}));
+fillFilterSelect("filterDivState","All States",stateNames);
+fillFilterSelect("filterHubState","All States",stateNames);
+const divisionNames=uniqValues(allDivisions.filter(divisionInScope).map(function(d){return d.name}));
+fillFilterSelect("filterHubDivision","All Divisions",divisionNames);
+}
+function onDivFilterRegionChange(){
+const region=filterVal("filterDivRegion");
+const states=allStates.filter(function(s){return stateInScope(s)&&(!region||s.regionName===region)}).map(function(s){return s.name});
+fillFilterSelect("filterDivState","All States",states);
+applyFilters();
+}
+function onHubFilterRegionChange(){
+const region=filterVal("filterHubRegion");
+const states=allStates.filter(function(s){return stateInScope(s)&&(!region||s.regionName===region)}).map(function(s){return s.name});
+fillFilterSelect("filterHubState","All States",states);
+const divisions=allDivisions.filter(function(d){return divisionInScope(d)&&(!region||d.regionName===region)}).map(function(d){return d.name});
+fillFilterSelect("filterHubDivision","All Divisions",divisions);
+applyFilters();
+}
+function onHubFilterStateChange(){
+const region=filterVal("filterHubRegion");
+const state=filterVal("filterHubState");
+const divisions=allDivisions.filter(function(d){return divisionInScope(d)&&(!region||d.regionName===region)&&(!state||d.stateName===state)}).map(function(d){return d.name});
+fillFilterSelect("filterHubDivision","All Divisions",divisions);
+applyFilters();
+}
+
+function exportExcel() {
+    if (!allHubs.length) { showToast("No data to export", "fa-solid fa-triangle-exclamation"); return; }
+    var wsData = [["Name","Region","State","Division","Type","Status"]];
+    for (var i = 0; i < allHubs.length; i++) {
+        var e = allHubs[i];
+        wsData.push([e.name||"-", e.region||"-", e.state||"-", e.division||"-", e.type||"-", e.status||"-"]);
+    }
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "Hubs");
+    XLSX.writeFile(wb, "hubs_export.xlsx");
+}
+document.head.insertAdjacentHTML('beforeend','<style>@media(max-width:768px){.sidebar-overlay{display:none!important}}</style>');
+    
+</script>
+</body>
+    
+</html>

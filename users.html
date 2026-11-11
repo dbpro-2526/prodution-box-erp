@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>User Management - Donation Box Inventory</title>
+<link rel="icon" href="dblogo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
+:root{--primary:#0F4C81;--accent:#2563EB;--bg:#f0f4f9;--sidebar-bg:#0F4C81;--text-dark:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--shadow:0 2px 12px rgba(0,0,0,0.06);--radius:14px;--radius-sm:10px;--transition:0.3s ease}
+body{background:var(--bg);color:var(--text-dark);display:flex;min-height:100vh;overflow-x:hidden}
+.sidebar{width:240px;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:1000;transition:transform var(--transition)}
+.sidebar-brand{padding:18px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar-brand img{width:36px;height:36px;border-radius:8px}
+.sidebar-brand h2{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
+.sidebar-menu{padding:12px 10px;display:flex;flex-direction:column;gap:2px;flex-grow:1;overflow-y:auto}
+.menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;color:rgba(255,255,255,0.7);text-decoration:none;border-radius:var(--radius-sm);font-weight:500;font-size:13px;transition:all var(--transition);cursor:pointer}
+.menu-item i{width:18px;text-align:center;font-size:14px}
+.menu-item:hover{background:rgba(255,255,255,0.12);color:#fff}
+.menu-item.active{background:rgba(255,255,255,0.18);color:#fff;font-weight:600}
+.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,0.1)}
+.btn-logout{width:100%;padding:10px;background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-sm);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px}
+.btn-logout:hover{background:rgba(239,68,68,0.35);color:#fff}
+.hamburger{display:none;position:fixed;top:10px;left:10px;z-index:1001;width:38px;height:38px;border-radius:10px;background:var(--sidebar-bg);color:#fff;border:none;font-size:16px;cursor:pointer;align-items:center;justify-content:center}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;opacity:0;transition:opacity var(--transition)}
+.sidebar-overlay.show{display:block;opacity:1}
+.main-content{margin-left:240px;width:calc(100% - 240px);padding:20px 24px;min-height:100vh}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.top-bar-left h1{font-size:20px;font-weight:700;color:var(--primary)}
+.dash-section{background:#fff;padding:18px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:16px}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.section-header h2{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.section-header h2 i{color:var(--accent)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{margin-bottom:2px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:3px}
+.form-group .required{color:#ef4444}
+.form-group input,.form-group select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff;transition:border-color var(--transition)}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
+.form-group input:disabled,.form-group select:disabled{background:#f1f5f9;cursor:not-allowed;opacity:0.7}
+.password-wrapper{display:flex;align-items:center;position:relative}
+.password-wrapper input{padding-right:36px}
+.password-wrapper .pwd-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:4px}
+.password-wrapper .pwd-toggle:hover{color:var(--text-dark)}
+.form-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.form-actions button{padding:9px 20px;border-radius:var(--radius-sm);font-weight:500;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border:none}
+.btn-action{background:var(--accent);color:#fff}
+.btn-action:hover{background:#1d4ed8}
+.btn-action-secondary{background:#fff;color:var(--text-dark);border:1px solid var(--border)}
+.btn-action-secondary:hover{background:#f8fafc}
+.btn-danger{background:#ef4444;color:#fff}
+.btn-danger:hover{background:#dc2626}
+.table-toolbar{display:grid;grid-template-columns:minmax(180px,2fr) repeat(4,minmax(115px,1fr)) auto;gap:8px;margin-bottom:12px;align-items:center;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px}
+.table-toolbar .search-wrap{position:relative;min-width:0}
+.table-toolbar .search-wrap input{width:100%;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff}
+.table-toolbar .search-wrap input:focus{border-color:var(--accent)}
+.table-toolbar .search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px}
+.table-toolbar select{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff;min-width:0;width:100%}
+.table-toolbar select:focus{border-color:var(--accent)}
+.filter-clear{padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text-muted);font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.filter-clear:hover{background:#f1f5f9;color:var(--text-dark)}
+.filter-summary{font-size:11px;color:var(--text-muted);margin-bottom:8px}
+.table-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;min-width:800px}
+th{background:#f8fafc;padding:10px 12px;color:var(--text-muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafcff}
+.status-badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.status-active{background:#d1fae5;color:#059669}
+.status-inactive{background:#fee2e2;color:#dc2626}
+.action-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:4px}
+.action-btn.edit{background:#dbeafe;color:#2563eb}
+.action-btn.edit:hover{background:#bfdbfe}
+.action-btn.delete{background:#fee2e2;color:#dc2626}
+.action-btn.delete:hover{background:#fecaca}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty-state i{font-size:36px;margin-bottom:10px;opacity:0.3}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--primary);color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.15);font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;z-index:3000;transform:translateY(80px);opacity:0;transition:var(--transition);max-width:340px}
+.toast.show{transform:translateY(0);opacity:1}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:2000;justify-content:center;align-items:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:var(--radius);width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);padding:20px 22px;position:relative;animation:modalIn 0.25s ease}
+@keyframes modalIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;color:var(--text-muted);cursor:pointer;padding:4px;line-height:1}
+.modal-close:hover{color:var(--text-dark)}
+.modal h2{font-size:16px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:var(--primary)}
+.modal h2 i{color:var(--accent)}
+.float-add-btn{position:fixed;top:82px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:18px;box-shadow:0 4px 16px rgba(37,99,235,0.35);cursor:pointer;transition:all var(--transition);z-index:500;display:flex;align-items:center;justify-content:center}
+.float-add-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(37,99,235,0.45)}
+.form-grid.full-width .form-group{grid-column:1/-1}
+@media(max-width:1024px){.main-content{padding:16px 18px}}
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.hamburger{display:flex}.sidebar-overlay{display:block}
+.main-content{margin-left:0;width:100%;padding:60px 12px 16px}.top-bar{flex-direction:column;gap:6px}.top-bar-left h1{font-size:17px}
+.form-grid{grid-template-columns:1fr}.dash-section{padding:12px}table{min-width:600px}th,td{padding:6px 6px;font-size:11px}.action-btn{padding:3px 6px;font-size:10px}.toast{left:12px;right:12px;bottom:12px;max-width:none}.section-header{flex-direction:column;align-items:stretch;gap:6px}.section-header h2{font-size:14px}.float-add-btn{top:60px;right:12px;width:40px;height:40px;font-size:16px}.modal{padding:14px 16px}.modal h2{font-size:14px}}
+@media(max-width:480px){.table-toolbar{grid-template-columns:1fr}.table-toolbar .search-wrap{min-width:100%}.table-toolbar select{width:100%}.filter-clear{width:100%;justify-content:center}.form-actions{flex-direction:column}.form-actions button{width:100%}}
+</style>
+<script src="scope-query.js"></script>
+<script src="auth-guard.js"></script>
+</head>
+<body>
+<button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="sidebar" id="sidebar">
+<div class="sidebar-brand"><img src="dblogo.png" alt="Logo"><h2>Donation Box Inventory</h2></div>
+<div class="sidebar-menu" id="dynamicSidebarMenu"><div class="menu-item active"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+<div class="sidebar-footer"><button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></div>
+</div>
+
+<div class="main-content">
+<div class="top-bar">
+<div class="top-bar-left"><h1>User Management</h1></div>
+</div>
+
+<div class="modal-overlay" id="userModal">
+<div class="modal">
+<button class="modal-close" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+<h2><i class="fa-solid fa-user-plus"></i> <span id="formTitle">Add New User</span></h2>
+<form id="userForm" autocomplete="off">
+<div class="form-grid">
+<div class="form-group">
+<label>Full Name <span class="required">*</span></label>
+<input type="text" id="userName" required placeholder="Enter full name">
+</div>
+<div class="form-group">
+<label>Email (optional)</label>
+<input type="email" id="userEmail" placeholder="Original email (reset link isi par jayega)">
+</div>
+<div class="form-group">
+<label>Employee Code <span class="required">*</span></label>
+<input type="text" id="userEmpCode" required placeholder="Enter employee code">
+</div>
+<div class="form-group">
+<label>Role <span class="required">*</span></label>
+<select id="userRole" required>
+<option value="">Select Role</option>
+<option value="Super Admin">Super Admin</option>
+<option value="Admin">Admin</option>
+<option value="Regional Manager">Regional Manager</option>
+<option value="Regional Office">Regional Office</option>
+<option value="State Manager">State Manager</option>
+<option value="State Office">State Office</option>
+<option value="Division Manager">Division Manager</option>
+<option value="Warehouse Manager">Warehouse Manager</option>
+<option value="Inventory Loader">Inventory Loader</option>
+<option value="User">User</option>
+</select>
+</div>
+<div class="form-group">
+<label>Region</label>
+<select id="userRegion"><option value="">All Regions</option></select>
+</div>
+<div class="form-group">
+<label>State</label>
+<select id="userState"><option value="">All States</option></select>
+</div>
+<div class="form-group">
+<label>Division</label>
+<select id="userDivision"><option value="">All Divisions</option></select>
+</div>
+<div class="form-group">
+<label>Hub</label>
+<select id="userHub"><option value="">All Hubs</option></select>
+</div>
+<div class="form-group">
+<label>Password <span class="required" id="pwdRequired">*</span></label>
+<div class="password-wrapper">
+<input type="password" id="userPassword" placeholder="Enter password">
+<button type="button" class="pwd-toggle" id="pwdToggle"><i class="fa-regular fa-eye"></i></button>
+</div>
+</div>
+<div class="form-group">
+<label>Status</label>
+<select id="userStatus">
+<option value="Active">Active</option>
+<option value="Inactive">Inactive</option>
+</select>
+</div>
+</div>
+<div class="form-actions">
+<button type="submit" class="btn-action" id="submitBtn"><i class="fa-solid fa-floppy-disk"></i> Save User</button>
+<button type="button" class="btn-action-secondary" id="cancelBtn" style="display:none"><i class="fa-solid fa-xmark"></i> Cancel</button>
+</div>
+</form>
+</div>
+</div>
+
+<button class="float-add-btn" id="addUserFloatBtn" title="Add User"><i class="fa-solid fa-plus"></i></button>
+
+<div class="dash-section">
+<div class="section-header">
+<h2><i class="fa-solid fa-users"></i> Users List</h2>
+<div style="display:flex;align-items:center;gap:8px">
+<button class="btn-action" id="addUserBtn" style="font-size:12px;padding:6px 14px"><i class="fa-solid fa-plus"></i> Add User</button>
+<button class="btn-action" onclick="exportExcel()" style="font-size:12px;padding:6px 14px;background:#059669;color:#fff"><i class="fa-solid fa-file-excel"></i> Excel</button>
+<span style="font-size:11px;color:var(--text-muted)" id="userCount">0 users</span>
+</div>
+</div>
+<div class="table-toolbar">
+<div class="search-wrap">
+<i class="fa-solid fa-search"></i>
+<input type="text" id="searchUser" placeholder="Search by name or email...">
+</div>
+<select id="filterRole">
+<option value="">All Roles</option>
+<option value="Super Admin">Super Admin</option>
+<option value="Admin">Admin</option>
+<option value="Regional Manager">Regional Manager</option>
+<option value="Regional Office">Regional Office</option>
+<option value="State Manager">State Manager</option>
+<option value="State Office">State Office</option>
+<option value="Division Manager">Division Manager</option>
+<option value="Warehouse Manager">Warehouse Manager</option>
+<option value="Inventory Loader">Inventory Loader</option>
+<option value="User">User</option>
+</select>
+<select id="filterRegion"><option value="">All Regions</option></select>
+<select id="filterState"><option value="">All States</option></select>
+<select id="filterDivision"><option value="">All Divisions</option></select>
+<button type="button" class="filter-clear" id="clearFilters"><i class="fa-solid fa-filter-circle-xmark"></i> Clear</button>
+</div>
+<div class="filter-summary" id="filterSummary"></div>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>S.No</th><th>Name</th><th>Email</th><th>Emp Code</th><th>Role</th><th>Region</th><th>State</th><th>Division</th><th>Hub</th><th>Status</th><th>Actions</th></tr>
+</thead>
+<tbody id="usersTableBody"><tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading users...</p></div></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div style="text-align:center;padding:16px 0;font-size:11px;color:var(--text-muted)">Donation Box Inventory | &copy; 2026</div>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastMsg">Done</span></div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="db-compat.js"></script>
+<script>
+// Supabase par shift ho chuka hai - purana Firebase config hata diya gaya hai.
+var db = firebase.firestore();
+
+var allRegions = [], allStates = [], allDivisions = [], allHubs = [], allUsers = [];
+var currentUser = null, editingUserId = null;
+
+function showToast(msg, icon) {
+var t = document.getElementById('toast');
+document.getElementById('toastMsg').textContent = msg;
+t.querySelector('i').className = icon || 'fa-solid fa-check-circle';
+t.classList.add('show');
+setTimeout(function(){ t.classList.remove('show') }, 2500);
+}
+
+document.getElementById('hamburgerBtn').addEventListener('click', function(){
+document.getElementById('sidebar').classList.toggle('open');
+document.getElementById('sidebarOverlay').classList.toggle('show');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', function(){
+document.getElementById('sidebar').classList.remove('open');
+document.getElementById('sidebarOverlay').classList.remove('show');
+});
+
+function mi(icon, label, href, active) {
+return '<a' + (href ? ' href="' + href + '"' : '') + ' class="menu-item' + (active ? ' active' : '') + '"><i class="' + icon + '"></i> ' + label + '</a>';
+}
+
+function setupSidebar(user) {
+var menu = document.getElementById('dynamicSidebarMenu');
+var items = mi('fa-solid fa-chart-pie', 'Dashboard', 'dashboard.html');
+if (["Super Admin", "Admin"].indexOf(user.role) !== -1) {
+items += mi('fa-solid fa-cubes', 'Items', 'items.html');
+items += mi('fa-solid fa-users-gear', 'User Management', 'users.html', true);
+}
+if (['Super Admin','Admin','Regional Manager','Regional Office','State Manager','State Office'].indexOf(user.role) !== -1) {
+items += mi('fa-solid fa-warehouse', 'Warehouse', 'hubs.html');
+}
+items += mi('fa-solid fa-arrow-down-long', 'Stock IN', 'stock-in.html');
+items += mi('fa-solid fa-arrow-up-long', 'Stock OUT', 'stock-out.html');
+items += mi('fa-solid fa-file-signature', 'Demand', 'demand.html');
+menu.innerHTML = items;
+}
+
+function openModal() {
+document.getElementById('userModal').classList.add('show');
+}
+
+function closeModal() {
+document.getElementById('userModal').classList.remove('show');
+resetForm();
+}
+
+document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+document.getElementById('userModal').addEventListener('click', function(e) {
+if (e.target === this) closeModal();
+});
+document.getElementById('addUserBtn').addEventListener('click', function(){ resetForm(); openModal(); });
+document.getElementById('addUserFloatBtn').addEventListener('click', function(){ resetForm(); openModal(); });
+
+document.getElementById('logoutBtn').addEventListener('click', function(){
+if (window.appLogout) { window.appLogout(); return; }
+localStorage.removeItem('userSession');
+window.location.replace('login.html');
+});
+
+document.getElementById('pwdToggle').addEventListener('click', function(){
+var inp = document.getElementById('userPassword');
+var icon = this.querySelector('i');
+if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-regular fa-eye-slash'; }
+else { inp.type = 'password'; icon.className = 'fa-regular fa-eye'; }
+});
+
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+
+document.getElementById('userForm').addEventListener('submit', function(e){
+e.preventDefault();
+var btn = document.getElementById('submitBtn');
+btn.disabled = true;
+btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+if (editingUserId) { updateUser(); }
+else { addUser(); }
+});
+
+// --- Cascade helpers ---
+function populateSelect(id, items, placeholder) {
+var sel = document.getElementById(id);
+if (!sel) return;
+var current = sel.value;
+sel.innerHTML = '<option value="">' + (placeholder || 'All ' + id.replace('user','').replace('filter','') + 's') + '</option>';
+for (var i = 0; i < items.length; i++) {
+var opt = document.createElement('option');
+opt.value = items[i];
+opt.textContent = items[i];
+sel.appendChild(opt);
+}
+if (current && items.indexOf(current) !== -1) sel.value = current;
+}
+
+function ensureOption(id, val) {
+var sel = document.getElementById(id);
+if (!sel || !val) return;
+for (var i = 0; i < sel.options.length; i++) {
+if (sel.options[i].value === val) return;
+}
+var opt = document.createElement('option');
+opt.value = val;
+opt.textContent = String(val).toUpperCase() === 'ALL' ? 'ALL (Full Access)' : val;
+sel.appendChild(opt);
+}
+
+function cascadeStates(regionVal) {
+var stateItems = [];
+if (regionVal === 'ALL') {
+stateItems = allStates.map(function(s) { return s.name }).filter(Boolean);
+} else if (regionVal) {
+stateItems = allStates.filter(function(s) {
+return (s.regionName || s.region) === regionVal;
+}).map(function(s) { return s.name }).filter(Boolean);
+}
+populateSelect('userState', stateItems, 'All States');
+populateSelect('userDivision', [], 'All Divisions');
+populateSelect('userHub', [], 'All Hubs');
+}
+
+function cascadeDivisions(stateVal) {
+var divItems = [];
+if (stateVal === 'ALL') {
+divItems = allDivisions.map(function(d) { return d.name }).filter(Boolean);
+} else if (stateVal) {
+divItems = allDivisions.filter(function(d) {
+return (d.stateName || d.state) === stateVal;
+}).map(function(d) { return d.name }).filter(Boolean);
+}
+populateSelect('userDivision', divItems, 'All Divisions');
+populateSelect('userHub', [], 'All Hubs');
+}
+
+function cascadeHubs(divisionVal) {
+var hubItems = [];
+if (divisionVal === 'ALL') {
+hubItems = allHubs.map(function(h) { return h.name }).filter(Boolean);
+} else if (divisionVal) {
+hubItems = allHubs.filter(function(h) {
+return h.division === divisionVal;
+}).map(function(h) { return h.name }).filter(Boolean);
+}
+populateSelect('userHub', hubItems, 'All Hubs');
+}
+
+document.getElementById('userRegion').addEventListener('change', function() {
+cascadeStates(this.value);
+});
+document.getElementById('userState').addEventListener('change', function() {
+cascadeDivisions(this.value);
+});
+document.getElementById('userDivision').addEventListener('change', function() {
+cascadeHubs(this.value);
+});
+
+// --- Table filter cascade ---
+function populateFilterDropdowns() {
+populateSelect('filterRegion', allRegions.map(function(r){ return r.name }).filter(Boolean), 'All Regions');
+populateSelect('filterState', [], 'All States');
+populateSelect('filterDivision', [], 'All Divisions');
+}
+
+function filterCascadeStates(regionVal) {
+var stateItems = [];
+if (regionVal) {
+stateItems = allStates.filter(function(s) {
+return (s.regionName || s.region) === regionVal;
+}).map(function(s) { return s.name }).filter(Boolean);
+}
+populateSelect('filterState', stateItems, 'All States');
+populateSelect('filterDivision', [], 'All Divisions');
+document.getElementById('filterState').dispatchEvent(new Event('change'));
+}
+
+function filterCascadeDivisions(stateVal) {
+var divItems = [];
+if (stateVal) {
+divItems = allDivisions.filter(function(d) {
+return (d.stateName || d.state) === stateVal;
+}).map(function(d) { return d.name }).filter(Boolean);
+}
+populateSelect('filterDivision', divItems, 'All Divisions');
+}
+
+document.getElementById('filterRegion').addEventListener('change', function() {
+filterCascadeStates(this.value);
+applyFilters();
+});
+document.getElementById('filterState').addEventListener('change', function() {
+filterCascadeDivisions(this.value);
+applyFilters();
+});
+document.getElementById('filterDivision').addEventListener('change', function() {
+applyFilters();
+});
+
+// --- Form actions ---
+function makeTempClient() {
+return window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, {
+auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+});
+}
+function authEmailFor(code) {
+return String(code || '').trim().toLowerCase() + '@' + (window.SUPABASE_AUTH_DOMAIN || 'donationbox.app');
+}
+function isValidEmail(v) {
+return /^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/.test(String(v || '').trim());
+}
+function fnErrorMessage(e) {
+var code = (e && e.code) || '';
+if (code === 'permission-denied') return 'Sirf Admin ye kaam kar sakta hai.';
+if (code === 'already-exists') return 'Ye Employee Code pehle se registered hai.';
+if (code === 'auth/email-already-in-use' || code === 'user_already_exists') return 'Is Employee Code ka login account pehle se bana hua hai.';
+if (code === 'auth/weak-password' || code === 'weak_password') return 'Password kam se kam 6 characters ka hona chahiye.';
+if (code === 'auth/invalid-email' || code === 'validation_failed') return 'Employee Code me sirf letters/numbers allowed hain.';
+var msg = String((e && e.message) || e || '');
+if (/rate limit/i.test(msg)) return 'Supabase email rate limit ho gaya. Authentication me "Confirm email" OFF karein (ya thodi der baad try karein).';
+if (/already registered|already been registered/i.test(msg)) return 'Is email ka login account pehle se bana hua hai.';
+if (/invalid email/i.test(msg)) return 'Email address valid nahi hai (asli email daalein).';
+return msg;
+}
+
+async function addUser() {
+try {
+var contactEmail = document.getElementById('userEmail').value.trim().toLowerCase();
+var employeeCode = document.getElementById('userEmpCode').value.trim();
+var password = document.getElementById('userPassword').value;
+if (!employeeCode) { showToast('Employee Code zaroori hai!', 'fa-solid fa-triangle-exclamation'); resetBtn(); return; }
+if (!/^[A-Za-z0-9._-]{2,32}$/.test(employeeCode)) { showToast('Employee Code me sirf letters/numbers (2-32) allowed hain!', 'fa-solid fa-triangle-exclamation'); resetBtn(); return; }
+if (contactEmail && !isValidEmail(contactEmail)) { showToast('Email address sahi nahi hai!', 'fa-solid fa-triangle-exclamation'); resetBtn(); return; }
+if (!password || password.length < 6) { showToast('Password kam se kam 6 characters ka hona chahiye!', 'fa-solid fa-triangle-exclamation'); resetBtn(); return; }
+// Auth email = user ka original email (isi par password reset link jayega).
+// Email nahi diya to Employee Code se internal email ban jaata hai (sirf login ke liye).
+var authEmail = contactEmail || authEmailFor(employeeCode);
+var exists = false;
+for (var i = 0; i < allUsers.length; i++) {
+if (allUsers[i].employeeCode && String(allUsers[i].employeeCode).toLowerCase() === employeeCode.toLowerCase()) { exists = true; break; }
+var existingAuth = String(allUsers[i].authEmail || allUsers[i].email || '').toLowerCase();
+if (contactEmail && existingAuth === contactEmail) { exists = true; break; }
+}
+if (exists) { showToast('Email / Employee Code already exists!', 'fa-solid fa-triangle-exclamation'); resetBtn(); return; }
+var region = document.getElementById('userRegion').value;
+var state = document.getElementById('userState').value;
+var division = document.getElementById('userDivision').value;
+var hub = document.getElementById('userHub').value;
+
+// 1) Login account (Supabase Auth) - alag temporary client se, taaki admin ka session na toote
+var temp = makeTempClient();
+var signRes = await temp.auth.signUp({ email: authEmail, password: password });
+if (signRes.error) throw signRes.error;
+var uid = signRes.data && signRes.data.user ? signRes.data.user.id : null;
+if (!uid) throw new Error('Login account nahi ban paya.');
+var confirmed = !!(signRes.data && signRes.data.session);
+try { await temp.auth.signOut(); } catch (e2) {}
+
+// 2) Profile + role + scope
+var profile = {
+fullName: document.getElementById('userName').value.trim(),
+email: contactEmail,
+authEmail: authEmail,
+employeeCode: employeeCode,
+role: document.getElementById('userRole').value,
+region: region || '',
+state: state || '',
+division: division || '',
+hub: hub || '',
+warehouse: hub || '',
+status: document.getElementById('userStatus').value || 'Active',
+createdAt: new Date().toISOString(),
+createdBy: (currentUser && currentUser.fullName) || ''
+};
+await db.collection('users').doc(uid).set(profile);
+showToast('User added successfully!');
+if (!confirmed) showToast('Account bana, par email confirm OFF karna baaki hai (Supabase settings).', 'fa-solid fa-triangle-exclamation');
+resetForm();
+closeModal();
+await loadUsers();
+} catch(e) { console.error(e); showToast('Error adding user: ' + fnErrorMessage(e), 'fa-solid fa-triangle-exclamation'); }
+resetBtn();
+}
+
+async function updateUser() {
+try {
+var region = document.getElementById('userRegion').value;
+var state = document.getElementById('userState').value;
+var division = document.getElementById('userDivision').value;
+var hub = document.getElementById('userHub').value;
+var data = {
+fullName: document.getElementById('userName').value.trim(),
+email: document.getElementById('userEmail').value.trim().toLowerCase(),
+employeeCode: document.getElementById('userEmpCode').value.trim(),
+role: document.getElementById('userRole').value,
+region: region || '',
+state: state || '',
+division: division || '',
+hub: hub || '',
+warehouse: hub || '',
+status: document.getElementById('userStatus').value,
+updatedAt: new Date().toISOString(),
+updatedBy: (currentUser && currentUser.fullName) || ''
+};
+var pwd = document.getElementById('userPassword').value;
+var prev = null;
+for (var i = 0; i < allUsers.length; i++) { if (allUsers[i].id === editingUserId) { prev = allUsers[i]; break; } }
+var prevAuth = String((prev && (prev.authEmail || prev.email)) || '').toLowerCase();
+var emailChanged = !!data.email && data.email !== prevAuth;
+await db.collection('users').doc(editingUserId).update(data);
+showToast('User updated successfully!');
+if (pwd || emailChanged) showToast('Login email/password change karne ke liye script chalayein: node supabase/scripts/admin-users.mjs (pass/email) --emp ' + data.employeeCode, 'fa-solid fa-triangle-exclamation');
+resetForm();
+closeModal();
+await loadUsers();
+} catch(e) { console.error(e); showToast('Error updating user: ' + fnErrorMessage(e), 'fa-solid fa-triangle-exclamation'); }
+resetBtn();
+}
+
+function resetBtn() {
+var btn = document.getElementById('submitBtn');
+if (!btn) return;
+btn.disabled = false;
+btn.innerHTML = editingUserId ? '<i class="fa-solid fa-floppy-disk"></i> Update User' : '<i class="fa-solid fa-floppy-disk"></i> Save User';
+}
+
+async function deleteUser(id, name) {
+if (!confirm('Are you sure you want to delete user "' + name + '"? This action cannot be undone.')) return;
+try {
+await db.collection('users').doc(id).delete();
+showToast('User removed! Login account cleanup: supabase/scripts/admin-users.mjs');
+await loadUsers();
+} catch(e) { console.error(e); showToast('Error deleting user: ' + fnErrorMessage(e), 'fa-solid fa-triangle-exclamation'); }
+}
+
+function getArrayVal(u, field) {
+if (u[field + 's'] && Array.isArray(u[field + 's']) && u[field + 's'].length) return u[field + 's'];
+if (u[field]) return [u[field]];
+return [];
+}
+
+function editUser(id) {
+var u = null;
+for (var i = 0; i < allUsers.length; i++) {
+if (allUsers[i].id === id) { u = allUsers[i]; break; }
+}
+if (!u) return;
+editingUserId = id;
+document.getElementById('formTitle').textContent = 'Edit User';
+document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update User';
+document.getElementById('cancelBtn').style.display = 'inline-flex';
+document.getElementById('pwdRequired').style.display = 'none';
+document.getElementById('userPassword').required = false;
+document.getElementById('userName').value = u.fullName || '';
+document.getElementById('userEmail').value = u.email || '';
+document.getElementById('userEmpCode').value = u.employeeCode || '';
+document.getElementById('userRole').value = u.role || '';
+document.getElementById('userStatus').value = u.status || 'Active';
+document.getElementById('userPassword').value = '';
+var regionVal = u.region || '';
+var stateVal = u.state || '';
+var divisionVal = u.division || '';
+var hubVal = u.hub || '';
+ensureOption('userRegion', regionVal);
+document.getElementById('userRegion').value = regionVal;
+cascadeStates(regionVal);
+ensureOption('userState', stateVal);
+document.getElementById('userState').value = stateVal;
+cascadeDivisions(stateVal);
+ensureOption('userDivision', divisionVal);
+document.getElementById('userDivision').value = divisionVal;
+cascadeHubs(divisionVal);
+ensureOption('userHub', hubVal);
+document.getElementById('userHub').value = hubVal;
+openModal();
+}
+
+function resetForm() {
+document.getElementById('userForm').reset();
+document.getElementById('pwdRequired').style.display = 'inline';
+document.getElementById('userPassword').required = true;
+document.getElementById('formTitle').textContent = 'Add New User';
+document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save User';
+document.getElementById('cancelBtn').style.display = 'none';
+editingUserId = null;
+populateSelect('userRegion', allRegions.map(function(r){ return r.name }).filter(Boolean), 'All Regions');
+populateSelect('userState', [], 'All States');
+populateSelect('userDivision', [], 'All Divisions');
+populateSelect('userHub', [], 'All Hubs');
+}
+
+function applyFilters() {
+var searchVal = document.getElementById('searchUser').value.trim().toLowerCase();
+var roleFilter = document.getElementById('filterRole').value;
+var regionFilter = document.getElementById('filterRegion').value;
+var stateFilter = document.getElementById('filterState').value;
+var divisionFilter = document.getElementById('filterDivision').value;
+
+var filtered = [];
+for (var i = 0; i < allUsers.length; i++) {
+var u = allUsers[i];
+
+if (roleFilter && u.role !== roleFilter) continue;
+// Strict filters: only exact area matches. "ALL" access users do not leak into a specific area.
+if (regionFilter) {
+var ur = getArrayVal(u, 'region');
+if (ur.indexOf(regionFilter) === -1) continue;
+}
+if (stateFilter) {
+var us = getArrayVal(u, 'state');
+if (us.indexOf(stateFilter) === -1) continue;
+}
+if (divisionFilter) {
+var ud = getArrayVal(u, 'division');
+if (ud.indexOf(divisionFilter) === -1) continue;
+}
+if (searchVal) {
+var name = (u.fullName || '').toLowerCase();
+var email = (u.email || '').toLowerCase();
+var emp = (u.employeeCode || '').toLowerCase();
+var mob = (u.mobile || '').toLowerCase();
+if (name.indexOf(searchVal) === -1 && email.indexOf(searchVal) === -1 && emp.indexOf(searchVal) === -1 && mob.indexOf(searchVal) === -1) continue;
+}
+filtered.push(u);
+}
+
+var parts = [];
+if (roleFilter) parts.push('Role: ' + roleFilter);
+if (regionFilter) parts.push('Region: ' + regionFilter);
+if (stateFilter) parts.push('State: ' + stateFilter);
+if (divisionFilter) parts.push('Division: ' + divisionFilter);
+if (searchVal) parts.push('Search: "' + document.getElementById('searchUser').value.trim() + '"');
+var summary = document.getElementById('filterSummary');
+if (summary) summary.textContent = (parts.length ? parts.join('  •  ') + '  —  ' : 'All users  —  ') + filtered.length + ' user(s) found';
+document.getElementById('userCount').textContent = filtered.length + ' users';
+renderTable(filtered);
+}
+
+function renderTable(users) {
+var tb = document.getElementById('usersTableBody');
+if (!tb) return;
+tb.innerHTML = '';
+if (!users.length) {
+tb.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>No users found.</p></div></td></tr>';
+return;
+}
+for (var i = 0; i < users.length; i++) {
+var u = users[i];
+var statusClass = (u.status === 'Active') ? 'status-active' : 'status-inactive';
+var row = '<tr><td>' + (i + 1) + '</td><td><strong>' + safeVal(u.fullName) + '</strong></td><td>' + safeVal(u.email) + '</td><td>' + safeVal(u.employeeCode) + '</td><td>' + safeVal(u.role) + '</td><td>' + safeVal(u.region) + '</td><td>' + safeVal(u.state) + '</td><td>' + safeVal(u.division) + '</td><td>' + safeVal(u.hub) + '</td><td><span class="status-badge ' + statusClass + '">' + safeVal(u.status, 'Active') + '</span></td><td><button class="action-btn edit" onclick="editUser(\'' + escapeAttr(u.id) + '\')"><i class="fa-solid fa-pen-to-square"></i> Edit</button> <button class="action-btn delete" onclick="deleteUser(\'' + escapeAttr(u.id) + '\',\'' + escapeAttr(u.fullName || '') + '\')"><i class="fa-solid fa-trash-can"></i> Delete</button></td></tr>';
+tb.innerHTML += row;
+}
+}
+
+function safeVal(val, fallback) {
+if (val === null || val === undefined || val === '') return fallback || '-';
+return escapeHtml(String(val));
+}
+
+function escapeHtml(s) {
+if (!s) return '';
+return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function escapeAttr(s) {
+if (!s) return '';
+return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"');
+}
+
+document.getElementById('searchUser').addEventListener('input', function(){ applyFilters(); });
+document.getElementById('filterRole').addEventListener('change', function(){ applyFilters(); });
+document.getElementById('clearFilters').addEventListener('click', function(){
+document.getElementById('searchUser').value = '';
+document.getElementById('filterRole').value = '';
+document.getElementById('filterRegion').value = '';
+populateSelect('filterState', [], 'All States');
+populateSelect('filterDivision', [], 'All Divisions');
+applyFilters();
+});
+
+async function loadMasterData() {
+try {
+var regSnap = await db.collection('regions').get().catch(function(e){ console.warn('regions query fail', e); return {docs:[]}; });
+var stateSnap = await db.collection('states').get().catch(function(e){ console.warn('states query fail', e); return {docs:[]}; });
+var divSnap = await db.collection('divisions').get().catch(function(e){ console.warn('divisions query fail', e); return {docs:[]}; });
+var hubSnap = await db.collection('hubs').get().catch(function(e){ console.warn('hubs query fail', e); return {docs:[]}; });
+
+allRegions = regSnap.docs ? regSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
+allStates = stateSnap.docs ? stateSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
+allDivisions = divSnap.docs ? divSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
+allHubs = hubSnap.docs ? hubSnap.docs.map(function(d){ return Object.assign({id: d.id}, d.data()) }) : [];
+
+// Build lookup maps for names (like hubs.html does)
+var regionNameMap = {};
+allRegions.forEach(function(r){ regionNameMap[r.id] = r.name; regionNameMap[r.name] = r.id; });
+
+var stateNameMap = {};
+allStates.forEach(function(s){ stateNameMap[s.id] = s.name; stateNameMap[s.name] = s.id; });
+
+// Enrich states with regionName so cascade filter works
+allStates.forEach(function(s){
+s.regionName = regionNameMap[s.regionId] || s.region || '';
+});
+
+// Enrich divisions with stateName so cascade filter works
+allDivisions.forEach(function(d){
+d.stateName = stateNameMap[d.stateId] || d.state || '';
+});
+
+populateSelect('userRegion', allRegions.map(function(r){ return r.name }).filter(Boolean), 'All Regions');
+populateFilterDropdowns();
+} catch(e) { console.error(e); }
+}
+
+async function loadUsers() {
+try {
+var snap = await db.collection('users').get();
+var tempUsers = [];
+for (var i = 0; i < snap.docs.length; i++) {
+var d = snap.docs[i];
+var data = d.data();
+if (!data) continue;
+tempUsers.push(Object.assign({id: d.id}, data));
+}
+allUsers = tempUsers;
+
+// Role-based filtering: show users based on current user's access
+if (currentUser && currentUser.role !== 'Super Admin' && currentUser.role !== 'Admin') {
+var filtered = [];
+for (var i = 0; i < allUsers.length; i++) {
+var u = allUsers[i];
+var keep = true;
+
+if (["State Manager", "State Office"].indexOf(currentUser.role) !== -1) {
+if (currentUser.state) {
+var us = getArrayVal(u, 'state');
+if (us.indexOf(currentUser.state) === -1) {
+keep = false;
+}
+}
+} 
+else if (["Regional Manager", "Regional Office"].indexOf(currentUser.role) !== -1) {
+if (currentUser.region) {
+var ur = getArrayVal(u, 'region');
+if (ur.indexOf(currentUser.region) === -1) {
+keep = false;
+}
+}
+} 
+else {
+if (currentUser.region) { 
+var ur = getArrayVal(u, 'region'); 
+if (ur.indexOf(currentUser.region) === -1) keep = false; 
+}
+if (currentUser.state) { 
+var us = getArrayVal(u, 'state'); 
+if (us.indexOf(currentUser.state) === -1) keep = false; 
+}
+if (currentUser.division) { 
+var ud = getArrayVal(u, 'division'); 
+if (ud.indexOf(currentUser.division) === -1) keep = false; 
+}
+}
+
+if (keep) {
+filtered.push(u);
+}
+}
+allUsers = filtered;
+}
+
+applyFilters();
+} catch(e) { 
+console.error(e);
+var tb = document.getElementById('usersTableBody');
+if (tb) tb.innerHTML = '<tr><td colspan="11"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;opacity:0.8"></i><p>Error loading users.</p></div></td></tr>';
+}
+}
+
+function exportExcel() {
+if (!allUsers.length) { showToast("No data to export", "fa-solid fa-triangle-exclamation"); return; }
+var wsData = [["#","Name","Email","Code","Role","Region","State","Division","Hub","Status"]];
+for (var i = 0; i < allUsers.length; i++) {
+var e = allUsers[i];
+wsData.push([(i+1), e.fullName||"-", e.email||"-", e.employeeCode||"-", e.role||"-", e.region||"-", e.state||"-", e.division||"-", e.hub||"-", e.status||"-"]);
+}
+var wb = XLSX.utils.book_new();
+var ws = XLSX.utils.aoa_to_sheet(wsData);
+XLSX.utils.book_append_sheet(wb, ws, "Users");
+XLSX.writeFile(wb, "users_export.xlsx");
+}
+
+window.addEventListener('DOMContentLoaded', async function(){
+try {
+var sessionStr = localStorage.getItem('userSession');
+if (!sessionStr) {
+showToast('Session invalid! Redirecting...');
+setTimeout(function(){ window.location.href = 'login.html' }, 1200);
+return;
+}
+var user = JSON.parse(sessionStr);
+if (!user || !user.role) {
+showToast('Session invalid! Redirecting...');
+setTimeout(function(){ window.location.href = 'login.html' }, 1200);
+return;
+}
+if (["Super Admin", "Admin"].indexOf(user.role) === -1) {
+showToast('Access denied! Redirecting...');
+setTimeout(function(){ window.location.href = 'dashboard.html' }, 1200);
+return;
+}
+currentUser = user;
+setupSidebar(user);
+await loadMasterData();
+await loadUsers();
+} catch(e) {
+console.error('Initialization error:', e);
+}
+});
+document.head.insertAdjacentHTML('beforeend','<style>@media(max-width:768px){.sidebar-overlay{display:none!important}}</style>');
+document.head.insertAdjacentHTML('beforeend',`<style>
+@media(max-width:768px){
+  .sidebar-overlay{ display:none !important; }
+  .sidebar-overlay.show{ display:block !important; }
+  .top-bar-left h1{ font-size:15px !important; }
+  .user-info .name{ font-size:11px !important; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .user-info .desig{ display:none !important; }
+  .user-info{ padding:5px 10px 5px 8px !important; }
+  table{ min-width:380px !important; }
+  th{ font-size:10px !important; padding:6px 4px !important; white-space:nowrap; }
+  td{ font-size:11px !important; padding:6px 4px !important; }
+  .btn-sm{ padding:7px 10px !important; min-height:34px !important; }
+  .action-cell{ gap:6px !important; flex-wrap:wrap !important; }
+  .tab-nav{ overflow-x:auto !important; flex-wrap:nowrap !important; }
+  .tab-btn{ white-space:nowrap !important; padding:7px 12px !important; font-size:11px !important; flex-shrink:0; }
+  .form-card{ padding:14px !important; }
+  .form-row{ grid-template-columns:1fr !important; gap:10px !important; }
+  .form-group input,.form-group select,.form-group textarea{ font-size:13px !important; padding:10px !important; min-height:42px !important; }
+  .form-actions{ flex-direction:column !important; gap:8px !important; }
+  .form-actions .btn-primary,.form-actions .btn-cancel{ width:100% !important; justify-content:center !important; padding:11px !important; font-size:13px !important; }
+  .stats-grid{ grid-template-columns:1fr 1fr !important; gap:8px !important; }
+  .stat-card{ padding:12px !important; }
+  .modal-container{ width:96% !important; max-width:100% !important; margin:8px auto !important; max-height:92vh !important; overflow-y:auto !important; }
+  .modal-body{ padding:14px !important; }
+  .modal-header h2{ font-size:14px !important; }
+  .modal-footer{ flex-direction:column !important; gap:8px !important; }
+  .modal-footer button{ width:100% !important; justify-content:center !important; }
+  .float-add-btn{ top:62px !important; right:12px !important; width:42px !important; height:42px !important; }
+  .table-toolbar{ grid-template-columns:1fr !important; gap:8px !important; }
+  .table-toolbar .search-wrap,.table-toolbar select,.filter-clear{ width:100% !important; }
+  .action-bar{ flex-direction:column !important; }
+  .action-bar button{ width:100% !important; }
+  .section-header{ flex-direction:column !important; gap:6px !important; }
+  .section-header h2{ font-size:13px !important; }
+  .dash-section{ padding:12px !important; }
+}
+@media(max-width:480px){
+  .main-content{ padding:58px 10px 16px !important; }
+  table{ min-width:300px !important; }
+  th{ font-size:9px !important; padding:4px !important; }
+  td{ font-size:10px !important; padding:4px !important; }
+  .stats-grid{ grid-template-columns:1fr !important; }
+}
+</style>`);
+</script>
+</body>
+</html>
